@@ -1,0 +1,163 @@
+:root {
+  color: #f8f4ff;
+  background: #090a1a;
+  font-family: "Courier New", Courier, monospace;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(125, 107, 255, 0.24), transparent 38rem),
+    #090a1a;
+}
+
+button,
+kbd {
+  font: inherit;
+}
+
+.game-shell {
+  width: min(100% - 2rem, 52rem);
+  margin: 0 auto;
+  padding: 2rem 0 2.5rem;
+}
+
+.game-header,
+.game-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: #55e6c1;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #ffcf5a;
+  font-size: clamp(1.8rem, 7vw, 3.4rem);
+  line-height: 0.95;
+  text-shadow: 3px 3px 0 #7d6bff;
+}
+
+.scoreboard {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.scoreboard div {
+  min-width: 7rem;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid #7d6bff;
+  background: rgba(17, 18, 47, 0.86);
+  box-shadow: 4px 4px 0 #301f62;
+}
+
+.scoreboard dt {
+  color: #a9a3d8;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scoreboard dd {
+  margin: 0.2rem 0 0;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.warning {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 2px solid #ff5c8a;
+  color: #ffdce6;
+  background: #4a1730;
+}
+
+.play-area {
+  width: min(100%, 30rem);
+  margin: 1.5rem auto;
+  border: 3px solid #55e6c1;
+  background: #11122f;
+  box-shadow: 8px 8px 0 #301f62;
+  line-height: 0;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: manipulation;
+  cursor: crosshair;
+}
+
+.game-footer {
+  color: #b9b5da;
+  font-size: 0.82rem;
+}
+
+.game-footer p {
+  margin: 0.25rem 0;
+}
+
+kbd {
+  padding: 0.12rem 0.35rem;
+  border: 1px solid #a9a3d8;
+  color: #fff;
+  background: #191a3e;
+}
+
+button {
+  padding: 0.7rem 1rem;
+  border: 2px solid #ffcf5a;
+  color: #11122f;
+  background: #ffcf5a;
+  box-shadow: 4px 4px 0 #a46721;
+  cursor: pointer;
+}
+
+button:disabled {
+  border-color: #676287;
+  color: #aaa5c6;
+  background: #302e48;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+canvas:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .game-shell {
+    width: min(100% - 1rem, 52rem);
+    padding-top: 1rem;
+  }
+
+  .scoreboard {
+    width: 100%;
+  }
+
+  .scoreboard div {
+    flex: 1;
+  }
+}

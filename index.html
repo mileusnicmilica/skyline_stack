@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Skyline Stack, a small retro-inspired block-stacking game."
+    />
+    <title>Skyline Stack</title>
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="game-header">
+        <div>
+          <p class="eyebrow">Night shift // tower district</p>
+          <h1>Skyline Stack</h1>
+        </div>
+        <dl class="scoreboard" aria-label="Current game information">
+          <div>
+            <dt>Score</dt>
+            <dd id="score">0</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="status" aria-live="polite">Ready</dd>
+          </div>
+        </dl>
+      </header>
+
+      <p id="config-warning" class="warning" role="alert" hidden></p>
+
+      <section class="play-area" aria-label="Skyline Stack play area">
+        <canvas id="game-canvas">
+          Skyline Stack requires a browser that supports HTML Canvas.
+        </canvas>
+      </section>
+
+      <footer class="game-footer">
+        <p><kbd>Space</kbd> or click/tap the play area to drop.</p>
+        <p><kbd>R</kbd> or Restart starts a new game after Game Over.</p>
+        <button id="restart-button" type="button" disabled>Restart</button>
+      </footer>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

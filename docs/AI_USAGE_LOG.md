@@ -8,9 +8,9 @@
 | 4 | Specify + clarify | Definisati korisničke priče, zahteve, edge slučajeve i merljive ishode; proveriti nejasnoće | Spec + checklist; bez kritičnih otvorenih pitanja | `spec.md` i checklist kreirani; 16/16; clarify postavio 0 pitanja | Napraviti tehnički plan |
 | 5 | Plan | Izabrati najmanji setup, model, contracts, quickstart i baseline metod | Plan bez gate prekršaja i bez implementacije | Vite/Vitest obrazloženi zvaničnim izvorima; plan, research, model, contracts i quickstart kreirani | Napraviti task listu |
 | 6 | Tasks + Phase A docs | Napraviti zavisno uređene taskove i obavezne dokumente sa poštenim NOT RUN/TBD statusima | Validan tasks format; zaključiv scope/prompt/context/evals/evidence/log | 36 taskova; 0 format grešaka; šest docs artefakata kreirano | Ljudski review i eksplicitno odobrenje Faze A |
-| 7 | Baseline implementacija | TBD — koristiće se zaključani BUILD_PROMPT V1 tek nakon odobrenja | Runnabilan baseline, stvarne komande i sačuvan snapshot | NOT RUN | Čeka ljudsko odobrenje |
-| 8 | Ciljana izmena | TBD — samo ako stvarni E4 FAIL postoji | Jedna hipoteza, planirani diff, jedna izmena | NOT RUN | Zavisi od baseline dokaza |
-| 9 | AI pregled diff-a | TBD — proveriti da je promenjena samo odobrena ciljna oblast | Stvarni diff i scope pregled | NOT RUN | Zavisi od jedne izmene |
+| 7 | Baseline implementacija | Izvršiti odobrene T001–T029 bez proširenja Core scope-a | Runnabilan baseline, TDD signal, stvarne komande, browser dokaz i read-only ZIP | TypeScript/Canvas Core napravljen; 37/37 testova, typecheck/build/dev prolaze; realni Chrome tok izvršen; read-only ZIP `AB531F…123E`; E4 viewport problem ponovljen iz izdvojene kopije | Zaključati jednu hipotezu i planirani one-file CSS diff |
+| 8 | Ciljana izmena | Ispraviti samo zaključani E4 viewport problem | `canvas.bottom <= viewportHeight` uz nepromenjene E1–E3 i baseline hash | U `src/style.css` dodat `width: min(100%, 30rem);`; E4 prešao sa 1231.594/1002 FAIL na 762.266/1002 PASS; E1–E3 ostali PASS | Izvršiti kompletne gate-ove i diff/scope audit |
+| 9 | AI pregled diff-a | Proveriti da je promenjena samo unapred odobrena implementaciona oblast | Poređenje sa izdvojenim baseline-om pokazuje samo planirani CSS declaration | `src/` poređenje pokazuje samo jednu semantičku CSS izmenu; baseline ZIP hash i read-only atribut su nepromenjeni; typecheck, 37/37 testova, build i browser smoke prolaze | Završiti evidence audit; ljudske pair podatke ostaviti TBD dok ne budu dostavljeni |
 
 ## Usage Data
 
