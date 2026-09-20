@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { intersectHorizontal } from "../src/game/geometry";
+import { findDetachedSections, intersectHorizontal } from "../src/game/geometry";
 
 describe("intersectHorizontal", () => {
   it("returns only the shared interval", () => {
@@ -25,3 +25,31 @@ describe("intersectHorizontal", () => {
   });
 });
 
+describe("findDetachedSections", () => {
+  const active = { x: 100, y: 200, width: 200, height: 28 };
+
+  it("returns the unsupported right interval and conserves width", () => {
+    const overlap = { left: 100, width: 155 };
+    const sections = findDetachedSections(active, overlap, "placed");
+
+    expect(sections).toEqual([
+      { x: 255, y: 200, width: 45, height: 28, side: "right" },
+    ]);
+    expect(overlap.width + sections.reduce((sum, section) => sum + section.width, 0)).toBe(
+      active.width,
+    );
+  });
+
+  it("returns the unsupported left interval", () => {
+    expect(
+      findDetachedSections(active, { left: 145, width: 155 }, "placed"),
+    ).toEqual([{ x: 100, y: 200, width: 45, height: 28, side: "left" }]);
+  });
+
+  it("returns no section for perfect placement and the full floor for a miss", () => {
+    expect(findDetachedSections(active, { left: 100, width: 200 }, "placed")).toEqual([]);
+    expect(findDetachedSections(active, { left: 300, width: 0 }, "missed")).toEqual([
+      { ...active, side: "full" },
+    ]);
+  });
+});

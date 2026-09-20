@@ -30,7 +30,7 @@ export const DEFAULT_GAME_CONFIG: Readonly<GameConfig> = Object.freeze({
   canvasWidth: 480,
   canvasHeight: 640,
   startingBlockWidth: 200,
-  blockHeight: 28,
+  blockHeight: 40,
   moveSpeed: 180,
   fallSpeed: 520,
   minOverlap: 8,

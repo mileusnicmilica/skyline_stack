@@ -11,3 +11,5 @@ Thumbs.db
 .vscode/
 .idea/
 responses/
+artifacts/.smoke-profile-*/
+Example.jpeg

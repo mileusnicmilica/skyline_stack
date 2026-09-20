@@ -40,6 +40,8 @@ describe("locked evals", () => {
       height: DEFAULT_GAME_CONFIG.blockHeight,
       role: "placed" as const,
       motion: "stationary" as const,
+      tilt: 0,
+      floorNumber: 4,
     };
     const session: GameSession = {
       phase: "playing",
@@ -52,9 +54,16 @@ describe("locked evals", () => {
         height: DEFAULT_GAME_CONFIG.blockHeight,
         role: "active",
         motion: "falling",
+        tilt: 0,
+        floorNumber: 5,
       },
       direction: 1,
       dropAccepted: true,
+      swingPhase: 0,
+      cameraOffset: 0,
+      cameraTarget: 0,
+      debris: [],
+      impactPulse: 0,
     };
 
     const resolved = resolveLanding(session, DEFAULT_GAME_CONFIG);

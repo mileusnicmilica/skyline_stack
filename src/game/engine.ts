@@ -1,46 +1,44 @@
+import { advanceCamera, getCameraTarget } from "./camera";
 import type { GameConfig } from "./config";
-import { intersectHorizontal } from "./geometry";
-import type { Block, Direction, GameSession } from "./model";
-
-const MOVING_LANE_GAP_IN_BLOCKS = 3;
-const TOP_MARGIN_IN_BLOCKS = 1;
+import {
+  advanceSwingPhase,
+  getHangingY,
+  getSwingPosition,
+} from "./crane";
+import { advanceMasonry, createMasonryPieces } from "./debris";
+import { findDetachedSections, intersectHorizontal } from "./geometry";
+import type { Block, GameSession } from "./model";
 
 function getLastSupport(session: GameSession): Block {
   const support = session.placedBlocks.at(-1);
   if (!support) {
-    throw new Error("A game session must contain a supporting block.");
+    throw new Error("A game session must contain a supporting floor.");
   }
 
   return support;
 }
 
-function getMovingLaneY(supportY: number, blockHeight: number): number {
-  return supportY - blockHeight * MOVING_LANE_GAP_IN_BLOCKS;
+function clamp(value: number, minimum: number, maximum: number): number {
+  return Math.min(maximum, Math.max(minimum, value));
 }
 
-function moveWithinBounds(
-  x: number,
+function createActiveFloor(
+  support: Block,
   width: number,
-  direction: Direction,
-  distance: number,
-  canvasWidth: number,
-): { x: number; direction: Direction } {
-  const maxX = Math.max(0, canvasWidth - width);
-  let nextX = x + direction * distance;
-  let nextDirection = direction;
-
-  while (nextX < 0 || nextX > maxX) {
-    if (nextX > maxX) {
-      nextX = maxX - (nextX - maxX);
-      nextDirection = -1;
-    }
-    if (nextX < 0) {
-      nextX = -nextX;
-      nextDirection = 1;
-    }
-  }
-
-  return { x: nextX, direction: nextDirection };
+  floorNumber: number,
+  config: GameConfig,
+): Block {
+  const swing = getSwingPosition(0, width, config);
+  return {
+    x: swing.x,
+    y: getHangingY(support.y, config.blockHeight),
+    width,
+    height: config.blockHeight,
+    role: "active",
+    motion: "moving",
+    tilt: 0,
+    floorNumber,
+  };
 }
 
 export function createGameSession(config: GameConfig): GameSession {
@@ -51,23 +49,35 @@ export function createGameSession(config: GameConfig): GameSession {
     height: config.blockHeight,
     role: "base",
     motion: "stationary",
+    tilt: 0,
+    floorNumber: 0,
   };
+  const activeBlock = createActiveFloor(base, config.startingBlockWidth, 1, config);
 
   return {
     phase: "playing",
     score: 0,
     placedBlocks: [base],
-    activeBlock: {
-      x: 0,
-      y: getMovingLaneY(base.y, config.blockHeight),
-      width: config.startingBlockWidth,
-      height: config.blockHeight,
-      role: "active",
-      motion: "moving",
-    },
+    activeBlock,
     direction: 1,
     dropAccepted: false,
+    swingPhase: 0,
+    cameraOffset: 0,
+    cameraTarget: getCameraTarget(activeBlock.y),
+    debris: [],
+    impactPulse: 0,
   };
+}
+
+function createDebrisForSections(
+  session: GameSession,
+  sections: ReturnType<typeof findDetachedSections>,
+  floorNumber: number,
+) {
+  return [
+    ...session.debris,
+    ...sections.flatMap((section) => createMasonryPieces(section, floorNumber)),
+  ];
 }
 
 export function resolveLanding(session: GameSession, config: GameConfig): GameSession {
@@ -78,19 +88,28 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
   const support = getLastSupport(session);
   const overlap = intersectHorizontal(session.activeBlock, support);
   const contactY = support.y - session.activeBlock.height;
+  const landedFloor = { ...session.activeBlock, y: contactY };
 
   if (overlap.width < config.minOverlap) {
+    const sections = findDetachedSections(landedFloor, overlap, "missed");
     return {
       ...session,
       phase: "gameOver",
       activeBlock: {
-        ...session.activeBlock,
-        y: contactY,
+        ...landedFloor,
         motion: "missed",
       },
+      debris: createDebrisForSections(
+        session,
+        sections,
+        session.activeBlock.floorNumber,
+      ),
+      impactPulse: 1,
     };
   }
 
+  const supportCenter = support.x + support.width / 2;
+  const activeCenter = landedFloor.x + landedFloor.width / 2;
   const placedBlock: Block = {
     x: overlap.left,
     y: contactY,
@@ -98,33 +117,51 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
     height: session.activeBlock.height,
     role: "placed",
     motion: "stationary",
+    tilt: clamp(((activeCenter - supportCenter) / support.width) * 0.08, -0.055, 0.055),
+    floorNumber: session.score + 1,
   };
-  let placedBlocks = [...session.placedBlocks, placedBlock];
-  let activeY = getMovingLaneY(placedBlock.y, config.blockHeight);
-  const topMargin = config.blockHeight * TOP_MARGIN_IN_BLOCKS;
-
-  if (activeY < topMargin) {
-    placedBlocks = placedBlocks.map((block) => ({
-      ...block,
-      y: block.y + config.blockHeight,
-    }));
-    activeY += config.blockHeight;
-  }
+  const sections = findDetachedSections(landedFloor, overlap, "placed");
+  const activeBlock = createActiveFloor(
+    placedBlock,
+    overlap.width,
+    session.score + 2,
+    config,
+  );
 
   return {
+    ...session,
     phase: "playing",
     score: session.score + 1,
-    placedBlocks,
-    activeBlock: {
-      x: 0,
-      y: activeY,
-      width: overlap.width,
-      height: config.blockHeight,
-      role: "active",
-      motion: "moving",
-    },
+    placedBlocks: [...session.placedBlocks, placedBlock],
+    activeBlock,
     direction: 1,
     dropAccepted: false,
+    swingPhase: 0,
+    cameraTarget: getCameraTarget(activeBlock.y),
+    debris: createDebrisForSections(
+      session,
+      sections,
+      session.activeBlock.floorNumber,
+    ),
+    impactPulse: 1,
+  };
+}
+
+function advanceVisualState(
+  session: GameSession,
+  config: GameConfig,
+  elapsed: number,
+): GameSession {
+  return {
+    ...session,
+    cameraOffset: advanceCamera(session.cameraOffset, session.cameraTarget, elapsed),
+    debris: advanceMasonry(
+      session.debris,
+      elapsed,
+      config.canvasHeight,
+      session.cameraOffset,
+    ),
+    impactPulse: Math.max(0, session.impactPulse - elapsed * 1.8),
   };
 }
 
@@ -133,47 +170,51 @@ export function advanceSession(
   config: GameConfig,
   deltaSeconds: number,
 ): GameSession {
-  if (session.phase !== "playing") {
-    return session;
+  const elapsed = Math.max(0, deltaSeconds);
+  const advanced = advanceVisualState(session, config, elapsed);
+
+  if (advanced.phase !== "playing") {
+    return advanced;
   }
 
-  const elapsed = Math.max(0, deltaSeconds);
-
-  if (session.activeBlock.motion === "moving") {
-    const moved = moveWithinBounds(
-      session.activeBlock.x,
-      session.activeBlock.width,
-      session.direction,
-      config.moveSpeed * elapsed,
-      config.canvasWidth,
+  if (advanced.activeBlock.motion === "moving") {
+    const swingPhase = advanceSwingPhase(
+      advanced.swingPhase,
+      config.moveSpeed,
+      elapsed,
     );
+    const swing = getSwingPosition(swingPhase, advanced.activeBlock.width, config);
 
     return {
-      ...session,
-      direction: moved.direction,
+      ...advanced,
+      swingPhase,
+      direction: swing.direction,
       activeBlock: {
-        ...session.activeBlock,
-        x: moved.x,
+        ...advanced.activeBlock,
+        x: swing.x,
+        tilt: Math.sin(swingPhase) * 0.035,
       },
     };
   }
 
-  if (session.activeBlock.motion === "falling") {
-    const support = getLastSupport(session);
-    const contactY = support.y - session.activeBlock.height;
-    const nextY = session.activeBlock.y + config.fallSpeed * elapsed;
+  if (advanced.activeBlock.motion === "falling") {
+    const support = getLastSupport(advanced);
+    const contactY = support.y - advanced.activeBlock.height;
+    const nextY = advanced.activeBlock.y + config.fallSpeed * elapsed;
     const fallingSession: GameSession = {
-      ...session,
+      ...advanced,
       activeBlock: {
-        ...session.activeBlock,
+        ...advanced.activeBlock,
         y: Math.min(nextY, contactY),
       },
     };
 
-    return nextY >= contactY ? resolveLanding(fallingSession, config) : fallingSession;
+    return nextY >= contactY
+      ? resolveLanding(fallingSession, config)
+      : fallingSession;
   }
 
-  return session;
+  return advanced;
 }
 
 export function restartSession(session: GameSession, config: GameConfig): GameSession {

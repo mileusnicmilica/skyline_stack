@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
     <meta
       name="description"
-      content="Skyline Stack, a small retro-inspired block-stacking game."
+      content="Skyline Stack, a crane-timed city tower building game."
     />
     <title>Skyline Stack</title>
   </head>
@@ -13,12 +14,12 @@
     <main class="game-shell">
       <header class="game-header">
         <div>
-          <p class="eyebrow">Night shift // tower district</p>
+          <p class="eyebrow">Crane district // high rise</p>
           <h1>Skyline Stack</h1>
         </div>
         <dl class="scoreboard" aria-label="Current game information">
           <div>
-            <dt>Score</dt>
+            <dt>Floors</dt>
             <dd id="score">0</dd>
           </div>
           <div>
@@ -37,8 +38,9 @@
       </section>
 
       <footer class="game-footer">
-        <p><kbd>Space</kbd> or click/tap the play area to drop.</p>
-        <p><kbd>R</kbd> or Restart starts a new game after Game Over.</p>
+        <p><kbd>Space</kbd> or click/tap to release the crane load.</p>
+        <p>Line up the facade. Unsupported masonry breaks away.</p>
+        <p><kbd>R</kbd> or Restart rebuilds after Game Over.</p>
         <button id="restart-button" type="button" disabled>Restart</button>
       </footer>
     </main>

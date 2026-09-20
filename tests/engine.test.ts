@@ -7,51 +7,50 @@ import {
   resolveLanding,
   restartSession,
 } from "../src/game/engine";
-import type { GameSession } from "../src/game/model";
+
+function prepareLanding(offset: number) {
+  const session = createGameSession(DEFAULT_GAME_CONFIG);
+  const support = session.placedBlocks.at(-1);
+  if (!support) throw new Error("Expected a support floor");
+
+  session.activeBlock = {
+    ...session.activeBlock,
+    x: support.x + offset,
+    y: support.y - session.activeBlock.height,
+    motion: "falling",
+  };
+  session.dropAccepted = true;
+  return { session, support };
+}
 
 describe("game engine", () => {
-  it("creates one bounded moving block and advances only its horizontal position", () => {
+  it("creates one centered crane floor and advances only its attached sway", () => {
     const session = createGameSession(DEFAULT_GAME_CONFIG);
     const initialY = session.activeBlock.y;
 
     const advanced = advanceSession(session, DEFAULT_GAME_CONFIG, 0.25);
 
+    expect(session.activeBlock.x).toBe(140);
     expect(advanced.activeBlock.x).toBeGreaterThan(session.activeBlock.x);
     expect(advanced.activeBlock.y).toBe(initialY);
-    expect(advanced.activeBlock.x).toBeGreaterThanOrEqual(0);
-    expect(advanced.activeBlock.x + advanced.activeBlock.width).toBeLessThanOrEqual(
-      DEFAULT_GAME_CONFIG.canvasWidth,
-    );
     expect(advanced.activeBlock.motion).toBe("moving");
+    expect(advanced.swingPhase).toBeGreaterThan(session.swingPhase);
   });
 
-  it("reflects at the right edge without leaving the canvas", () => {
+  it("keeps the release x fixed while the active floor falls", () => {
     const session = createGameSession(DEFAULT_GAME_CONFIG);
-    session.activeBlock.x =
-      DEFAULT_GAME_CONFIG.canvasWidth - session.activeBlock.width - 2;
-    session.direction = 1;
-
-    const advanced = advanceSession(session, DEFAULT_GAME_CONFIG, 0.1);
-
-    expect(advanced.direction).toBe(-1);
-    expect(advanced.activeBlock.x).toBeGreaterThanOrEqual(0);
-    expect(advanced.activeBlock.x + advanced.activeBlock.width).toBeLessThanOrEqual(
-      DEFAULT_GAME_CONFIG.canvasWidth,
-    );
-  });
-
-  it("places only the overlap, increments once, and spawns one matching block", () => {
-    const session = createGameSession(DEFAULT_GAME_CONFIG);
-    const support = session.placedBlocks[0];
-    if (!support) throw new Error("Expected a base block");
-    session.activeBlock = {
-      ...session.activeBlock,
-      x: support.x + 25,
-      y: support.y - session.activeBlock.height,
-      motion: "falling",
-    };
+    session.activeBlock = { ...session.activeBlock, x: 173, motion: "falling" };
     session.dropAccepted = true;
 
+    const advanced = advanceSession(session, DEFAULT_GAME_CONFIG, 0.25);
+
+    expect(advanced.activeBlock.x).toBe(173);
+    expect(advanced.activeBlock.y).toBeGreaterThan(session.activeBlock.y);
+    expect(advanced.swingPhase).toBe(session.swingPhase);
+  });
+
+  it("places only overlap, scores once, and crumbles the right overhang", () => {
+    const { session, support } = prepareLanding(25);
     const resolved = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
     expect(resolved.score).toBe(1);
@@ -61,76 +60,77 @@ describe("game engine", () => {
       width: support.width - 25,
       role: "placed",
       motion: "stationary",
+      floorNumber: 1,
     });
     expect(resolved.activeBlock.width).toBe(support.width - 25);
     expect(resolved.activeBlock.motion).toBe("moving");
+    expect(resolved.debris.length).toBeGreaterThanOrEqual(4);
+    expect(resolved.debris.every((piece) => piece.side === "right")).toBe(true);
     expect(resolved.dropAccepted).toBe(false);
   });
 
-  it("rebases placed blocks by one height when the next moving lane reaches the top", () => {
-    const support = {
-      x: 160,
-      y: DEFAULT_GAME_CONFIG.blockHeight * 4,
-      width: 160,
-      height: DEFAULT_GAME_CONFIG.blockHeight,
-      role: "base" as const,
-      motion: "stationary" as const,
-    };
-    const session: GameSession = {
-      phase: "playing",
-      score: 0,
-      placedBlocks: [support],
-      activeBlock: {
-        x: support.x,
-        y: support.y - DEFAULT_GAME_CONFIG.blockHeight,
-        width: support.width,
-        height: DEFAULT_GAME_CONFIG.blockHeight,
-        role: "active",
-        motion: "falling",
-      },
-      direction: 1,
-      dropAccepted: true,
-    };
-
+  it("crumbles the left overhang from the left side", () => {
+    const { session } = prepareLanding(-25);
     const resolved = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
-    expect(resolved.placedBlocks[0]?.y).toBe(support.y + DEFAULT_GAME_CONFIG.blockHeight);
-    expect(resolved.placedBlocks[1]?.y).toBe(support.y);
-    expect(resolved.activeBlock.y).toBe(DEFAULT_GAME_CONFIG.blockHeight);
+    expect(resolved.debris.length).toBeGreaterThanOrEqual(4);
+    expect(resolved.debris.every((piece) => piece.side === "left")).toBe(true);
   });
 
-  it("enters a frozen game-over state on a below-minimum miss", () => {
-    const support = {
-      x: 200,
-      y: 500,
-      width: 80,
-      height: DEFAULT_GAME_CONFIG.blockHeight,
-      role: "placed" as const,
-      motion: "stationary" as const,
-    };
-    const session: GameSession = {
-      phase: "playing",
-      score: 4,
-      placedBlocks: [support],
-      activeBlock: {
-        x: support.x + support.width - (DEFAULT_GAME_CONFIG.minOverlap - 1),
-        y: support.y - DEFAULT_GAME_CONFIG.blockHeight,
-        width: support.width,
-        height: DEFAULT_GAME_CONFIG.blockHeight,
-        role: "active",
-        motion: "falling",
-      },
-      direction: 1,
-      dropAccepted: true,
-    };
+  it("creates no debris for a perfect placement", () => {
+    const { session } = prepareLanding(0);
+    const resolved = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
+    expect(resolved.score).toBe(1);
+    expect(resolved.activeBlock.width).toBe(DEFAULT_GAME_CONFIG.startingBlockWidth);
+    expect(resolved.debris).toEqual([]);
+  });
+
+  it("turns a full miss into masonry and freezes score/tower gameplay", () => {
+    const { session, support } = prepareLanding(DEFAULT_GAME_CONFIG.startingBlockWidth + 1);
+    session.score = 4;
     const failed = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
     expect(failed.phase).toBe("gameOver");
     expect(failed.score).toBe(4);
     expect(failed.placedBlocks).toEqual([support]);
     expect(failed.activeBlock.motion).toBe("missed");
-    expect(advanceSession(failed, DEFAULT_GAME_CONFIG, 1)).toBe(failed);
+    expect(failed.debris.length).toBeGreaterThanOrEqual(4);
+    expect(failed.debris.every((piece) => piece.side === "full")).toBe(true);
+
+    const animated = advanceSession(failed, DEFAULT_GAME_CONFIG, 0.1);
+    expect(animated.score).toBe(failed.score);
+    expect(animated.placedBlocks).toEqual(failed.placedBlocks);
+    expect(animated.debris).not.toEqual(failed.debris);
+  });
+
+  it("keeps the active construction zone visible after eight floors", () => {
+    let session = createGameSession(DEFAULT_GAME_CONFIG);
+
+    for (let floor = 0; floor < 8; floor += 1) {
+      const support = session.placedBlocks.at(-1);
+      if (!support) throw new Error("Expected a support floor");
+      session.activeBlock = {
+        ...session.activeBlock,
+        x: support.x,
+        y: support.y - DEFAULT_GAME_CONFIG.blockHeight,
+        motion: "falling",
+      };
+      session.dropAccepted = true;
+      session = resolveLanding(session, DEFAULT_GAME_CONFIG);
+      session = advanceSession(session, DEFAULT_GAME_CONFIG, 1);
+    }
+
+    const support = session.placedBlocks.at(-1);
+    if (!support) throw new Error("Expected a support floor");
+    const activeScreenY = session.activeBlock.y + session.cameraOffset;
+    const supportScreenY = support.y + session.cameraOffset;
+
+    expect(session.score).toBe(8);
+    expect(activeScreenY).toBeGreaterThanOrEqual(0);
+    expect(activeScreenY).toBeLessThan(DEFAULT_GAME_CONFIG.canvasHeight);
+    expect(supportScreenY).toBeLessThan(DEFAULT_GAME_CONFIG.canvasHeight);
+    expect(session.cameraOffset).toBeGreaterThan(0);
   });
 
   it("restarts every observable field to a fresh session", () => {
@@ -139,6 +139,9 @@ describe("game engine", () => {
     gameOver.score = 7;
     gameOver.dropAccepted = true;
     gameOver.activeBlock.motion = "missed";
+    gameOver.cameraOffset = 120;
+    gameOver.cameraTarget = 140;
+    gameOver.impactPulse = 1;
 
     expect(restartSession(gameOver, DEFAULT_GAME_CONFIG)).toEqual(
       createGameSession(DEFAULT_GAME_CONFIG),

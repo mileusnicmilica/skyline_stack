@@ -2,17 +2,16 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { access, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
 const targetUrl = process.argv[2] ?? "http://127.0.0.1:5173/";
 const screenshotPath = resolve(
-  process.argv[3] ?? "artifacts/session-003/baseline.png",
+  process.argv[3] ?? "artifacts/crane-tower/smoke.png",
 );
 
 const chromeCandidates = [
-  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "/usr/bin/google-chrome",
   "/usr/bin/chromium",
 ];
@@ -175,9 +174,15 @@ async function pressKey(send, { key, code, keyCode }) {
   });
 }
 
+async function wait(milliseconds) {
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
+}
+
 const chrome = await findChrome();
 const port = await reservePort();
-const profilePrefix = join(tmpdir(), "skyline-stack-smoke-");
+const profileRoot = resolve("artifacts");
+await mkdir(profileRoot, { recursive: true });
+const profilePrefix = join(profileRoot, ".smoke-profile-");
 const profile = await mkdtemp(profilePrefix);
 const browser = spawn(
   chrome,
@@ -189,6 +194,7 @@ const browser = spawn(
     "--disable-gpu",
     "--disable-sync",
     "--metrics-recording-only",
+    "--no-sandbox",
     "--no-first-run",
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${profile}`,
@@ -226,6 +232,9 @@ try {
   });
   await writeFile(screenshotPath, Buffer.from(screenshot.data, "base64"));
 
+  // A fresh crane load begins centered. Wait for the sine swing to reach the
+  // far-right miss window before releasing it.
+  await wait(875);
   await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
   const gameOver = await pollUi(
     cdp.send,
@@ -264,10 +273,10 @@ try {
     ]);
   }
 
-  const resolvedTemp = resolve(tmpdir());
+  const resolvedProfileRoot = resolve(profileRoot);
   const resolvedProfile = resolve(profile);
   if (
-    dirname(resolvedProfile) === resolvedTemp &&
+    dirname(resolvedProfile) === resolvedProfileRoot &&
     resolvedProfile.startsWith(resolve(profilePrefix))
   ) {
     await rm(resolvedProfile, {
