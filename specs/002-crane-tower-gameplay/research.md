@@ -12,9 +12,9 @@ City Bloxx is gameplay inspiration only.
 
 ## Decision 2: Attached floors use sinusoidal sway
 
-**Decision**: Drive the attached floor's horizontal center from a deterministic sine phase. The cable endpoint follows the floor center; release freezes the horizontal coordinate and changes only vertical position.
+**Decision**: Drive the attached floor's horizontal center from a deterministic sine phase over the safe center interval `width / 2 .. canvasWidth - width / 2`. The cable endpoint follows the floor center; release freezes the horizontal coordinate and changes only vertical position.
 
-**Rationale**: A sine curve reads as suspended motion, is frame-rate independent, remains easy to unit-test, and keeps drop timing understandable. Reusing `moveSpeed` as the phase-rate input preserves the public configuration contract.
+**Rationale**: A sine curve reads as suspended motion, is frame-rate independent, remains easy to unit-test, and keeps drop timing understandable without allowing facade geometry to leave the visible Canvas. Reusing `moveSpeed` as the phase-rate input preserves the public configuration contract.
 
 **Alternatives considered**: A full rigid-body pendulum was rejected as unnecessary for one-input play and contrary to the no-physics-library constraint. Edge-reflecting linear motion was rejected because it does not feel suspended.
 

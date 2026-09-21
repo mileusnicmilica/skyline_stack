@@ -19,6 +19,17 @@ describe("Crane Tower V2 evals", () => {
     expect(advanced.activeBlock.x).not.toBe(initial.activeBlock.x);
     expect(advanced.activeBlock.y).toBe(initial.activeBlock.y);
     expect(advanced.swingPhase).toBeGreaterThan(initial.swingPhase);
+    for (const phase of [Math.PI / 2, Math.PI * 1.5]) {
+      const bounded = advanceSession(
+        { ...initial, swingPhase: phase - 0.0001 },
+        DEFAULT_GAME_CONFIG,
+        0.0001 / (DEFAULT_GAME_CONFIG.moveSpeed / 100),
+      );
+      expect(bounded.activeBlock.x).toBeGreaterThanOrEqual(0);
+      expect(bounded.activeBlock.x + bounded.activeBlock.width).toBeLessThanOrEqual(
+        DEFAULT_GAME_CONFIG.canvasWidth,
+      );
+    }
   });
 
   it("V2-E2: one release freezes x and advances only the vertical fall", () => {

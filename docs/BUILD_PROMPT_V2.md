@@ -153,7 +153,7 @@ Implement and preserve `tests/v2-evals.test.ts` with these locked meanings:
 - **V2-E3 — Cut/crumble**: width is conserved and debris appears only on the unsupported side.
 - **V2-E4 — No-lives loss rule**: one full miss enters Game Over, creates full-floor debris, preserves score, and exposes no lives state.
 - **V2-E5 — Camera/restart**: eight floors remain playable and restart clears all V2 state.
-- **V2-E6 — Browser presentation**: actual browser flow verifies Ready, success, Game Over, restart, zero runtime/log errors, and a visual screenshot.
+- **V2-E6 — Browser presentation**: actual browser flow verifies Ready, success, a bounded edge partial landing, a later full miss, Game Over, restart, zero runtime/log errors, and a visual screenshot.
 
 Do not weaken these expectations after observing a failure. Fix implementation instead, unless a human explicitly approves a requirements change.
 
@@ -207,6 +207,7 @@ Record a command as PASS only when its actual process succeeds. A browser screen
 - The exact City Bloxx gameplay-inspiration-only boundary is present.
 - The no-lives rule is explicit in specification, implementation state, and V2-E4.
 - V2-E1 through V2-E5 pass as executable deterministic tests.
+- Crane extrema keep the complete active floor inside the Canvas; left and right bound assertions pass.
 - Typecheck, full tests, and production build pass.
 - V2-E6 has actual browser evidence or is honestly marked NOT RUN with a reason.
 - Session 003 evidence is unchanged.

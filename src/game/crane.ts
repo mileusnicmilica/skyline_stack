@@ -32,8 +32,9 @@ export function getSwingPosition(
   floorWidth: number,
   config: Pick<GameConfig, "canvasWidth">,
 ): SwingPosition {
+  const halfFloorWidth = floorWidth / 2;
   const centerX = config.canvasWidth / 2;
-  const amplitude = config.canvasWidth / 2;
+  const amplitude = Math.max(0, centerX - halfFloorWidth);
   const floorCenter = centerX + Math.sin(phase) * amplitude;
 
   return {

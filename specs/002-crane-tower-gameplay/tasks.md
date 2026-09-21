@@ -5,7 +5,7 @@ description: "Implementation tasks for crane tower gameplay"
 
 # Tasks: Crane Tower Gameplay
 
-**Current status**: 28/28 implementation tasks complete. V2 specification, build prompt, and eval documentation are maintained in `docs/GAME_SPEC_V2.md`, `docs/BUILD_PROMPT_V2.md`, and `docs/EVALS_V2.md`.
+**Current status**: 30/30 implementation tasks complete. V2 specification, build prompt, and eval documentation are maintained in `docs/GAME_SPEC_V2.md`, `docs/BUILD_PROMPT_V2.md`, and `docs/EVALS_V2.md`.
 
 **Input**: Design documents from `/specs/002-crane-tower-gameplay/`
 
@@ -168,3 +168,12 @@ description: "Implementation tasks for crane tower gameplay"
 - `[P]` identifies file-isolated work only; execution remains dependency ordered.
 - Existing `GameConfig` schema and Session 003 evidence are not rewritten.
 - Building detail is procedural Canvas art; `Example.jpeg` is reference-only and is not shipped as a game asset.
+
+---
+
+## Phase 7: Convergence
+
+**Purpose**: Close the discovered crane-sway boundary and regression-coverage gap without changing the public `GameConfig` schema or Session 003 evidence.
+
+- [X] T029 [US1] Add failing deterministic left/right sine-extrema and full-interval boundary assertions in `tests/crane.test.ts` and the V2 acceptance suite per FR-020 (partial)
+- [X] T030 [US1] Bound the attached-floor sine center and update V2 contracts, eval evidence, quickstart, and browser smoke coverage per the retained Core horizontal-movement rule and FR-003 (contradicts)

@@ -11,6 +11,7 @@
 
 - Negative elapsed time behaves as zero; the application caps large frame deltas before calling the engine.
 - An attached floor derives its horizontal position from the advanced swing phase and does not change vertical position.
+- The attached floor's full interval is always within `0..config.canvasWidth`, including at both sine extrema.
 - A falling floor keeps its horizontal release position and advances downward no farther than contact height before landing is resolved.
 - Camera easing, fragment gravity/rotation, and impact decay are deterministic for equal state and elapsed time.
 - In Game Over, tower, score, active collision geometry, and swing state do not advance; existing debris and visual feedback may advance.

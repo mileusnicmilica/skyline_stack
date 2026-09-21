@@ -232,13 +232,22 @@ try {
   });
   await writeFile(screenshotPath, Buffer.from(screenshot.data, "base64"));
 
-  // A fresh crane load begins centered. Wait for the sine swing to reach the
-  // far-right miss window before releasing it.
+  // The bounded crane floor reaches the right edge while staying entirely
+  // inside the Canvas. This creates one partial landing, narrowing the next
+  // floor enough that the following left-edge release is a genuine full miss.
   await wait(875);
+  await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
+  const afterPartial = await pollUi(
+    cdp.send,
+    (ui) => ui.status === "Playing" && ui.score === "2",
+    "Bounded right-edge partial placement",
+  );
+
+  await wait(2_625);
   await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
   const gameOver = await pollUi(
     cdp.send,
-    (ui) => ui.status === "Game Over" && ui.score === "1" && !ui.restartDisabled,
+    (ui) => ui.status === "Game Over" && ui.score === "2" && !ui.restartDisabled,
     "Game Over state",
   );
 
@@ -255,6 +264,7 @@ try {
     screenshot: screenshotPath,
     initial,
     afterSuccess,
+    afterPartial,
     gameOver,
     afterRestart,
     browserErrors: cdp.browserErrors,

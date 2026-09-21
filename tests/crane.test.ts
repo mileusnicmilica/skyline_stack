@@ -20,6 +20,17 @@ describe("crane motion", () => {
     expect(getSwingPosition(Math.PI, 200, DEFAULT_GAME_CONFIG).direction).toBe(-1);
   });
 
+  it("keeps the entire attached floor inside the canvas at both sine extrema", () => {
+    const width = DEFAULT_GAME_CONFIG.startingBlockWidth;
+    const left = getSwingPosition(Math.PI * 1.5, width, DEFAULT_GAME_CONFIG);
+    const right = getSwingPosition(Math.PI / 2, width, DEFAULT_GAME_CONFIG);
+
+    expect(left.x).toBe(0);
+    expect(left.x + width).toBeLessThanOrEqual(DEFAULT_GAME_CONFIG.canvasWidth);
+    expect(right.x).toBeGreaterThanOrEqual(0);
+    expect(right.x + width).toBe(DEFAULT_GAME_CONFIG.canvasWidth);
+  });
+
   it("keeps the floor at a fixed hanging height and joins cable to its center", () => {
     const supportY = DEFAULT_GAME_CONFIG.canvasHeight - DEFAULT_GAME_CONFIG.blockHeight;
     const hangingY = getHangingY(supportY, DEFAULT_GAME_CONFIG.blockHeight);

@@ -52,7 +52,7 @@ Not stored as a separate mutable object. It is derived from `swingPhase`, config
 | --- | --- |
 | `pivotX` | Horizontal play-area center |
 | `pivotY` | Fixed distance above the hanging floor in world space |
-| `hookX` | Active floor center while attached |
+| `hookX` | Active floor center while attached; always within `active width / 2 .. canvasWidth - active width / 2` |
 | `hookY` | Active floor top while attached |
 | `direction` | Sign of the sine derivative |
 

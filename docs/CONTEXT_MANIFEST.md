@@ -22,13 +22,13 @@ Originalni Phase A snapshot ostaje proverljiv u Git tagu `phase-a-approved` i co
 | `specs/002-crane-tower-gameplay/spec.md` | Da; implemented and verified | User stories, FR-001–FR-020, SC-001–SC-008 i acceptance scenariji | 3 | City Bloxx je samo gameplay inspiracija |
 | `specs/002-crane-tower-gameplay/plan.md` | Da | Aktuelna arhitektura, alati i struktura modula | 3 | Grana je `phase-b/crane-tower-v2` |
 | Feature 002 research, data model i contracts | Da | Obrazloženje sway/camera/debris odluka i precizni ugovori | 3 | Proceduralni vizuelni sloj; bez tuđih runtime asseta |
-| `specs/002-crane-tower-gameplay/tasks.md` | Da; 28/28 završeno | Izvršeni implementacioni redosled i traceability | 4 | Nema otvorenog implementacionog taska |
+| `specs/002-crane-tower-gameplay/tasks.md` | Da; 30/30 završeno | Izvršeni implementacioni redosled i traceability | 4 | Nema otvorenog implementacionog taska |
 | `docs/EVALS_V2.md` | Da | Zaključana V2-E1–V2-E6 očekivanja i stvarni rezultati | 2 za V2 evale | V2-E4 proverava odsustvo lives sistema |
 | `tests/v2-evals.test.ts` | Da | Izvršna V2-E1–V2-E5 provera | 4 | 5/5 PASS 2026-09-21 |
 | `docs/AI_USAGE_LOG.md` | Da | Hronološki zapis Session 003 i naknadnog V2 rada | 4 | Redovi se dodaju; istorijski ishodi se ne prepisuju |
 | `package.json` i `package-lock.json` | Da | Autoritet za stvarne scripts i instalirane verzije | 3 za toolchain | TypeScript 7.0.2, Vite 8.3.0, Vitest 5.0.1 |
 | `src/` | Da | Autoritet za trenutno implementirano ponašanje | 4 | Framework-free TypeScript/Canvas; nema backend-a |
-| `tests/` | Da | Deterministički regression, input, engine i eval testovi | 4 | 9 fajlova / 54 testa PASS pri poslednjoj punoj proveri |
+| `tests/` | Da | Deterministički regression, input, engine i eval testovi | 4 | 9 fajlova / 55 testova PASS pri poslednjoj punoj proveri |
 | `README.md` | Da | Kratak korisnički setup/run/verify vodič | 5 | Komande odgovaraju stvarnom `package.json` |
 | `artifacts/crane-tower/` | Da | V2 browser screenshot i stvarni smoke rezultat | 4 za vizuelni dokaz | Edge flow PASS; runtime i log errors prazni |
 | Git istorija, branch, tag i remote | Da | Autoritet za verzionisano stanje i istorijske checkpoint-e | 4 | `origin` postoji; `phase-a-approved` čuva Phase A snapshot |
@@ -57,8 +57,8 @@ Sledeći izvori ostaju autoritativni samo za feature 001 / Session 003 istoriju:
 - Feature 002 crane/city implementacija je sačuvana u commitu `90e6259`.
 - `README.md`, `package.json`, `package-lock.json`, `index.html`, `src/`, `tests/` i `tsconfig.json` postoje.
 - Stvarni npm scripts su `dev`, `build`, `smoke`, `typecheck` i `test`.
-- Poslednja puna lokalna provera 2026-09-21: typecheck PASS, 9 test fajlova/54 testa PASS, build PASS.
-- V2 browser smoke je stvarno izvršen 2026-09-20 i sačuvan u `artifacts/crane-tower/`.
+- Poslednja puna lokalna provera 2026-09-21: typecheck PASS, 9 test fajlova/55 testova PASS, build PASS.
+- V2 browser smoke je stvarno izvršen 2026-09-20 i ponovljen 2026-09-21 nakon crane-bound korekcije; sačuvan je u `artifacts/crane-tower/`.
 - Session 003 baseline je `artifacts/session-003/baseline.zip`, 158.941 bajt, read-only, SHA-256 `AB531FCFD7277167B49368346FC4044A1EEB7E6FA54C019EEF512206A691123E`.
 
 ## Current implementation map

@@ -59,8 +59,8 @@ screenshot. It does not download a browser. The locked Session 003 baseline
 under `artifacts/session-003/` is not modified by this V2 flow.
 
 The latest verified local result, dated 2026-09-21, is: typecheck PASS,
-9 test files/54 tests PASS, and production build PASS. Browser evidence from
-the original V2 implementation is recorded separately and remains valid.
+9 test files/55 tests PASS, production build PASS, and local Edge smoke PASS.
+The active crane floor remains fully within the Canvas at both sway extremes.
 
 ## Documentation
 

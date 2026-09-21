@@ -75,7 +75,7 @@ As a player, I can always see the crane, the active floor, and the top of my ris
 
 - **FR-001**: A session MUST present one main game loop with one active building floor, one tower, one score, one status, and one Restart control.
 - **FR-002**: A new active floor MUST appear suspended from a visible crane cable above the current tower support.
-- **FR-003**: While attached, the active floor MUST sway horizontally in a continuous repeating motion and remain visually connected to the cable.
+- **FR-003**: While attached, the active floor MUST sway horizontally in a continuous repeating motion, remain visually connected to the cable, and stay fully within the horizontal Canvas bounds at every phase.
 - **FR-004**: Space, left click, and tap MUST release an attached floor at most once per active floor.
 - **FR-005**: After release, the floor MUST retain its release position horizontally and fall vertically until contact is resolved.
 - **FR-006**: Contact resolution MUST calculate the horizontal overlap with the current top support.
@@ -107,7 +107,7 @@ As a player, I can always see the crane, the active floor, and the top of my ris
 
 ### Measurable Outcomes
 
-- **SC-001**: In 100% of deterministic checks, an unreleased floor changes horizontal position over time while retaining its hanging height, and a released floor changes vertical position without changing horizontal position.
+- **SC-001**: In 100% of deterministic checks, an unreleased floor changes horizontal position over time while retaining its hanging height and full horizontal Canvas bounds, and a released floor changes vertical position without changing horizontal position.
 - **SC-002**: For every tested successful imperfect landing, the placed width plus detached width equals the released width within 0.001 units, and debris originates only from the unsupported side.
 - **SC-003**: Perfect placement produces zero debris in 100% of deterministic checks; a full miss produces at least four visible fragments and no score increase.
 - **SC-004**: Repeated input during a fall produces no additional release or score transition in 100% of automated input checks.

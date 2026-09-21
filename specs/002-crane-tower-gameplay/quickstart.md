@@ -1,6 +1,6 @@
 # Quickstart: Validate Crane Tower Gameplay
 
-**Verified**: 2026-09-21 — typecheck PASS, 9 test files/54 tests PASS, production build PASS. Browser smoke evidence is recorded under `artifacts/crane-tower/`.
+**Verified**: 2026-09-21 — typecheck PASS, 9 test files/55 tests PASS, production build PASS, and local Edge smoke PASS. Browser smoke evidence is recorded under `artifacts/crane-tower/`.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ npm.cmd run dev -- --host 127.0.0.1
 Open the printed local URL and verify:
 
 1. The initial view is a portrait city scene with a detailed building base, skyline, sky/cloud depth, crane cable, and one suspended detailed floor.
-2. Without input, the suspended floor sways left and right while the cable follows it.
+2. Without input, the suspended floor sways left and right while the cable follows it; at both extremes, the entire floor remains inside the Canvas.
 3. Press Space near alignment. The cable detaches, the floor falls vertically, score becomes 1, and the next floor appears.
 4. Make a partial placement. Only the supported overlap remains; the outside section visibly breaks into rotating masonry and dust on the correct side.
 5. Make a full miss. The entire floor crumbles, score stays unchanged, and Game Over appears.

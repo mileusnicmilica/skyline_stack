@@ -58,6 +58,7 @@ Repeated Space events, an additional pointer action during a fall, and all drop 
 - Exactly one active floor exists.
 - `motion: moving` means the floor is attached to the crane.
 - Attached horizontal position is derived from a sine phase, not edge-reflecting linear movement.
+- At every sine phase, the full attached floor remains within `0..canvasWidth`; its center ranges only from `width / 2` to `canvasWidth - width / 2`.
 - The cable endpoint follows the active floor center while attached.
 - One accepted input changes motion to `falling` and sets `dropAccepted`.
 - Falling is vertical-only: `x` and width remain unchanged until contact resolution.
@@ -204,6 +205,7 @@ The executable V2 evals are in `tests/v2-evals.test.ts`; their recorded results 
 ## Definition of Done
 
 - [x] One suspended floor sways deterministically with a visible cable.
+- [x] The complete attached floor stays inside the horizontal Canvas bounds at both sway extremes.
 - [x] Space, click, and tap share a one-shot release transition.
 - [x] A released floor retains `x` and falls vertically.
 - [x] Successful landing preserves only overlap and increments score once.

@@ -6,7 +6,7 @@
 
 ## Summary
 
-Evolve the existing Skyline Stack Canvas game into one focused crane-and-city tower loop. An original building floor hangs from a visible cable, sways sinusoidally, releases on one input, and falls vertically. Existing overlap geometry remains authoritative: supported masonry joins the tower, unsupported masonry is deterministically split into animated rubble, and a full miss ends the run. A camera offset follows the construction height while procedural sky, clouds, distant buildings, facade panels, windows, shadows, and a crane establish the requested classic mobile city-construction feel without copied assets.
+Evolve the existing Skyline Stack Canvas game into one focused crane-and-city tower loop. An original building floor hangs from a visible cable, sways sinusoidally within its full horizontal Canvas bounds, releases on one input, and falls vertically. Existing overlap geometry remains authoritative: supported masonry joins the tower, unsupported masonry is deterministically split into animated rubble, and a full miss ends the run. A camera offset follows the construction height while procedural sky, clouds, distant buildings, facade panels, windows, shadows, and a crane establish the requested classic mobile city-construction feel without copied assets.
 
 ## Technical Context
 
