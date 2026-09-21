@@ -1,6 +1,6 @@
 # Implementation Plan: Crane Tower Gameplay
 
-**Branch**: `phase-b/skyline-stack-core` | **Date**: 2026-09-20 | **Spec**: [spec.md](./spec.md)
+**Branch**: `phase-b/crane-tower-v2` | **Date**: 2026-09-20 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `/specs/002-crane-tower-gameplay/spec.md`
 
@@ -88,6 +88,7 @@ tests/
 ├── engine.test.ts
 ├── input.test.ts
 ├── evals.test.ts
+├── v2-evals.test.ts
 └── browser-smoke.mjs
 ```
 

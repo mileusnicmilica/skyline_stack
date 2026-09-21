@@ -1,5 +1,7 @@
 # Quickstart: Validate Crane Tower Gameplay
 
+**Verified**: 2026-09-21 — typecheck PASS, 9 test files/54 tests PASS, production build PASS. Browser smoke evidence is recorded under `artifacts/crane-tower/`.
+
 ## Prerequisites
 
 - Node.js 24+
@@ -46,6 +48,9 @@ Expected: the script verifies Ready, one successful placement, deliberate Game O
 
 ## Contract references
 
+- Current product contract: [GAME_SPEC_V2.md](../../docs/GAME_SPEC_V2.md)
+- Reproducible build/maintenance prompt: [BUILD_PROMPT_V2.md](../../docs/BUILD_PROMPT_V2.md)
+- Executable V2 acceptance evidence: [EVALS_V2.md](../../docs/EVALS_V2.md)
 - State and transition expectations: [contracts/gameplay.md](./contracts/gameplay.md)
 - Required city/building presentation: [contracts/visual-presentation.md](./contracts/visual-presentation.md)
 - Entity constraints and invariants: [data-model.md](./data-model.md)

@@ -5,6 +5,8 @@ description: "Implementation tasks for crane tower gameplay"
 
 # Tasks: Crane Tower Gameplay
 
+**Current status**: 28/28 implementation tasks complete. V2 specification, build prompt, and eval documentation are maintained in `docs/GAME_SPEC_V2.md`, `docs/BUILD_PROMPT_V2.md`, and `docs/EVALS_V2.md`.
+
 **Input**: Design documents from `/specs/002-crane-tower-gameplay/`
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/, quickstart.md

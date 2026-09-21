@@ -2,6 +2,8 @@
 
 ## Decision 1: Recreate the feel, not the protected identity
 
+City Bloxx is gameplay inspiration only.
+
 **Decision**: Use the recognisable interaction vocabulary of a swaying crane load, rising building, blue sky, clouds, distant city, facade panels, windows, and falling masonry, while keeping the Skyline Stack name and drawing all visuals procedurally.
 
 **Rationale**: The user's reference is primarily about gameplay readability and atmosphere. Original Canvas geometry can deliver that feel without copying another game's logo, characters, code, screenshots, or sprite sheets.

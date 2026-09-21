@@ -24,6 +24,7 @@ The game must read immediately as a playful city-construction tower game, using 
 
 ## Identity boundary
 
+- City Bloxx is gameplay inspiration only.
 - Keep the title `Skyline Stack`.
 - Do not reproduce City Bloxx/Tower Bloxx logos, names, character art, sprites, exact UI panels, music, sound effects, or source code.
 - The similarity target is the broad crane-building atmosphere, readable modular floors, vertical city scale, and one-action timing rhythm.

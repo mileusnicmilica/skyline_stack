@@ -23,3 +23,18 @@
 ## Baseline protection
 
 `artifacts/session-003/baseline.zip` remains read-only at 158,941 bytes with SHA-256 `AB531FCFD7277167B49368346FC4044A1EEB7E6FA54C019EEF512206A691123E`.
+
+## Documentation closure verification
+
+**Date**: 2026-09-21
+
+The original browser run above is preserved as measured on 2026-09-20. After
+adding the explicit V2 documentation/eval layer, the non-browser checks were
+rerun with these results:
+
+- `npm.cmd test -- tests/v2-evals.test.ts`: PASS — 1 file, 5 tests
+- `npm.cmd test`: PASS — 9 files, 54 tests
+- `npm.cmd run typecheck`: PASS
+- `npm.cmd run build`: PASS
+
+No new browser screenshot was claimed for this documentation-only follow-up.

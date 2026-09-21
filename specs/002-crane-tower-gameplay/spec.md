@@ -1,12 +1,14 @@
 # Feature Specification: Crane Tower Gameplay
 
-**Feature Branch**: `phase-b/skyline-stack-core`
+**Feature Branch**: `phase-b/crane-tower-v2`
 
 **Created**: 2026-09-20
 
-**Status**: Approved for implementation
+**Status**: Implemented and verified
 
 **Input**: User description: "Make Skyline Stack feel like the classic mobile crane-and-tower game shown in Example.jpeg, while retaining the overlap-cut mechanic so unsupported floor sections break into masonry and fall. Keep one main game loop and do not add separate modes or a multi-miss lives system."
+
+**Inspiration boundary**: City Bloxx is gameplay inspiration only. Skyline Stack does not copy its identity, assets, characters, audio, source code, or exact interface.
 
 ## User Scenarios & Testing *(mandatory)*
 
