@@ -1,8 +1,8 @@
 # Context Manifest — Skyline Stack
 
-**Updated**: 2026-09-21
+**Updated**: 2026-09-26
 **Current feature**: `002-crane-tower-gameplay`
-**Current branch at audit**: `phase-b/crane-tower-v2`
+**Current branch at audit**: `main`
 **Current state**: V2 implemented and verified; project documentation synchronized locally
 
 ## Purpose
@@ -20,7 +20,7 @@ Originalni Phase A snapshot ostaje proverljiv u Git tagu `phase-a-approved` i co
 | `docs/GAME_SPEC_V2.md` | Da, v2.0 | Trenutni gameplay, vizuelni, no-lives i scope ugovor | 2 | Kreiran je naknadno radi zatvaranja dokumentacionog propusta; to je eksplicitno zabeleženo |
 | `docs/BUILD_PROMPT_V2.md` | Da, v2.0 | Trenutni build/maintenance postupak i zabrane | 2 | Ne sme se predstavljati kao pre-implementation lock |
 | `specs/002-crane-tower-gameplay/spec.md` | Da; implemented and verified | User stories, FR-001–FR-020, SC-001–SC-008 i acceptance scenariji | 3 | City Bloxx je samo gameplay inspiracija |
-| `specs/002-crane-tower-gameplay/plan.md` | Da | Aktuelna arhitektura, alati i struktura modula | 3 | Grana je `phase-b/crane-tower-v2` |
+| `specs/002-crane-tower-gameplay/plan.md` | Da | Aktuelna arhitektura, alati i struktura modula | 3 | Plan čuva istorijski razvojni kontekst grane `phase-b/crane-tower-v2`; trenutni checkout je `main` |
 | Feature 002 research, data model i contracts | Da | Obrazloženje sway/camera/debris odluka i precizni ugovori | 3 | Proceduralni vizuelni sloj; bez tuđih runtime asseta |
 | `specs/002-crane-tower-gameplay/tasks.md` | Da; 30/30 završeno | Izvršeni implementacioni redosled i traceability | 4 | Nema otvorenog implementacionog taska |
 | `docs/EVALS_V2.md` | Da | Zaključana V2-E1–V2-E6 očekivanja i stvarni rezultati | 2 za V2 evale | V2-E4 proverava odsustvo lives sistema |
@@ -52,13 +52,13 @@ Sledeći izvori ostaju autoritativni samo za feature 001 / Session 003 istoriju:
 
 - Git repozitorijum postoji.
 - Remote `origin` postoji.
-- Aktivna razvojna grana je `phase-b/crane-tower-v2` i prati istoimenu remote granu.
+- Trenutni pregledani checkout je `main`; V2 je razvijen u istorijskom kontekstu feature grane `phase-b/crane-tower-v2`.
 - Feature 001 implementacija je sačuvana u commitu `dccbbb9`.
 - Feature 002 crane/city implementacija je sačuvana u commitu `90e6259`.
 - `README.md`, `package.json`, `package-lock.json`, `index.html`, `src/`, `tests/` i `tsconfig.json` postoje.
-- Stvarni npm scripts su `dev`, `build`, `smoke`, `typecheck` i `test`.
-- Poslednja puna lokalna provera 2026-09-21: typecheck PASS, 9 test fajlova/55 testova PASS, build PASS.
-- V2 browser smoke je stvarno izvršen 2026-09-20 i ponovljen 2026-09-21 nakon crane-bound korekcije; sačuvan je u `artifacts/crane-tower/`.
+- Stvarni npm scripts su `dev`, `build`, `preview`, `smoke`, `typecheck`, `test` i `verify`.
+- Poslednja puna lokalna provera 2026-09-26: typecheck PASS, 9 test fajlova/55 testova PASS, build PASS i automatizovani production-preview Edge smoke PASS.
+- V2 browser smoke je stvarno izvršen 2026-09-20, ponovljen 2026-09-21 nakon crane-bound korekcije i 2026-09-26 protiv dev servera i production preview-a; sačuvan je u `artifacts/crane-tower/`.
 - Session 003 baseline je `artifacts/session-003/baseline.zip`, 158.941 bajt, read-only, SHA-256 `AB531FCFD7277167B49368346FC4044A1EEB7E6FA54C019EEF512206A691123E`.
 
 ## Current implementation map

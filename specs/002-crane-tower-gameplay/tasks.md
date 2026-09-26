@@ -176,4 +176,4 @@ description: "Implementation tasks for crane tower gameplay"
 **Purpose**: Close the discovered crane-sway boundary and regression-coverage gap without changing the public `GameConfig` schema or Session 003 evidence.
 
 - [X] T029 [US1] Add failing deterministic left/right sine-extrema and full-interval boundary assertions in `tests/crane.test.ts` and the V2 acceptance suite per FR-020 (partial)
-- [X] T030 [US1] Bound the attached-floor sine center and update V2 contracts, eval evidence, quickstart, and browser smoke coverage per the retained Core horizontal-movement rule and FR-003 (contradicts)
+- [X] T030 [US1] Bound the attached-floor sine center and update V2 contracts, eval evidence, quickstart, and browser smoke coverage per the retained Core horizontal-movement rule and FR-003 (resolved the previously identified rule contradiction)

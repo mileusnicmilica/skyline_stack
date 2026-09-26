@@ -40,17 +40,55 @@ external image assets.
 
 ## Verify
 
+For deterministic checks and a production build:
+
 ```powershell
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run build
 ```
 
-With the dev server running and local Chrome or Edge installed, the repeatable
-browser smoke flow is:
+### Automated production verification
+
+With local Chrome or Edge installed, the recommended full verification is:
+
+```powershell
+npm.cmd run verify
+```
+
+This command runs typecheck, tests, and a production build; starts Vite preview
+at `http://127.0.0.1:4173/`; waits for it to become ready; runs the browser
+smoke; and shuts the preview server down. No server setup is required. The
+smoke screenshot is written to `artifacts/crane-tower/smoke.png`.
+
+### Smoke against the dev server
+
+To exercise Vite's development server, start it in one terminal:
+
+```powershell
+npm.cmd run dev -- --host 127.0.0.1
+```
+
+Then run the smoke in another terminal:
 
 ```powershell
 npm.cmd run smoke -- http://127.0.0.1:5173/ artifacts/crane-tower/smoke.png
+```
+
+### Smoke against production preview
+
+For a manual production-preview flow, build and start the preview in one
+terminal:
+
+```powershell
+npm.cmd run build
+npm.cmd run preview
+```
+
+Then run the smoke in another terminal:
+
+```powershell
+npm.cmd run smoke -- http://127.0.0.1:4173/ artifacts/crane-tower/smoke.png
 ```
 
 The smoke flow checks Ready, a successful crane placement, a deliberately
@@ -58,9 +96,16 @@ timed full miss, Game Over, restart, and browser exceptions, then writes a
 screenshot. It does not download a browser. The locked Session 003 baseline
 under `artifacts/session-003/` is not modified by this V2 flow.
 
-The latest verified local result, dated 2026-09-21, is: typecheck PASS,
-9 test files/55 tests PASS, production build PASS, and local Edge smoke PASS.
-The active crane floor remains fully within the Canvas at both sway extremes.
+The Chromium user profile used by the smoke is created in the operating
+system's temporary directory and removed after the run. It must not be moved
+under `artifacts/`: on Windows, Vite's dev watcher can otherwise encounter an
+`EBUSY` error while Chromium has its `Cookies` file locked. Screenshots are
+safe to keep under `artifacts/crane-tower/`.
+
+The latest verified local result, dated 2026-09-26, is: typecheck PASS,
+9 test files/55 tests PASS, production build PASS, and both dev-server and
+production-preview Edge smoke PASS. The active crane floor remains fully
+within the Canvas at both sway extremes.
 
 ## Documentation
 

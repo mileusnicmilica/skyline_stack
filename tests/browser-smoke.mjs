@@ -2,7 +2,8 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { access, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
-import { dirname, join, resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { basename, dirname, join, resolve } from "node:path";
 
 const targetUrl = process.argv[2] ?? "http://127.0.0.1:5173/";
 const screenshotPath = resolve(
@@ -180,9 +181,8 @@ async function wait(milliseconds) {
 
 const chrome = await findChrome();
 const port = await reservePort();
-const profileRoot = resolve("artifacts");
-await mkdir(profileRoot, { recursive: true });
-const profilePrefix = join(profileRoot, ".smoke-profile-");
+const profileRoot = resolve(tmpdir());
+const profilePrefix = join(profileRoot, "skyline-stack-smoke-");
 const profile = await mkdtemp(profilePrefix);
 const browser = spawn(
   chrome,
@@ -287,7 +287,7 @@ try {
   const resolvedProfile = resolve(profile);
   if (
     dirname(resolvedProfile) === resolvedProfileRoot &&
-    resolvedProfile.startsWith(resolve(profilePrefix))
+    basename(resolvedProfile).startsWith("skyline-stack-smoke-")
   ) {
     await rm(resolvedProfile, {
       recursive: true,
