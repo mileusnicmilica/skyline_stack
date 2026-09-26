@@ -56,10 +56,12 @@ With local Chrome or Edge installed, the recommended full verification is:
 npm.cmd run verify
 ```
 
-This command runs typecheck, tests, and a production build; starts Vite preview
-at `http://127.0.0.1:4173/`; waits for it to become ready; runs the browser
-smoke; and shuts the preview server down. No server setup is required. The
-smoke screenshot is written to `artifacts/crane-tower/smoke.png`.
+This command runs browser and server typechecks, tests, and a production build;
+starts the fake-provider API and Vite preview at `http://127.0.0.1:4173/`;
+checks the `/api` proxy; runs browser smoke; and shuts down both processes.
+No manual server setup is required. Its temporary smoke screenshot is kept
+outside the repository and removed afterward, so verification does not replace
+the checked-in W03 screenshot.
 
 ### Smoke against the dev server
 
@@ -74,6 +76,9 @@ Then run the smoke in another terminal:
 ```powershell
 npm.cmd run smoke -- http://127.0.0.1:5173/ artifacts/crane-tower/smoke.png
 ```
+
+This checks the existing game UI. To use the W04 `/api` path during development,
+start both processes with `npm.cmd run dev:full` instead.
 
 ### Smoke against production preview
 
@@ -91,6 +96,10 @@ Then run the smoke in another terminal:
 npm.cmd run smoke -- http://127.0.0.1:4173/ artifacts/crane-tower/smoke.png
 ```
 
+Manual preview alone starts only the frontend. To call `/api` in that manual
+flow, also start `npm.cmd run dev:api` in another terminal. The automated
+`verify` command starts both processes for you.
+
 The smoke flow checks Ready, a successful crane placement, a deliberately
 timed full miss, Game Over, restart, and browser exceptions, then writes a
 screenshot. It does not download a browser. The locked Session 003 baseline
@@ -106,6 +115,22 @@ The latest verified local result, dated 2026-09-26, is: typecheck PASS,
 9 test files/55 tests PASS, production build PASS, and both dev-server and
 production-preview Edge smoke PASS. The active crane floor remains fully
 within the Canvas at both sway extremes.
+
+### W04 AI Crane Coach development boundary
+
+The W04 feature is tracked separately in
+[`specs/003-ai-crane-coach/`](specs/003-ai-crane-coach/spec.md). The browser
+and TypeScript API run as separate local processes. Start both with
+`npm.cmd run dev:full`; Vite proxies `/api` to the loopback API. Check the
+split with `Invoke-RestMethod http://127.0.0.1:5173/api/health`. The API uses
+a deterministic fake provider and needs no Gemini key. The live provider and
+player-facing analysis button are Milica's next implementation block.
+
+`npm.cmd run verify` checks browser and server types, game/API contract tests,
+the preview `/api` proxy, production build, and browser smoke. The browser
+smoke checks the game flow; zero-provider-call behavior is covered by API
+tests. A real `.env` remains ignored; `.env.example` contains an empty
+server-only key placeholder for the later live-provider work.
 
 ## Documentation
 

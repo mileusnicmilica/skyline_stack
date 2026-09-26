@@ -1,17 +1,13 @@
 <!--
 Sync Impact Report
-- Version change: template without version -> 1.0.0
-- Added principles:
-  - I. Specifikacija pre implementacije
-  - II. Minimalan Core scope
-  - III. Proverljivi dokazi bez izmišljanja
-  - IV. Strukturisani ugovor i bezbedan fallback
-  - V. Jedna kontrolisana promena
-- Added sections:
-  - Tehnička i bezbednosna ograničenja
-  - Razvojni tok i kontrolne tačke
-- Removed sections: none; template placeholders were resolved.
-- Follow-up TODOs: none.
+- Version change: 1.0.0 -> 1.1.0 (MINOR: materijalno razjašnjen opseg Principa II i V).
+- Modified principles:
+  - II. Minimalan Core scope: dodata usko ograničena W04 AI feature iznimka
+    posle zasebnog Spec Kit paketa i eksplicitnog ljudskog odobrenja.
+  - V. Jedna kontrolisana promena: razjašnjeno da se odnosi na Session 003 baseline tok.
+- Added sections: none.
+- Removed sections: none.
+- Follow-up TODOs: none; Sync Impact Report reviewed on 2026-09-26.
 -->
 # Skyline Stack Constitution
 
@@ -29,7 +25,12 @@ Core MORA ostati mala single-player TypeScript browser igra zasnovana na HTML Ca
 API-ju, bez backend-a, baze, mrežnih poziva, deployment-a, framework-a, game engine-a
 ili physics biblioteke. Svaka nova zavisnost MORA imati dokumentovanu neposrednu
 potrebu. Funkcionalnosti izvan zaključanog GAME_SPEC dokumenta NE SMEJU se dodavati
-bez eksplicitnog ljudskog odobrenja.
+bez eksplicitnog ljudskog odobrenja. Ova granica opisuje zaključeni W03/V2 scope.
+Zasebna funkcionalnost koja je izričito odobrena za kasniju bootcamp nedelju, kao W04
+AI integracija, SME da uvede potreban backend i mrežni poziv samo kroz nov, zaseban
+Spec Kit feature paket, bez prepisivanja istorijskih W03/V2 specifikacija ili dokaza.
+Takav paket MORA proći review spec-a, plana i taskova pre implementacije, a backend
+MORA ostati u odobrenom obimu te funkcionalnosti.
 
 ### III. Proverljivi dokazi bez izmišljanja
 Komande, terminalski izlazi, screenshot-ovi, test rezultati, baseline problemi i
@@ -51,7 +52,9 @@ Nakon čuvanja kompletnog baseline-a bira se tačno jedan stvarni problem, formu
 jedna proverljiva hipoteza i pravi jedna najmanja ciljana izmena. Isti zaključani eval
 skup MORA biti izvršen pre i posle izmene. Tokom izmene NE SMEJU se menjati početni
 prompt, zaključani build prompt, kontekst, `GameConfig` šema, gameplay pravila ili eval
-očekivanja. Planirani i stvarni diff MORAJU biti dokumentovani.
+očekivanja. Planirani i stvarni diff MORAJU biti dokumentovani. Ovo načelo uređuje
+kontrolisani Session 003 baseline eksperiment; zasebni, odobreni Spec Kit feature-i
+koriste sopstveni spec, plan, taskove i evaluaciju.
 
 ## Tehnička i bezbednosna ograničenja
 
@@ -85,4 +88,4 @@ za pojašnjenje bez promene značenja. Svaki pregled specifikacije, plana, tasko
 evidence dokumenta MORA proveriti usklađenost sa ovim načelima. Konflikt koji menja
 scope zaustavlja rad dok čovek ne donese odluku.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-20 | **Last Amended**: 2026-09-20
+**Version**: 1.1.0 | **Ratified**: 2026-09-20 | **Last Amended**: 2026-09-26

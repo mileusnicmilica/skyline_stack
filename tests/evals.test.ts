@@ -46,6 +46,7 @@ describe("locked evals", () => {
     const session: GameSession = {
       phase: "playing",
       score: 4,
+      drops: [],
       placedBlocks: [support],
       activeBlock: {
         x: support.x + support.width - DEFAULT_GAME_CONFIG.minOverlap,

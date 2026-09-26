@@ -2,8 +2,18 @@ export type GamePhase = "playing" | "gameOver";
 export type BlockRole = "base" | "placed" | "active";
 export type BlockMotion = "stationary" | "moving" | "falling" | "missed";
 export type Direction = -1 | 1;
+export type DropTiming = "early" | "late" | "centered";
 export type VisibleStatus = "Ready" | "Playing" | "Game Over";
 export type DebrisSide = "left" | "right" | "full";
+
+export type DropRecord = {
+  floor: number;
+  offsetPx: number;
+  direction: Direction;
+  timing: DropTiming;
+  widthBefore: number;
+  widthAfter: number;
+};
 
 export type Block = {
   x: number;
@@ -41,6 +51,7 @@ export type MasonryPiece = {
 export type GameSession = {
   phase: GamePhase;
   score: number;
+  drops: DropRecord[];
   placedBlocks: Block[];
   activeBlock: Block;
   direction: Direction;

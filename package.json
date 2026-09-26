@@ -5,14 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "tsx server/main.ts",
+    "dev:web": "vite --host 127.0.0.1",
+    "dev:full": "node scripts/dev-full.mjs",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "smoke": "node tests/browser-smoke.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
     "verify": "node tests/verify.mjs"
   },
   "devDependencies": {
+    "@types/node": "24.13.6",
+    "tsx": "4.23.13",
     "typescript": "7.0.2",
     "vite": "8.3.0",
     "vitest": "5.0.1"

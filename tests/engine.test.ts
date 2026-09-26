@@ -54,6 +54,15 @@ describe("game engine", () => {
     const resolved = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
     expect(resolved.score).toBe(1);
+    expect(resolved.drops).toHaveLength(1);
+    expect(resolved.drops[0]).toMatchObject({
+      floor: 1,
+      offsetPx: 25,
+      direction: 1,
+      timing: "late",
+      widthBefore: DEFAULT_GAME_CONFIG.startingBlockWidth,
+      widthAfter: DEFAULT_GAME_CONFIG.startingBlockWidth - 25,
+    });
     expect(resolved.placedBlocks).toHaveLength(2);
     expect(resolved.placedBlocks[1]).toMatchObject({
       x: support.x + 25,
@@ -75,6 +84,7 @@ describe("game engine", () => {
 
     expect(resolved.debris.length).toBeGreaterThanOrEqual(4);
     expect(resolved.debris.every((piece) => piece.side === "left")).toBe(true);
+    expect(resolved.drops[0]?.timing).toBe("early");
   });
 
   it("creates no debris for a perfect placement", () => {
@@ -93,6 +103,10 @@ describe("game engine", () => {
 
     expect(failed.phase).toBe("gameOver");
     expect(failed.score).toBe(4);
+    expect(failed.drops.at(-1)).toMatchObject({
+      floor: 1,
+      widthAfter: 0,
+    });
     expect(failed.placedBlocks).toEqual([support]);
     expect(failed.activeBlock.motion).toBe("missed");
     expect(failed.debris.length).toBeGreaterThanOrEqual(4);
@@ -137,14 +151,22 @@ describe("game engine", () => {
     const gameOver = createGameSession(DEFAULT_GAME_CONFIG);
     gameOver.phase = "gameOver";
     gameOver.score = 7;
+    gameOver.drops = [{
+      floor: 1,
+      offsetPx: 0,
+      direction: 1,
+      timing: "centered",
+      widthBefore: DEFAULT_GAME_CONFIG.startingBlockWidth,
+      widthAfter: DEFAULT_GAME_CONFIG.startingBlockWidth,
+    }];
     gameOver.dropAccepted = true;
     gameOver.activeBlock.motion = "missed";
     gameOver.cameraOffset = 120;
     gameOver.cameraTarget = 140;
     gameOver.impactPulse = 1;
 
-    expect(restartSession(gameOver, DEFAULT_GAME_CONFIG)).toEqual(
-      createGameSession(DEFAULT_GAME_CONFIG),
-    );
+    const restarted = restartSession(gameOver, DEFAULT_GAME_CONFIG);
+    expect(restarted).toEqual(createGameSession(DEFAULT_GAME_CONFIG));
+    expect(restarted.drops).toEqual([]);
   });
 });

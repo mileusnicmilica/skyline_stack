@@ -7,7 +7,14 @@ import {
 } from "./crane";
 import { advanceMasonry, createMasonryPieces } from "./debris";
 import { findDetachedSections, intersectHorizontal } from "./geometry";
-import type { Block, GameSession } from "./model";
+import type { Block, DropTiming, GameSession } from "./model";
+
+const CENTERED_TOLERANCE_PX = 1;
+
+function classifyTiming(offsetPx: number, direction: -1 | 1): DropTiming {
+  if (Math.abs(offsetPx) <= CENTERED_TOLERANCE_PX) return "centered";
+  return offsetPx * direction > 0 ? "late" : "early";
+}
 
 function getLastSupport(session: GameSession): Block {
   const support = session.placedBlocks.at(-1);
@@ -57,6 +64,7 @@ export function createGameSession(config: GameConfig): GameSession {
   return {
     phase: "playing",
     score: 0,
+    drops: [],
     placedBlocks: [base],
     activeBlock,
     direction: 1,
@@ -89,12 +97,24 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
   const overlap = intersectHorizontal(session.activeBlock, support);
   const contactY = support.y - session.activeBlock.height;
   const landedFloor = { ...session.activeBlock, y: contactY };
+  const supportCenter = support.x + support.width / 2;
+  const activeCenter = landedFloor.x + landedFloor.width / 2;
+  const offsetPx = activeCenter - supportCenter;
+  const dropRecord = {
+    floor: session.activeBlock.floorNumber,
+    offsetPx,
+    direction: session.direction,
+    timing: classifyTiming(offsetPx, session.direction),
+    widthBefore: session.activeBlock.width,
+    widthAfter: overlap.width,
+  } as const;
 
   if (overlap.width < config.minOverlap) {
     const sections = findDetachedSections(landedFloor, overlap, "missed");
     return {
       ...session,
       phase: "gameOver",
+      drops: [...session.drops, { ...dropRecord, widthAfter: 0 }],
       activeBlock: {
         ...landedFloor,
         motion: "missed",
@@ -108,8 +128,6 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
     };
   }
 
-  const supportCenter = support.x + support.width / 2;
-  const activeCenter = landedFloor.x + landedFloor.width / 2;
   const placedBlock: Block = {
     x: overlap.left,
     y: contactY,
@@ -132,6 +150,7 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
     ...session,
     phase: "playing",
     score: session.score + 1,
+    drops: [...session.drops, dropRecord],
     placedBlocks: [...session.placedBlocks, placedBlock],
     activeBlock,
     direction: 1,
