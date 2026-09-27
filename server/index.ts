@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { coachRun } from "./coach/analysis";
-import type { CoachExecutionOptions, CoachProvider } from "./coach/types";
+import { coachRun } from "./coach/analysis.js";
+import type { CoachExecutionOptions, CoachProvider } from "./coach/types.js";
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.API_PORT ?? 3001);
@@ -31,7 +31,14 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
 }
 
 export function createCoachServer(provider: CoachProvider, executionOptions: CoachExecutionOptions = {}) {
-  return createServer(async (request, response) => {
+  return createServer(createCoachRequestHandler(provider, executionOptions));
+}
+
+export function createCoachRequestHandler(
+  provider: CoachProvider,
+  executionOptions: CoachExecutionOptions = {},
+) {
+  return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
     try {
       const url = new URL(request.url ?? "/", `http://${HOST}`);
       if (url.pathname === HEALTH_PATH && request.method === "GET") {
@@ -79,7 +86,7 @@ export function createCoachServer(provider: CoachProvider, executionOptions: Coa
         response.end();
       }
     }
-  });
+  };
 }
 
 export const coachServerConfig = { host: HOST, port: PORT };

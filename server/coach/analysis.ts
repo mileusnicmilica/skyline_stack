@@ -1,4 +1,4 @@
-import type { DropRecord, DropTiming } from "../../src/game/model";
+import type { DropRecord, DropTiming } from "../../src/game/model.js";
 import type {
   CoachExecutionOptions,
   CoachProvider,
@@ -8,9 +8,9 @@ import type {
   ProviderUsageRecord,
   RunStatistics,
   TimingBias,
-} from "./types";
-import { ProviderError } from "../providers/provider-error";
-import { validateAdvice } from "./validate-advice";
+} from "./types.js";
+import { ProviderError } from "../providers/provider-error.js";
+import { validateAdvice } from "./validate-advice.js";
 
 const MAX_DROPS = 501;
 const MAX_SCORE = 500;

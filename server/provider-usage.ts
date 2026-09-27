@@ -1,4 +1,4 @@
-import type { ProviderUsageRecord } from "./coach/types";
+import type { ProviderUsageRecord } from "./coach/types.js";
 
 const records: ProviderUsageRecord[] = [];
 

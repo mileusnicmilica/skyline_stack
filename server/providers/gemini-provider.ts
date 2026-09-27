@@ -3,8 +3,8 @@ import type {
   ProviderGeneration,
   ProviderTokenUsage,
   RunStatistics,
-} from "../coach/types";
-import { ProviderError } from "./provider-error";
+} from "../coach/types.js";
+import { ProviderError } from "./provider-error.js";
 
 export const GEMINI_MODEL = "gemini-3.1-flash-lite";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;

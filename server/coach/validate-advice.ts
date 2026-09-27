@@ -1,4 +1,4 @@
-import type { CoachAdvice, RunStatistics, TimingBias } from "./types";
+import type { CoachAdvice, RunStatistics, TimingBias } from "./types.js";
 
 const BIASES = new Set<TimingBias>(["early", "late", "mixed", "consistent"]);
 const ADVICE_KEYS = new Set(["headline", "timingBias", "biggestMistakeFloor", "tip"]);

@@ -1,6 +1,6 @@
-import type { CoachProvider } from "../coach/types";
-import { fakeCoachProvider } from "./fake-provider";
-import { GeminiCoachProvider } from "./gemini-provider";
+import type { CoachProvider } from "../coach/types.js";
+import { fakeCoachProvider } from "./fake-provider.js";
+import { GeminiCoachProvider } from "./gemini-provider.js";
 
 type ProviderEnvironment = Partial<Record<"AI_COACH_PROVIDER" | "GEMINI_API_KEY", string | undefined>>;
 

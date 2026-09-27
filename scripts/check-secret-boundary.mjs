@@ -41,7 +41,7 @@ const searchable = `${trackedText}\n${bundleText}\n${historyText}`;
 if (/AIza[0-9A-Za-z_-]{35}/.test(searchable)) {
   failures.push("A value matching a Google API key was found in tracked files, history, or dist.");
 }
-if (/GEMINI_API_KEY[ \t]*=[ \t]*["']?[^\s#"']+/.test(searchable)) {
+if (/GEMINI_API_KEY[ \t]*=[ \t]*["']?[^\s#"'`]+/.test(searchable)) {
   failures.push("A non-empty GEMINI_API_KEY assignment was found in tracked files, history, or dist.");
 }
 if (/VITE_[A-Z0-9_]*(?:KEY|SECRET|TOKEN)[ \t]*=/.test(searchable)) {

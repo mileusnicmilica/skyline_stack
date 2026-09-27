@@ -1,4 +1,4 @@
-import type { DropRecord } from "../../src/game/model";
+import type { DropRecord } from "../../src/game/model.js";
 
 export type CoachRequest = {
   finalScore: number;

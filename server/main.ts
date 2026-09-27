@@ -1,6 +1,6 @@
-import { createCoachServer, coachServerConfig } from "./index";
-import { recordProviderUsage } from "./provider-usage";
-import { createCoachProvider } from "./providers/provider-config";
+import { createCoachServer, coachServerConfig } from "./index.js";
+import { recordProviderUsage } from "./provider-usage.js";
+import { createCoachProvider } from "./providers/provider-config.js";
 
 try {
   process.loadEnvFile();

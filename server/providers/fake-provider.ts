@@ -1,4 +1,4 @@
-import type { CoachAdvice, CoachProvider } from "../coach/types";
+import type { CoachAdvice, CoachProvider } from "../coach/types.js";
 
 export const fakeCoachProvider: CoachProvider = {
   name: "fake",

@@ -13,3 +13,4 @@ Thumbs.db
 .idea/
 reports/
 artifacts/.smoke-profile-*/
+.vercel
