@@ -145,6 +145,12 @@ describe("game engine", () => {
     expect(activeScreenY).toBeLessThan(DEFAULT_GAME_CONFIG.canvasHeight);
     expect(supportScreenY).toBeLessThan(DEFAULT_GAME_CONFIG.canvasHeight);
     expect(session.cameraOffset).toBeGreaterThan(0);
+    const visiblePlacedFloors = session.placedBlocks.filter((block) => {
+      const screenY = block.y + session.cameraOffset;
+      return screenY < DEFAULT_GAME_CONFIG.canvasHeight &&
+        screenY + block.height > 0;
+    });
+    expect(visiblePlacedFloors).toHaveLength(3);
   });
 
   it("starts vertical camera follow only after five accepted floors", () => {
@@ -168,7 +174,7 @@ describe("game engine", () => {
     expect(session.score).toBe(5);
     expect(session.placedBlocks).toHaveLength(6);
     expect(session.cameraOffset).toBe(0);
-    expect(session.cameraTarget).toBe(160 + DEFAULT_GAME_CONFIG.blockHeight);
+    expect(session.cameraTarget).toBe(100 + DEFAULT_GAME_CONFIG.blockHeight);
   });
 
   it("restarts every observable field to a fresh session", () => {

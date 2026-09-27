@@ -2,7 +2,7 @@
 // next hanging floor moves above the Canvas, follow it at a stable inset so
 // the crane cable keeps its intended visual length instead of collapsing.
 const CAMERA_FOLLOW_THRESHOLD_Y = 0;
-const CAMERA_FOLLOW_SCREEN_Y = 160;
+const CAMERA_FOLLOW_SCREEN_Y = 100;
 const CAMERA_EASING_PER_SECOND = 6;
 
 export function getCameraTarget(hangingWorldY: number): number {

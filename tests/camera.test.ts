@@ -11,15 +11,15 @@ describe("tower camera", () => {
     expect(getCameraTarget(160)).toBe(0);
     expect(getCameraTarget(40)).toBe(0);
     expect(getCameraTarget(0)).toBe(0);
-    expect(getCameraTarget(-60)).toBe(220);
+    expect(getCameraTarget(-60)).toBe(160);
     expect(getCameraTarget(300)).toBe(0);
   });
 
-  it("holds a followed hanging floor 160 pixels below the top edge", () => {
+  it("holds a followed hanging floor 100 pixels below the top edge", () => {
     const hangingWorldY = -40;
     const target = getCameraTarget(hangingWorldY);
 
-    expect(worldToScreenY(hangingWorldY, target)).toBe(160);
+    expect(worldToScreenY(hangingWorldY, target)).toBe(100);
   });
 
   it("eases toward a non-negative target without overshooting", () => {
