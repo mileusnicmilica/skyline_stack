@@ -7,12 +7,19 @@ import {
 } from "../src/game/camera";
 
 describe("tower camera", () => {
-  it("keeps the first five-floor build-up still, then follows above the top edge", () => {
+  it("keeps the first five-floor build-up still, then preserves the crane cable inset", () => {
     expect(getCameraTarget(160)).toBe(0);
     expect(getCameraTarget(40)).toBe(0);
     expect(getCameraTarget(0)).toBe(0);
-    expect(getCameraTarget(-60)).toBe(60);
+    expect(getCameraTarget(-60)).toBe(220);
     expect(getCameraTarget(300)).toBe(0);
+  });
+
+  it("holds a followed hanging floor 160 pixels below the top edge", () => {
+    const hangingWorldY = -40;
+    const target = getCameraTarget(hangingWorldY);
+
+    expect(worldToScreenY(hangingWorldY, target)).toBe(160);
   });
 
   it("eases toward a non-negative target without overshooting", () => {

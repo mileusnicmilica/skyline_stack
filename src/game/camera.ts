@@ -1,10 +1,14 @@
-// Keep the base and first five accepted floors visually anchored. Camera
-// follow begins only when the next hanging floor would move above the Canvas.
-const CAMERA_FOLLOW_EDGE_Y = 0;
+// Keep the base and first five accepted floors visually anchored. Once the
+// next hanging floor moves above the Canvas, follow it at a stable inset so
+// the crane cable keeps its intended visual length instead of collapsing.
+const CAMERA_FOLLOW_THRESHOLD_Y = 0;
+const CAMERA_FOLLOW_SCREEN_Y = 160;
 const CAMERA_EASING_PER_SECOND = 6;
 
 export function getCameraTarget(hangingWorldY: number): number {
-  return Math.max(0, CAMERA_FOLLOW_EDGE_Y - hangingWorldY);
+  return hangingWorldY < CAMERA_FOLLOW_THRESHOLD_Y
+    ? CAMERA_FOLLOW_SCREEN_Y - hangingWorldY
+    : 0;
 }
 
 export function advanceCamera(

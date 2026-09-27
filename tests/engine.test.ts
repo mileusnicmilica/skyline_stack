@@ -168,7 +168,7 @@ describe("game engine", () => {
     expect(session.score).toBe(5);
     expect(session.placedBlocks).toHaveLength(6);
     expect(session.cameraOffset).toBe(0);
-    expect(session.cameraTarget).toBe(DEFAULT_GAME_CONFIG.blockHeight);
+    expect(session.cameraTarget).toBe(160 + DEFAULT_GAME_CONFIG.blockHeight);
   });
 
   it("restarts every observable field to a fresh session", () => {
