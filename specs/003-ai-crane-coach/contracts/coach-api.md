@@ -74,9 +74,10 @@ restart and play. No provider detail, stack trace, or secret is returned.
 
 Server coach logic receives a provider interface that accepts only
 server-derived `RunStatistics` and returns unknown structured content for
-runtime validation. Nemanja's implementation and tests use a deterministic
-fake provider only. Milica adds live Gemini wiring; key configuration is
-server-only and the browser never calls Gemini.
+runtime validation. Fake mode remains the deterministic test/default path.
+Live mode uses stable `gemini-3.1-flash-lite`, a server-only
+`GEMINI_API_KEY`, JSON structured output, and independent runtime validation;
+the browser never calls Gemini.
 
 ## Request lifecycle
 
@@ -85,3 +86,6 @@ server-only and the browser never calls Gemini.
 - No retries for invalid input or deterministic malformed output.
 - Client-visible total wait bound: 12 seconds; timeout maps to safe failure.
 - No persistence, authentication, CORS allowance, or broad network binding.
+- Sanitized usage records contain provider/model, timestamp, latency, outcome,
+  attempt count, and token usage when returned; no prompt, key, run log, or
+  raw provider response is logged.

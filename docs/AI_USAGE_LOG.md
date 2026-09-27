@@ -21,6 +21,8 @@ synchronization. Historical results are retained as originally measured.
 | 13 | Dokumentaciona sinhronizacija | Pronaći i ispraviti zastarele tvrdnje o nepostojećem Git-u, source-u, testovima i runtime dokazima | Trenutni manifest i README moraju opisivati V2, dok zaključani V1/Session 003 fajlovi ostaju neizmenjeni | `CONTEXT_MANIFEST.md`, README, V2 reference, AI log i rezultati su usklađeni; lokalni linkovi, typecheck, 54/54 testova i build prolaze; baseline hash/read-only stanje i istorijski sadržaj su nepromenjeni | Commitovati i pushovati dokumentacioni paket kada ga par odobri |
 | 14 | Crane-bound convergence | Ispraviti nalaz da sinusni hod izvodi polovinu aktivnog poda van Canvas-a | Centar tereta mora ostati u intervalu `width / 2 .. canvasWidth - width / 2`; testovi i browser smoke moraju dokazati ponašanje | Dodati ekstremni testovi; TDD crveno stanje je pokazalo `x=-100` i desni rub `580`; korekcija prolazi 55/55 testova, typecheck/build i lokalni Edge smoke bez grešaka | Commitovati i pushovati convergence dopunu |
 
+| 15 | W04 Milicin implementacioni blok | Implementirati T016–T019 i T023–T025 prema odobrenom feature-u 003 | Fake-first reliability, server-only Gemini adapter, Game Over UI, security gate i istinit evidence | Dodati testovi i kod; `npm.cmd run verify` prolazi 16 test fajlova / 116 testova, build, secret gate, API/proxy i Edge success/failure smoke; jedan ograničen live Gemini poziv je PASS u 1 attempt-u, 1.459 s i 230 tokena | Nemanja pregleda diff, ponavlja verify/security i sa Milicom prolazi završni demo |
+
 ## Usage Data
 
 Usage podatak nije dostupan u korišćenom okruženju.

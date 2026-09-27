@@ -13,7 +13,9 @@
 2. Check the process boundary through Vite with
    `Invoke-RestMethod http://127.0.0.1:5173/api/health` in PowerShell. It
    returns `{ "status": "ok" }` without a provider call.
-3. Stop `dev:full` with Ctrl+C; the coordinator stops both processes.
+3. Finish a run and use "Analiziraj partiju". Fake mode returns deterministic
+   validated advice without a provider key.
+4. Stop `dev:full` with Ctrl+C; the coordinator stops both processes.
 
 `npm run dev:web` starts only the browser frontend, and `npm run dev:api`
 starts only the fake-provider API. `npm run dev` remains the frontend-only Vite
@@ -26,19 +28,21 @@ restarting `dev:full` or `dev:api`.
 - `npm run typecheck` checks browser and server TypeScript separately.
 - `npm run build` builds the frontend.
 - `npm run verify` runs both typechecks, tests, build, starts API and production
-  preview, checks the same-origin `/api` proxy and fake response, runs browser
-  smoke, then stops both processes.
+  preview, checks the same-origin `/api` proxy and fake response, runs the
+  secret-boundary check and browser success/failure smoke, then stops both
+  processes.
+- `npm run check:secrets` checks tracked files, Git history, and the production
+  bundle for a provider secret or forbidden `VITE_` secret assignment.
 
 Manual `npm run preview` starts only the frontend. Start `npm run dev:api`
 separately when testing `/api` during a manual preview. The generated browser
 smoke screenshot is `artifacts/crane-tower/smoke.png`; Chromium's temporary
 profile stays outside `artifacts/` to avoid the Vite watcher `EBUSY` issue.
 
-## Handoff to Milica
+## Optional bounded live check
 
-The currently runnable API uses a deterministic fake provider. Milica's
-remaining tasks are T016-T019 and T023-T025 in [tasks.md](tasks.md): live
-Gemini adapter, bounded timeout/retry, Game Over analysis UI and safe failure
-states, plus redacted live/evidence checks. A real `.env` is ignored; the
-versioned `.env.example` has an empty `GEMINI_API_KEY` placeholder. Never use a
-`VITE_`-prefixed secret.
+Copy `.env.example` to ignored `.env`, set `AI_COACH_PROVIDER=gemini`, and add
+the real `GEMINI_API_KEY` only in that local file. Restart the API and make one
+intentional Game Over analysis request. Record the actual call/token result in
+`docs/AI_PROVIDER_USAGE_LOG.md`; if it is not run, keep `NOT RUN`. Never use a
+`VITE_`-prefixed secret. Fake mode remains the default for tests and verify.

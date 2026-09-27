@@ -29,7 +29,9 @@
 - Derive detached sections from every unsupported interval; their total width plus placed width equals released width within `0.001`.
 - Convert detached sections into deterministic masonry pieces; full overlap creates none.
 - Spawn exactly one next attached floor with width equal to the placed floor.
-- Set a new camera target that keeps the active construction zone visible.
+- Keep `cameraTarget` at zero through the first four accepted floors. After
+  the fifth accepted floor, begin follow because the next hanging floor would
+  cross the Canvas top edge; later targets keep the active construction zone visible.
 
 ## Failed landing
 

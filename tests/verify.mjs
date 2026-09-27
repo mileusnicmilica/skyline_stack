@@ -15,6 +15,7 @@ const tools = {
   vite: resolve(projectRoot, "node_modules/vite/bin/vite.js"),
   tsx: resolve(projectRoot, "node_modules/tsx/dist/cli.mjs"),
   smoke: resolve(projectRoot, "tests/browser-smoke.mjs"),
+  secrets: resolve(projectRoot, "scripts/check-secret-boundary.mjs"),
 };
 
 function spawnNode(script, args, options = {}) {
@@ -172,6 +173,7 @@ try {
   await runStep("Server TypeScript typecheck", tools.tsc, ["--noEmit", "-p", "tsconfig.server.json"]);
   await runStep("Vitest suite", tools.vitest, ["run"]);
   await runStep("Production build", tools.vite, ["build"]);
+  await runStep("Provider secret boundary", tools.secrets);
 
   process.stdout.write("\n[verify] Starting local fake-provider API\n");
   api = spawnNode(tools.tsx, [resolve(projectRoot, "server/main.ts")]);

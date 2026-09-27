@@ -21,12 +21,14 @@ const advice: CoachAdvice = {
 
 function providerReturning(output: unknown, onCall = () => {}): CoachProvider {
   return {
+    name: "fake",
+    model: "test-scenario",
     async generate(statistics) {
       onCall();
       expect(statistics.finalScore).toBe(1);
       expect(statistics.timingBias).toBe("late");
       expect("drops" in statistics).toBe(false);
-      return output;
+      return { output };
     },
   };
 }
@@ -100,10 +102,12 @@ describe("coach analysis", () => {
       ],
     };
     const provider: CoachProvider = {
+      name: "fake",
+      model: "test-scenario",
       async generate(statistics) {
         expect(statistics.timingBias).toBe("mixed");
         expect(statistics.centeredPercent).toBeCloseTo(33.333, 2);
-        return { ...advice, timingBias: "mixed", biggestMistakeFloor: 3 };
+        return { output: { ...advice, timingBias: "mixed", biggestMistakeFloor: 3 } };
       },
     };
 
@@ -116,10 +120,12 @@ describe("coach analysis", () => {
       startingWidth: 100,
       drops: [{ floor: 1, offsetPx: 100, direction: 1, timing: "late", widthBefore: 100, widthAfter: 0 }],
     }, {
+      name: "fake",
+      model: "test-scenario",
       async generate(statistics) {
         expect(statistics.biggestMistakeFloor).toBe(1);
         expect(statistics.maxWidthLossPx).toBe(100);
-        return { ...advice, biggestMistakeFloor: 1 };
+        return { output: { ...advice, biggestMistakeFloor: 1 } };
       },
     });
     expect(result.ok).toBe(true);

@@ -11,6 +11,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "smoke": "node tests/browser-smoke.mjs",
+    "check:secrets": "node scripts/check-secret-boundary.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
     "verify": "node tests/verify.mjs"

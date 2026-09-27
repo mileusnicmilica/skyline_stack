@@ -154,10 +154,15 @@ kbd {
   font-weight: 900;
 }
 
-button {
+.game-actions {
   grid-column: 2;
   grid-row: 1 / span 3;
+  display: flex;
   align-self: stretch;
+  gap: 0.65rem;
+}
+
+button {
   min-width: 6.4rem;
   padding: 0.6rem 0.9rem;
   border: 3px solid #263b50;
@@ -168,6 +173,25 @@ button {
   text-transform: uppercase;
   cursor: pointer;
 }
+
+.coach-panel {
+  width: min(100%, 30rem);
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border: 3px solid #263b50;
+  color: #263b50;
+  background: #fff5d6;
+  box-shadow: 6px 6px 0 #b24b3d;
+}
+
+.coach-panel h2 {
+  margin: 0 0 0.6rem;
+  color: #8b3f35;
+  font-size: 1.05rem;
+}
+
+.coach-panel p { margin: 0.3rem 0; }
+.coach-message { font-weight: 900; }
 
 button:disabled {
   color: #6e7f86;
@@ -188,4 +212,7 @@ button:focus-visible, canvas:focus-visible {
   .scoreboard { width: 100%; }
   .scoreboard div { flex: 1; }
   .play-area { margin-top: 1rem; border-width: 4px; }
+  .game-footer { grid-template-columns: 1fr; }
+  .game-actions { grid-column: 1; grid-row: auto; margin-top: 0.55rem; }
+  .game-actions button { flex: 1; }
 }

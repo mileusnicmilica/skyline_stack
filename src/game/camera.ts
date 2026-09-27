@@ -1,8 +1,10 @@
-const DESIRED_HANGING_SCREEN_Y = 160;
+// Keep the base and first five accepted floors visually anchored. Camera
+// follow begins only when the next hanging floor would move above the Canvas.
+const CAMERA_FOLLOW_EDGE_Y = 0;
 const CAMERA_EASING_PER_SECOND = 6;
 
 export function getCameraTarget(hangingWorldY: number): number {
-  return Math.max(0, DESIRED_HANGING_SCREEN_Y - hangingWorldY);
+  return Math.max(0, CAMERA_FOLLOW_EDGE_Y - hangingWorldY);
 }
 
 export function advanceCamera(

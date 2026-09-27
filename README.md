@@ -111,10 +111,11 @@ under `artifacts/`: on Windows, Vite's dev watcher can otherwise encounter an
 `EBUSY` error while Chromium has its `Cookies` file locked. Screenshots are
 safe to keep under `artifacts/crane-tower/`.
 
-The latest verified local result, dated 2026-09-26, is: typecheck PASS,
-9 test files/55 tests PASS, production build PASS, and both dev-server and
-production-preview Edge smoke PASS. The active crane floor remains fully
-within the Canvas at both sway extremes.
+The latest verified local result, dated 2026-09-27, is: browser/server
+typecheck PASS, 16 test files/117 tests PASS, production build and secret gate
+PASS, and production-preview Edge smoke PASS. The active crane floor remains
+fully within the Canvas at both sway extremes, and camera follow begins only
+after the initial five-floor build-up.
 
 ### W04 AI Crane Coach development boundary
 
@@ -122,15 +123,25 @@ The W04 feature is tracked separately in
 [`specs/003-ai-crane-coach/`](specs/003-ai-crane-coach/spec.md). The browser
 and TypeScript API run as separate local processes. Start both with
 `npm.cmd run dev:full`; Vite proxies `/api` to the loopback API. Check the
-split with `Invoke-RestMethod http://127.0.0.1:5173/api/health`. The API uses
-a deterministic fake provider and needs no Gemini key. The live provider and
-player-facing analysis button are Milica's next implementation block.
+split with `Invoke-RestMethod http://127.0.0.1:5173/api/health`. Fake mode is
+the default and needs no Gemini key. After Game Over, "Analiziraj partiju"
+shows pending, validated advice, or one safe unavailable state; duplicate
+requests and stale responses after Restart are blocked.
+
+For one bounded live check, copy `.env.example` to ignored `.env`, set
+`AI_COACH_PROVIDER=gemini`, and add `GEMINI_API_KEY` only there. The server
+uses the reviewed stable `gemini-3.1-flash-lite` model. Never use a `VITE_`
+prefix or place the value in source, docs, screenshots, fixtures, or output.
 
 `npm.cmd run verify` checks browser and server types, game/API contract tests,
-the preview `/api` proxy, production build, and browser smoke. The browser
-smoke checks the game flow; zero-provider-call behavior is covered by API
-tests. A real `.env` remains ignored; `.env.example` contains an empty
-server-only key placeholder for the later live-provider work.
+the preview `/api` proxy, production build, provider secret boundary, and
+browser smoke for fake success/failure plus Restart. A real `.env` remains
+ignored; `.env.example` contains an empty server-only key placeholder.
+
+W04 prompt, provider contract, evals, provider usage, and redacted evidence
+are in `docs/AI_FEATURE_PROMPT.md`, `docs/AI_PROVIDER_CONTRACT.md`,
+`docs/AI_EVALS.md`, `docs/AI_PROVIDER_USAGE_LOG.md`, and
+`docs/EVIDENCE_W04.md`.
 
 ## Documentation
 

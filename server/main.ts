@@ -1,9 +1,19 @@
 import { createCoachServer, coachServerConfig } from "./index";
-import { fakeCoachProvider } from "./providers/fake-provider";
+import { recordProviderUsage } from "./provider-usage";
+import { createCoachProvider } from "./providers/provider-config";
 
-const server = createCoachServer(fakeCoachProvider);
+try {
+  process.loadEnvFile();
+} catch (error) {
+  if (!(error instanceof Error && "code" in error && error.code === "ENOENT")) throw error;
+}
+
+const provider = createCoachProvider();
+const server = createCoachServer(provider, { onUsage: recordProviderUsage });
 server.listen(coachServerConfig.port, coachServerConfig.host, () => {
-  process.stdout.write(`Coach API listening on http://${coachServerConfig.host}:${coachServerConfig.port}\n`);
+  process.stdout.write(
+    `Coach API listening on http://${coachServerConfig.host}:${coachServerConfig.port} (${provider.name}/${provider.model})\n`,
+  );
 });
 
 function shutdown(): void {

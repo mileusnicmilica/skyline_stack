@@ -1,5 +1,15 @@
 import type { DropRecord, DropTiming } from "../../src/game/model";
-import type { CoachProvider, CoachRequest, CoachRunResult, RunStatistics, TimingBias } from "./types";
+import type {
+  CoachExecutionOptions,
+  CoachProvider,
+  CoachRequest,
+  CoachRunResult,
+  ProviderGeneration,
+  ProviderUsageRecord,
+  RunStatistics,
+  TimingBias,
+} from "./types";
+import { ProviderError } from "../providers/provider-error";
 import { validateAdvice } from "./validate-advice";
 
 const MAX_DROPS = 501;
@@ -8,6 +18,10 @@ const CENTERED_TOLERANCE_PX = 1;
 const WIDTH_EPSILON = 1e-6;
 const REQUEST_KEYS = new Set(["finalScore", "startingWidth", "drops"]);
 const DROP_KEYS = new Set(["floor", "offsetPx", "direction", "timing", "widthBefore", "widthAfter"]);
+const DEFAULT_TOTAL_TIMEOUT_MS = 10_000;
+const DEFAULT_ATTEMPT_TIMEOUT_MS = 4_500;
+const DEFAULT_RETRY_DELAY_MS = 250;
+const MAX_ATTEMPTS = 2;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -126,19 +140,124 @@ function deriveStatistics(request: CoachRequest): RunStatistics {
   };
 }
 
-export async function coachRun(value: unknown, provider: CoachProvider): Promise<CoachRunResult> {
+function positiveDuration(value: number | undefined, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+async function wait(milliseconds: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function generateWithTimeout(
+  provider: CoachProvider,
+  statistics: RunStatistics,
+  attempt: number,
+  timeoutMs: number,
+): Promise<ProviderGeneration> {
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      const error = new ProviderError("Provider attempt timed out.", true, "timeout");
+      controller.abort(error);
+      reject(error);
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([
+      provider.generate(statistics, { signal: controller.signal, attempt }),
+      timeout,
+    ]);
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new ProviderError("Provider attempt timed out.", true, "timeout");
+    }
+    throw error;
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
+function emitUsage(
+  provider: CoachProvider,
+  startedAt: number,
+  startedTimestamp: string,
+  attempts: number,
+  outcome: ProviderUsageRecord["outcome"],
+  options: CoachExecutionOptions,
+  tokenUsage?: ProviderGeneration["tokenUsage"],
+): void {
+  if (!options.onUsage) return;
+  try {
+    options.onUsage({
+      provider: provider.name,
+      model: provider.model,
+      timestamp: startedTimestamp,
+      latencyMs: Math.max(0, Date.now() - startedAt),
+      outcome,
+      attempts,
+      ...(tokenUsage === undefined ? {} : { tokenUsage }),
+    });
+  } catch {
+    // Observability must never change the public result.
+  }
+}
+
+export async function coachRun(
+  value: unknown,
+  provider: CoachProvider,
+  options: CoachExecutionOptions = {},
+): Promise<CoachRunResult> {
   const request = parseRequest(value);
   if (!request) return { ok: false, kind: "invalid-request" };
 
   const statistics = deriveStatistics(request);
-  let output: unknown;
-  try {
-    output = await provider.generate(statistics);
-  } catch {
-    return { ok: false, kind: "provider-failure" };
+  const totalTimeoutMs = positiveDuration(options.totalTimeoutMs, DEFAULT_TOTAL_TIMEOUT_MS);
+  const attemptTimeoutMs = positiveDuration(options.attemptTimeoutMs, DEFAULT_ATTEMPT_TIMEOUT_MS);
+  const retryDelayMs = positiveDuration(options.retryDelayMs, DEFAULT_RETRY_DELAY_MS);
+  const startedAt = Date.now();
+  const startedTimestamp = new Date(startedAt).toISOString();
+  let attempts = 0;
+  let lastWasTimeout = false;
+
+  while (attempts < MAX_ATTEMPTS) {
+    const elapsed = Date.now() - startedAt;
+    const remaining = totalTimeoutMs - elapsed;
+    if (remaining <= 0) break;
+    attempts += 1;
+
+    try {
+      const generation = await generateWithTimeout(
+        provider,
+        statistics,
+        attempts,
+        Math.min(attemptTimeoutMs, remaining),
+      );
+      const validated = validateAdvice(generation.output, statistics);
+      if (!validated.ok) {
+        emitUsage(provider, startedAt, startedTimestamp, attempts, "invalid-output", options, generation.tokenUsage);
+        return { ok: false, kind: "invalid-advice" };
+      }
+      emitUsage(provider, startedAt, startedTimestamp, attempts, "success", options, generation.tokenUsage);
+      return { ok: true, advice: validated.advice, statistics };
+    } catch (error) {
+      const providerError = error instanceof ProviderError ? error : null;
+      lastWasTimeout = providerError?.kind === "timeout";
+      if (!providerError?.retryable || attempts >= MAX_ATTEMPTS) break;
+      const afterAttemptRemaining = totalTimeoutMs - (Date.now() - startedAt);
+      if (afterAttemptRemaining <= retryDelayMs) break;
+      await wait(retryDelayMs);
+    }
   }
 
-  const validated = validateAdvice(output, statistics);
-  if (!validated.ok) return { ok: false, kind: "invalid-advice" };
-  return { ok: true, advice: validated.advice, statistics };
+  emitUsage(
+    provider,
+    startedAt,
+    startedTimestamp,
+    attempts,
+    lastWasTimeout ? "timeout" : "provider-failure",
+    options,
+  );
+  return { ok: false, kind: "provider-failure" };
 }

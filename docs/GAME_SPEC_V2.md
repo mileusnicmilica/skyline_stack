@@ -122,7 +122,10 @@ The V2 lives eval is therefore a negative contract check: it confirms that a ful
 
 - Blocks remain in stable world coordinates.
 - Rendering uses `screenY = worldY + cameraOffset`.
-- A successful placement sets a non-negative target offset for the next construction zone.
+- The base and first five accepted floors remain visually anchored with zero
+  camera offset. Follow begins only when the next hanging floor would cross
+  above the Canvas top edge.
+- A later successful placement sets a non-negative target offset for the next construction zone.
 - Camera movement eases toward the target and does not modify collision coordinates.
 - After at least eight accepted floors, the active floor and immediate support remain within the Canvas.
 
@@ -213,7 +216,7 @@ The executable V2 evals are in `tests/v2-evals.test.ts`; their recorded results 
 - [x] Perfect placement produces no debris.
 - [x] A full miss produces complete-floor debris and Game Over without a score increase.
 - [x] No lives field or multi-miss allowance exists.
-- [x] Camera keeps an eight-floor construction zone visible.
+- [x] Camera shows the initial five-floor build-up before smoothly following an eight-floor construction zone.
 - [x] Restart clears tower progress, crane phase, camera, debris, impact, and input state.
 - [x] Original procedural city/crane/building presentation is visible in browser evidence.
 - [x] Runtime configuration validation and safe fallback remain operational.

@@ -26,6 +26,8 @@ describe("coach HTTP contract", () => {
   it("answers the local health route without a provider call", async () => {
     let providerCalls = 0;
     const provider: CoachProvider = {
+      name: "fake",
+      model: "health-must-not-call",
       async generate() {
         providerCalls += 1;
         throw new Error("Health checks must not reach the provider");
@@ -110,6 +112,8 @@ describe("coach HTTP contract", () => {
 
   it("does not expose provider exceptions", async () => {
     const privateProvider: CoachProvider = {
+      name: "fake",
+      model: "private-failure",
       async generate() { throw new Error("private key and provider payload"); },
     };
     await withServer(async (url) => {

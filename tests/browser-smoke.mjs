@@ -129,6 +129,12 @@ async function readUi(send) {
       score: document.querySelector('#score')?.textContent,
       status: document.querySelector('#status')?.textContent,
       restartDisabled: document.querySelector('#restart-button')?.disabled,
+      analyzeHidden: document.querySelector('#analyze-button')?.hidden,
+      analyzeDisabled: document.querySelector('#analyze-button')?.disabled,
+      coachPanelHidden: document.querySelector('#coach-panel')?.hidden,
+      coachMessage: document.querySelector('#coach-message')?.textContent,
+      coachHeadline: document.querySelector('#coach-headline')?.textContent,
+      coachTip: document.querySelector('#coach-tip')?.textContent,
       warningHidden: document.querySelector('#config-warning')?.hidden,
       canvas: (() => {
         const canvas = document.querySelector('#game-canvas');
@@ -173,6 +179,18 @@ async function pressKey(send, { key, code, keyCode }) {
     windowsVirtualKeyCode: keyCode,
     nativeVirtualKeyCode: keyCode,
   });
+}
+
+async function clickElement(send, selector) {
+  const point = await evaluate(send, `(() => {
+    const element = document.querySelector(${JSON.stringify(selector)});
+    if (!element) return null;
+    const rect = element.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  })()`);
+  if (!point) throw new Error(`Cannot click missing element ${selector}.`);
+  await send("Input.dispatchMouseEvent", { type: "mousePressed", x: point.x, y: point.y, button: "left", clickCount: 1 });
+  await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: point.x, y: point.y, button: "left", clickCount: 1 });
 }
 
 async function wait(milliseconds) {
@@ -247,15 +265,53 @@ try {
   await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
   const gameOver = await pollUi(
     cdp.send,
-    (ui) => ui.status === "Game Over" && ui.score === "2" && !ui.restartDisabled,
+    (ui) => ui.status === "Game Over" && ui.score === "2" && !ui.restartDisabled &&
+      !ui.analyzeHidden && !ui.analyzeDisabled,
     "Game Over state",
+  );
+
+  await clickElement(cdp.send, "#analyze-button");
+  const coachSuccess = await pollUi(
+    cdp.send,
+    (ui) => !ui.coachPanelHidden && Boolean(ui.coachHeadline) && Boolean(ui.coachTip) &&
+      !ui.restartDisabled && !ui.analyzeDisabled,
+    "Fake coach success state",
   );
 
   await pressKey(cdp.send, { key: "r", code: "KeyR", keyCode: 82 });
   const afterRestart = await pollUi(
     cdp.send,
-    (ui) => ui.status === "Ready" && ui.score === "0" && ui.restartDisabled,
+    (ui) => ui.status === "Ready" && ui.score === "0" && ui.restartDisabled &&
+      ui.analyzeHidden && ui.coachPanelHidden,
     "Restarted Ready state",
+  );
+
+  await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
+  await pollUi(cdp.send, (ui) => ui.status === "Playing" && ui.score === "1", "Second run first placement");
+  await wait(875);
+  await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
+  await pollUi(cdp.send, (ui) => ui.status === "Playing" && ui.score === "2", "Second run partial placement");
+  await wait(2_625);
+  await pressKey(cdp.send, { key: " ", code: "Space", keyCode: 32 });
+  await pollUi(cdp.send, (ui) => ui.status === "Game Over" && !ui.analyzeHidden, "Second Game Over state");
+
+  await cdp.send("Network.enable");
+  await cdp.send("Network.setBlockedURLs", { urls: ["*/api/ai/coach"] });
+  await clickElement(cdp.send, "#analyze-button");
+  const coachUnavailable = await pollUi(
+    cdp.send,
+    (ui) => ui.coachMessage === "AI analiza trenutno nije dostupna." &&
+      !ui.restartDisabled && !ui.analyzeDisabled,
+    "Fake coach failure state",
+  );
+  await cdp.send("Network.setBlockedURLs", { urls: [] });
+
+  await pressKey(cdp.send, { key: "r", code: "KeyR", keyCode: 82 });
+  const afterUnavailableRestart = await pollUi(
+    cdp.send,
+    (ui) => ui.status === "Ready" && ui.score === "0" && ui.restartDisabled &&
+      ui.analyzeHidden && ui.coachPanelHidden,
+    "Restart after unavailable coach state",
   );
 
   const result = {
@@ -266,7 +322,10 @@ try {
     afterSuccess,
     afterPartial,
     gameOver,
+    coachSuccess,
     afterRestart,
+    coachUnavailable,
+    afterUnavailableRestart,
     browserErrors: cdp.browserErrors,
     browserLogErrors: cdp.browserLogErrors,
   };

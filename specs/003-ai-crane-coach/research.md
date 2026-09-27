@@ -37,9 +37,10 @@ Sources (official):
 
 ## Provider/model (Milica's later block)
 
-**Decision**: Plan against Google Gemini API model ID `gemini-3.1-flash-lite`.
-Use Gemini structured JSON output when implementing the live adapter, while
-retaining independent runtime schema and semantic validation.
+**Decision**: Use Google Gemini API stable model ID `gemini-3.1-flash-lite`.
+The model ID and structured-output support were rechecked in official Google
+documentation on 2026-09-26. The implemented adapter uses structured JSON and
+retains independent runtime schema and semantic validation.
 
 **Rationale**: Google's official model and pricing pages identify it as a
 stable Flash-Lite model and price it below Gemini 3.5 Flash-Lite. Its ability
@@ -53,7 +54,8 @@ At the 2026-09-26 check, the standard paid tier listed text pricing of
 $0.25/1M input tokens and $1.50/1M output tokens for Gemini 3.1 Flash-Lite,
 versus $0.30/1M input and $2.50/1M output for Gemini 3.5 Flash-Lite. Pricing
 and model availability can change; Milica should recheck them before wiring the
-live provider. Google's pricing page also distinguishes free-tier data use
+live provider. The recheck confirmed the same USD 0.25/1M text input and USD
+1.50/1M output paid-tier prices. Google's pricing page also distinguishes free-tier data use
 (content may be used to improve products) from paid-tier use (not used for
 that purpose), so the integration should send no personal data and use the
 appropriate account/data controls for a live demonstration.
@@ -66,7 +68,7 @@ the backend calculates facts deterministically.
 Sources (official Google documentation, checked 2026-09-26):
 - [Gemini 3.1 Flash-Lite model](https://ai.google.dev/gemini-api/docs/models)
 - [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing)
-- [Structured outputs](https://ai.google.dev/gemini-api/docs/generate-content/structured-output)
+- [Structured outputs](https://ai.google.dev/gemini-api/docs/structured-output)
 
 ## Security and reliability choices
 

@@ -19,7 +19,7 @@ V2 has no lives counter. V2-E4 evaluates the explicit absence of lives and confi
 | V2-E2 | Release with Space, repeat with pointer, then advance 0.1 seconds | First input enters falling; repeat input returns unchanged state; `x` remains fixed and `y` increases | Focused suite reproduced the one-shot vertical drop | PASS | `tests/v2-evals.test.ts` V2-E2 |
 | V2-E3 | Land a default-width floor 30 units to the right of its support | Placed plus detached widths equal released width; placed width is reduced by 30; at least four pieces originate on the right | Conservation, placed width, count, and side assertions passed | PASS | `tests/v2-evals.test.ts` V2-E3 |
 | V2-E4 | Place the released floor completely beyond the support | Score remains unchanged; full floor becomes at least four debris pieces; phase becomes Game Over; no `lives` or `remainingLives` field exists; later drop is ignored | All loss/no-lives assertions passed | PASS | `tests/v2-evals.test.ts` V2-E4 |
-| V2-E5 | Resolve eight perfect floors, advance camera after each, then restart a state containing V2 debris | Active floor and immediate support remain visible; restart is deeply equal to a fresh session and clears V2 state | Tall-tower visibility and full restart assertions passed | PASS | `tests/v2-evals.test.ts` V2-E5 |
+| V2-E5 | Resolve five perfect floors without advancing the camera, then continue to eight floors and restart a state containing V2 debris | Camera target stays zero through four accepted floors, follow begins after the fifth, active floor and immediate support remain visible at eight, and restart clears V2 state | Five-floor threshold, tall-tower visibility, and full restart assertions passed | PASS | `tests/camera.test.ts`, `tests/engine.test.ts`, `tests/v2-evals.test.ts` V2-E5 |
 | V2-E6 | Run the local Edge browser smoke through Ready, one success, a bounded right-edge partial landing, deliberate left-edge miss, Game Over, and R restart; capture the Playing screenshot | All DOM states match, screenshot is written, and browser runtime/log error arrays are empty | Ready 0 → Playing 1 → Playing 2 → Game Over 2 → Ready 0; zero browser/runtime log errors | PASS | `artifacts/crane-tower/RESULTS.md`; `artifacts/crane-tower/smoke.png` |
 
 ## Actual focused execution
@@ -64,3 +64,9 @@ build: PASS — 14 modules transformed
 ## Result
 
 V2-E1 through V2-E6 are PASS. The focused executable suite covers crane, sway, drop, cut/crumble, the explicit no-lives rule, camera, and restart. Browser evidence covers the integrated HUD/Canvas flow and visual presentation.
+
+Camera-threshold refinement was revalidated on 2026-09-27: the focused
+camera/engine/V2 eval command passed 3 files / 16 tests, and the complete
+`npm.cmd run verify` passed 16 files / 117 tests, both typechecks, production
+build, secret boundary, API/proxy checks, and Edge smoke with zero browser
+errors.

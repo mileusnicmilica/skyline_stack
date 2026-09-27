@@ -48,10 +48,10 @@ malformed or inconsistent output is rejected.
 
 ### Milica — later implementation block (deferred)
 
-- [ ] T016 [P] [US1] [MILICA — DEFERRED] Add live Gemini adapter for `gemini-3.1-flash-lite`, structured JSON output, server-only credential loading, and provider configuration tests in `server/providers/gemini-provider.ts`.
-- [ ] T017 [US1] [MILICA — DEFERRED] Add a 10-second total provider deadline and at most one transient retry with bounded backoff; verify no retries for invalid input or deterministic malformed output.
-- [ ] T018 [P] [US1] [MILICA — DEFERRED] Add Game Over-only “Analiziraj partiju” button, a client that sends only `{ finalScore, startingWidth, drops }`, and localized pending/advice states in `index.html`, `src/main.ts`, `src/style.css`, and `src/coach/coach-client.ts`.
-- [ ] T019 [US1] [MILICA — DEFERRED] Prevent duplicate analysis requests and ignore stale results after restart in `src/main.ts`; keep Restart available after all outcomes.
+- [x] T016 [P] [US1] [MILICA] Add live Gemini adapter for `gemini-3.1-flash-lite`, structured JSON output, server-only credential loading, and provider configuration tests in `server/providers/gemini-provider.ts`.
+- [x] T017 [US1] [MILICA] Add a 10-second total provider deadline and at most one transient retry with bounded backoff; verify no retries for invalid input or deterministic malformed output.
+- [x] T018 [P] [US1] [MILICA] Add Game Over-only “Analiziraj partiju” button, a client that sends only `{ finalScore, startingWidth, drops }`, and localized pending/advice states in `index.html`, `src/main.ts`, `src/style.css`, and `src/coach/coach-client.ts`.
+- [x] T019 [US1] [MILICA] Prevent duplicate analysis requests and ignore stale results after restart in `src/main.ts`; keep Restart available after all outcomes.
 
 ## Phase 4: User Story 2 — Preserve play when analysis is unavailable (Priority: P2)
 
@@ -69,9 +69,9 @@ malformed-result behavior and prove the game is still restartable.
 
 ### Milica — later implementation block (deferred)
 
-- [ ] T023 [US2] [MILICA — DEFERRED] Add UI unavailable state and verify Restart starts a new playable run after unavailable, timeout, or malformed output.
-- [ ] T024 [US2] [MILICA — DEFERRED] Confirm provider key never appears in client bundle, response, logs, docs, fixtures, or evidence; add a reproducible secret-boundary check.
-- [ ] T025 [US2] [MILICA — DEFERRED] Capture and document redacted fake/live-path evidence and actual model/configuration limitations in the feature evidence.
+- [x] T023 [US2] [MILICA] Add UI unavailable state and verify Restart starts a new playable run after unavailable, timeout, or malformed output.
+- [x] T024 [US2] [MILICA] Confirm provider key never appears in client bundle, response, logs, docs, fixtures, or evidence; add a reproducible secret-boundary check.
+- [x] T025 [US2] [MILICA] Capture and document redacted fake/live-path evidence and actual model/configuration limitations in the feature evidence. One bounded live call passed and its redacted usage is recorded.
 
 ## Phase 5: First-block verification and handoff — Nemanja
 

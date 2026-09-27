@@ -147,6 +147,30 @@ describe("game engine", () => {
     expect(session.cameraOffset).toBeGreaterThan(0);
   });
 
+  it("starts vertical camera follow only after five accepted floors", () => {
+    let session = createGameSession(DEFAULT_GAME_CONFIG);
+
+    for (let floor = 1; floor <= 5; floor += 1) {
+      const support = session.placedBlocks.at(-1);
+      if (!support) throw new Error("Expected a support floor");
+      session.activeBlock = {
+        ...session.activeBlock,
+        x: support.x,
+        y: support.y - DEFAULT_GAME_CONFIG.blockHeight,
+        motion: "falling",
+      };
+      session.dropAccepted = true;
+      session = resolveLanding(session, DEFAULT_GAME_CONFIG);
+
+      if (floor < 5) expect(session.cameraTarget).toBe(0);
+    }
+
+    expect(session.score).toBe(5);
+    expect(session.placedBlocks).toHaveLength(6);
+    expect(session.cameraOffset).toBe(0);
+    expect(session.cameraTarget).toBe(DEFAULT_GAME_CONFIG.blockHeight);
+  });
+
   it("restarts every observable field to a fresh session", () => {
     const gameOver = createGameSession(DEFAULT_GAME_CONFIG);
     gameOver.phase = "gameOver";

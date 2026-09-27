@@ -41,8 +41,21 @@
         <p><kbd>Space</kbd> or click/tap to release the crane load.</p>
         <p>Line up the facade. Unsupported masonry breaks away.</p>
         <p><kbd>R</kbd> or Restart rebuilds after Game Over.</p>
-        <button id="restart-button" type="button" disabled>Restart</button>
+        <div class="game-actions">
+          <button id="restart-button" type="button" disabled>Restart</button>
+          <button id="analyze-button" type="button" hidden>Analiziraj partiju</button>
+        </div>
       </footer>
+
+      <section id="coach-panel" class="coach-panel" aria-live="polite" aria-busy="false" hidden>
+        <p id="coach-message" class="coach-message"></p>
+        <div id="coach-advice" hidden>
+          <h2 id="coach-headline"></h2>
+          <p><strong>Tajming:</strong> <span id="coach-timing"></span></p>
+          <p><strong>Najveća greška:</strong> sprat <span id="coach-floor"></span></p>
+          <p id="coach-tip"></p>
+        </div>
+      </section>
     </main>
 
     <script type="module" src="/src/main.ts"></script>

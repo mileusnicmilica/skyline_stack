@@ -36,9 +36,11 @@ City Bloxx is gameplay inspiration only.
 
 ## Decision 5: Camera is an eased vertical world offset
 
-**Decision**: Store floors in stable world coordinates and add a positive camera offset at render time. After each success, target the offset that keeps the next hanging floor near the upper scene and its support near the lower scene; ease toward that target with bounded interpolation.
+**Decision**: Store floors in stable world coordinates and add a positive camera offset at render time. Keep the base and first five accepted floors anchored with zero offset; once the next hanging floor would cross the Canvas top edge, target the smallest offset that returns it to the visible edge and ease toward that target with bounded interpolation.
 
-**Rationale**: This gives visible upward progression without rewriting settled geometry and keeps the crane, load, and support on screen for tall towers.
+**Rationale**: The player first sees a readable five-floor tower accumulate,
+then gets visible upward progression without rewriting settled geometry. The
+load and immediate support remain on screen for taller towers.
 
 **Alternatives considered**: Mutating every floor position after each landing was rejected because it conflates world geometry with the viewport. A complex free camera was rejected as unnecessary.
 

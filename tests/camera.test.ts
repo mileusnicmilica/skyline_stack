@@ -7,9 +7,11 @@ import {
 } from "../src/game/camera";
 
 describe("tower camera", () => {
-  it("uses no offset for the initial hanging height and follows higher floors", () => {
+  it("keeps the first five-floor build-up still, then follows above the top edge", () => {
     expect(getCameraTarget(160)).toBe(0);
-    expect(getCameraTarget(-60)).toBe(220);
+    expect(getCameraTarget(40)).toBe(0);
+    expect(getCameraTarget(0)).toBe(0);
+    expect(getCameraTarget(-60)).toBe(60);
     expect(getCameraTarget(300)).toBe(0);
   });
 

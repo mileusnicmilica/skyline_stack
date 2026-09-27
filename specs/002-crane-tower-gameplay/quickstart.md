@@ -34,7 +34,9 @@ Open the printed local URL and verify:
 4. Make a partial placement. Only the supported overlap remains; the outside section visibly breaks into rotating masonry and dust on the correct side.
 5. Make a full miss. The entire floor crumbles, score stays unchanged, and Game Over appears.
 6. Press R or Restart. The score, tower, debris, camera, and crane return to the initial scene.
-7. Build eight or more floors and confirm the camera keeps the active floor and top support visible.
+7. Build five floors and confirm the scene stays anchored while the full
+   initial tower accumulates. Continue to eight or more floors and confirm the
+   camera then follows while keeping the active floor and top support visible.
 
 ## Automated browser smoke and screenshot
 

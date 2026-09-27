@@ -83,7 +83,7 @@ Keep responsibilities separated:
 - `src/game/geometry.ts` — interval overlap and detached sections;
 - `src/game/crane.ts` — sine phase, hanging position, direction, and cable endpoints;
 - `src/game/debris.ts` — deterministic piece generation and advancement;
-- `src/game/camera.ts` — non-negative follow target, easing, and world-to-screen conversion;
+- `src/game/camera.ts` — five-floor static build-up, non-negative follow target, easing, and world-to-screen conversion;
 - `src/game/engine.ts` — fresh session, animation, landing, Game Over, and restart;
 - `src/game/input.ts` — one-shot release and restart gates;
 - `src/game/render.ts` — procedural city, crane, building, debris, and overlay drawing;
@@ -152,7 +152,8 @@ Implement and preserve `tests/v2-evals.test.ts` with these locked meanings:
 - **V2-E2 — Drop**: one release enters falling; repeat input is ignored; `x` is fixed while `y` advances.
 - **V2-E3 — Cut/crumble**: width is conserved and debris appears only on the unsupported side.
 - **V2-E4 — No-lives loss rule**: one full miss enters Game Over, creates full-floor debris, preserves score, and exposes no lives state.
-- **V2-E5 — Camera/restart**: eight floors remain playable and restart clears all V2 state.
+- **V2-E5 — Camera/restart**: the first five accepted floors build without
+  camera movement, eight floors remain playable, and restart clears all V2 state.
 - **V2-E6 — Browser presentation**: actual browser flow verifies Ready, success, a bounded edge partial landing, a later full miss, Game Over, restart, zero runtime/log errors, and a visual screenshot.
 
 Do not weaken these expectations after observing a failure. Fix implementation instead, unless a human explicitly approves a requirements change.

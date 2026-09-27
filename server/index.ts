@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { coachRun } from "./coach/analysis";
-import type { CoachProvider } from "./coach/types";
+import type { CoachExecutionOptions, CoachProvider } from "./coach/types";
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.API_PORT ?? 3001);
@@ -30,7 +30,7 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-export function createCoachServer(provider: CoachProvider) {
+export function createCoachServer(provider: CoachProvider, executionOptions: CoachExecutionOptions = {}) {
   return createServer(async (request, response) => {
     try {
       const url = new URL(request.url ?? "/", `http://${HOST}`);
@@ -63,7 +63,7 @@ export function createCoachServer(provider: CoachProvider) {
         return;
       }
 
-      const result = await coachRun(input, provider);
+      const result = await coachRun(input, provider, executionOptions);
       if (!result.ok) {
         sendJson(response, result.kind === "invalid-request" ? 400 : 503, {
           success: false,
