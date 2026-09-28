@@ -1,4 +1,4 @@
-import { advanceCamera, getCameraTarget } from "./camera";
+import { advanceCamera, getCameraTarget, getMinimumCameraOffset } from "./camera";
 import type { GameConfig } from "./config";
 import {
   advanceSwingPhase,
@@ -70,7 +70,7 @@ export function createGameSession(config: GameConfig): GameSession {
     direction: 1,
     dropAccepted: false,
     swingPhase: 0,
-    cameraOffset: 0,
+    cameraOffset: getMinimumCameraOffset(activeBlock.y),
     cameraTarget: getCameraTarget(activeBlock.y),
     debris: [],
     impactPulse: 0,
@@ -156,6 +156,7 @@ export function resolveLanding(session: GameSession, config: GameConfig): GameSe
     direction: 1,
     dropAccepted: false,
     swingPhase: 0,
+    cameraOffset: Math.max(session.cameraOffset, getMinimumCameraOffset(activeBlock.y)),
     cameraTarget: getCameraTarget(activeBlock.y),
     debris: createDebrisForSections(
       session,

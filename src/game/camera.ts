@@ -1,14 +1,16 @@
-// Keep the base and first five accepted floors visually anchored. Once the
-// next hanging floor moves above the Canvas, follow it at a stable inset so
-// the crane cable keeps its intended visual length instead of collapsing.
-const CAMERA_FOLLOW_THRESHOLD_Y = 0;
+// Follow before the hanging floor reaches the crane boom. The smaller safety
+// inset protects that relationship even when a new floor appears before the
+// eased camera has reached its target.
 const CAMERA_FOLLOW_SCREEN_Y = 100;
+const MINIMUM_HANGING_SCREEN_Y = 64;
 const CAMERA_EASING_PER_SECOND = 6;
 
 export function getCameraTarget(hangingWorldY: number): number {
-  return hangingWorldY < CAMERA_FOLLOW_THRESHOLD_Y
-    ? CAMERA_FOLLOW_SCREEN_Y - hangingWorldY
-    : 0;
+  return Math.max(0, CAMERA_FOLLOW_SCREEN_Y - hangingWorldY);
+}
+
+export function getMinimumCameraOffset(hangingWorldY: number): number {
+  return Math.max(0, MINIMUM_HANGING_SCREEN_Y - hangingWorldY);
 }
 
 export function advanceCamera(

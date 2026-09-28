@@ -54,10 +54,10 @@ As a player, I can always see the crane, the active floor, and the top of my ris
 
 **Acceptance Scenarios**:
 
-1. **Given** a new tower, **When** its first five floors are accepted, **Then**
-   the view stays anchored so the player sees the initial tower accumulate;
-   after that threshold the view shifts smoothly enough to keep the active
-   floor and immediate support visible.
+1. **Given** a rising tower, **When** the next hanging floor approaches the
+   crane boom, **Then** the view follows early enough to keep the boom above
+   the floor, with roughly the top three placed floors visible; a newly
+   spawned floor remains below the boom even before camera easing completes.
 2. **Given** any active session, **When** the scene is rendered, **Then** the player can distinguish sky, clouds, distant city, crane cable, floor windows, tower, score, and status without external branded assets.
 3. **Given** Game Over, **When** the player presses R or activates Restart, **Then** score, tower, debris, camera, active floor, and input state match a fresh session.
 
@@ -90,9 +90,9 @@ As a player, I can always see the crane, the active floor, and the top of my ris
 - **FR-012**: An overlap below the configured minimum MUST break the full released floor into visible falling masonry, preserve the score, and enter Game Over.
 - **FR-013**: Game Over MUST freeze placement state and ignore new drop input while allowing existing debris to finish its visual fall.
 - **FR-014**: R and Restart MUST restore a fresh session after Game Over, including score, tower, crane phase, active floor, camera, debris, and input state.
-- **FR-015**: The view MUST remain anchored through the initial five accepted
-  floors, then follow the active construction zone as the tower grows while
-  keeping the active floor and immediate support visible.
+- **FR-015**: The view MUST follow before the hanging floor reaches the crane
+  boom, keep every newly spawned floor below that boom even while easing, and
+  keep the active floor and immediate support visible as the tower grows.
 - **FR-016**: The scene MUST use an original bright construction-city presentation with sky depth, clouds, distant buildings, crane elements, masonry floors, windows, and readable impact feedback.
 - **FR-017**: The implementation MUST NOT copy another game's name, logo, characters, music, code, or image assets.
 - **FR-018**: The existing validated game configuration and its all-or-nothing safe fallback behavior MUST remain operational.
@@ -116,9 +116,9 @@ As a player, I can always see the crane, the active floor, and the top of my ris
 - **SC-002**: For every tested successful imperfect landing, the placed width plus detached width equals the released width within 0.001 units, and debris originates only from the unsupported side.
 - **SC-003**: Perfect placement produces zero debris in 100% of deterministic checks; a full miss produces at least four visible fragments and no score increase.
 - **SC-004**: Repeated input during a fall produces no additional release or score transition in 100% of automated input checks.
-- **SC-005**: Camera target remains zero through the first four successful
-  placements, begins following after the fifth, and after at least eight
-  placements the active floor and top support remain inside the visible play area.
+- **SC-005**: Through at least eight successful placements, the rendered
+  horizontal boom stays above every newly spawned floor, and the active floor
+  and top support remain inside the visible play area.
 - **SC-006**: Restart after Game Over restores every tested initial value, including an empty debris collection and reset camera/crane state.
 - **SC-007**: A first-time player can identify the suspended floor, its support, score, and drop control within 10 seconds of opening the game.
 - **SC-008**: The complete interaction remains usable with keyboard, mouse, and touch input and requires no network request after the local page loads.

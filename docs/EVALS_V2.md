@@ -5,6 +5,17 @@
 **Executable suite**: `tests/v2-evals.test.ts`
 **Historical isolation**: This file is separate from `docs/EVALS.md` and does not alter Session 003 expectations or results.
 
+**Camera follow-up (2026-09-28)**: The locked V2-E5 row below records the
+original five-floor threshold. That timing was superseded after a player found
+that the hanging floor could cross above the crane boom. Current regression
+checks in `tests/camera.test.ts` and `tests/engine.test.ts` require earlier
+follow, immediate minimum clearance, and the eight-floor visible zone while
+preserving the original 440-pixel drop distance.
+The 2026-09-28 local `npm.cmd run verify` passed 17 test files/120 tests,
+typechecks, production build, secret boundary, API proxy, and production-preview
+Edge smoke. The new `tests/render-camera.test.ts` checks the drawn boom/floor
+ordering immediately after each of the first eight successful placements.
+
 ## Inspiration and lives decisions
 
 **City Bloxx is gameplay inspiration only.** V2 evaluates the original Skyline Stack implementation, assets, and interface.

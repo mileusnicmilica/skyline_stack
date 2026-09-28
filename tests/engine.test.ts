@@ -153,10 +153,10 @@ describe("game engine", () => {
     expect(visiblePlacedFloors).toHaveLength(3);
   });
 
-  it("starts vertical camera follow only after five accepted floors", () => {
+  it("keeps each new hanging floor below the boom through and beyond floor five", () => {
     let session = createGameSession(DEFAULT_GAME_CONFIG);
 
-    for (let floor = 1; floor <= 5; floor += 1) {
+    for (let floor = 1; floor <= 8; floor += 1) {
       const support = session.placedBlocks.at(-1);
       if (!support) throw new Error("Expected a support floor");
       session.activeBlock = {
@@ -168,13 +168,20 @@ describe("game engine", () => {
       session.dropAccepted = true;
       session = resolveLanding(session, DEFAULT_GAME_CONFIG);
 
-      if (floor < 5) expect(session.cameraTarget).toBe(0);
+      const hangingScreenY = session.activeBlock.y + session.cameraOffset;
+      const placedSupport = session.placedBlocks.at(-1);
+      if (!placedSupport) throw new Error("Expected the newly placed support floor");
+      expect(placedSupport.y - session.activeBlock.y).toBe(440);
+      expect(hangingScreenY).toBeGreaterThanOrEqual(64);
+      expect(session.cameraTarget).toBeGreaterThanOrEqual(session.cameraOffset);
+      if (floor === 2) expect(session.cameraTarget).toBe(20);
+      if (floor === 5) expect(session.cameraTarget).toBe(140);
     }
 
-    expect(session.score).toBe(5);
-    expect(session.placedBlocks).toHaveLength(6);
-    expect(session.cameraOffset).toBe(0);
-    expect(session.cameraTarget).toBe(100 + DEFAULT_GAME_CONFIG.blockHeight);
+    expect(session.score).toBe(8);
+    expect(session.placedBlocks).toHaveLength(9);
+    const settled = advanceSession(session, DEFAULT_GAME_CONFIG, 1);
+    expect(settled.activeBlock.y + settled.cameraOffset).toBe(100);
   });
 
   it("restarts every observable field to a fresh session", () => {

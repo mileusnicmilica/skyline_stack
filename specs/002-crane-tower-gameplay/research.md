@@ -44,6 +44,12 @@ load and immediate support remain on screen for taller towers.
 
 **Alternatives considered**: Mutating every floor position after each landing was rejected because it conflates world geometry with the viewport. A complex free camera was rejected as unnecessary.
 
+**Amendment (2026-09-28)**: The original five-floor threshold above proved too
+late for the rendered crane boom: the new hanging floor could appear above it
+while the camera eased. Follow now starts before that crossing, with an
+immediate minimum camera clearance on spawn. The 440-pixel hanging distance
+and world-space collision geometry remain unchanged.
+
 ## Decision 6: Procedural building art uses semantic layers
 
 **Decision**: Render in this order: sky gradient and sun glow, drifting cloud silhouettes, parallax skyline, crane structure/cable, placed floors, active floor, debris/dust, HUD feedback, and Game Over veil. Floors use facade fill, roof/floor bands, side shade, window grid, and subtle wear marks.

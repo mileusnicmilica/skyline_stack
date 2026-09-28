@@ -111,11 +111,13 @@ under `artifacts/`: on Windows, Vite's dev watcher can otherwise encounter an
 `EBUSY` error while Chromium has its `Cookies` file locked. Screenshots are
 safe to keep under `artifacts/crane-tower/`.
 
-The latest verified local result, dated 2026-09-27, is: browser/server
-typecheck PASS, 16 test files/117 tests PASS, production build and secret gate
-PASS, and production-preview Edge smoke PASS. The active crane floor remains
-fully within the Canvas at both sway extremes, and camera follow begins only
-after the initial five-floor build-up.
+The camera begins following before the hanging floor reaches the crane boom.
+It preserves the original drop distance and keeps roughly the top three placed
+floors visible as the tower grows. A minimum camera clearance keeps a newly
+spawned floor below the boom even while the camera is easing. The 2026-09-28
+local verification passed: 17 test files/120 tests, browser/server typecheck,
+production build, secret boundary, API proxy, and production-preview Edge smoke.
+The automated render regression covers newly spawned floors one through eight.
 
 ### W04 AI Crane Coach development boundary
 
