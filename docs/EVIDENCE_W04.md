@@ -2,8 +2,8 @@
 
 **Datum:** 2026-09-26  
 **Stanje:** fake/end-to-end, live-adapter testovi i dva ograničena stvarna
-Gemini poziva su PASS. Nemanjin finalni review i šestominutni zajednički demo
-su još otvoreni.
+Gemini poziva su PASS. Nemanja je potvrdio da je pregledao Miličin završni
+diff; šestominutni zajednički demo još nije evidentiran.
 
 ## Arhitektura i granica
 
@@ -76,12 +76,14 @@ provider usage odgovora.
 - Milicin blok: Gemini adapter/config testovi, timeout/retry/abort, sanitizovan
   usage zapis, Game Over UI, pending/advice/unavailable stanja, duplicate/stale
   zaštita, browser smoke, secret gate i ovaj redigovani evidence.
-- Nemanjin pregled Milicinog diff-a: **NOT RUN**.
+- Nemanjin pregled Milicinog završnog diff-a: **URAĐENO** (Nemanjina potvrda
+  2026-09-28; posebna ponovljena `verify`/security provera nije potvrđena).
 - Zajednički šestominutni demo i stvarna potvrda zamene reviewer/driver uloga:
   **NOT RUN**.
 
 ## Poznata ograničenja / sledeći gate
 
-Live gate je zatvoren jednim lokalnim i jednim produkcijskim kontrolisanim pozivom. Pre finalne predaje
-Nemanja još pregleda diff, ponavlja `npm.cmd run verify` i security checklist,
-a par evidentira stvarni zajednički šestominutni demo i zamenu uloga.
+Live gate je zatvoren jednim lokalnim i jednim produkcijskim kontrolisanim
+pozivom. Nemanja je potvrdio pregled diff-a; njegovo zasebno ponavljanje
+`npm.cmd run verify` i security checklist-e nije potvrđeno. Par još treba da
+evidentira stvarni zajednički šestominutni demo i zamenu uloga.
