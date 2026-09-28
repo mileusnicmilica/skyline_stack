@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { coachRun } from "./coach/analysis.js";
 import type { CoachExecutionOptions, CoachProvider } from "./coach/types.js";
+import type { RequestRateLimiter } from "./rate-limit.js";
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.API_PORT ?? 3001);
@@ -30,13 +31,22 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
-export function createCoachServer(provider: CoachProvider, executionOptions: CoachExecutionOptions = {}) {
-  return createServer(createCoachRequestHandler(provider, executionOptions));
+type CoachRequestHandlerOptions = {
+  rateLimiter?: RequestRateLimiter;
+};
+
+export function createCoachServer(
+  provider: CoachProvider,
+  executionOptions: CoachExecutionOptions = {},
+  handlerOptions: CoachRequestHandlerOptions = {},
+) {
+  return createServer(createCoachRequestHandler(provider, executionOptions, handlerOptions));
 }
 
 export function createCoachRequestHandler(
   provider: CoachProvider,
   executionOptions: CoachExecutionOptions = {},
+  handlerOptions: CoachRequestHandlerOptions = {},
 ) {
   return async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
     try {
@@ -56,6 +66,13 @@ export function createCoachRequestHandler(
       }
       if (!/^application\/json(?:\s*;|$)/i.test(request.headers["content-type"] ?? "")) {
         sendJson(response, 400, { success: false, message: SAFE_MESSAGE });
+        return;
+      }
+
+      const rateLimit = handlerOptions.rateLimiter?.allow(request);
+      if (rateLimit && !rateLimit.allowed) {
+        response.setHeader("retry-after", String(rateLimit.retryAfterSeconds));
+        sendJson(response, 429, { success: false, message: SAFE_MESSAGE });
         return;
       }
 

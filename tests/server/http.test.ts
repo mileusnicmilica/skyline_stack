@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 
 import { createCoachServer } from "../../server/index";
 import { fakeCoachProvider } from "../../server/providers/fake-provider";
+import { createRequestRateLimiter, type RequestRateLimiter } from "../../server/rate-limit";
 import type { CoachProvider } from "../../server/coach/types";
 
 async function withServer(
   run: (url: string) => Promise<void>,
   provider: CoachProvider = fakeCoachProvider,
+  rateLimiter?: RequestRateLimiter,
 ): Promise<void> {
-  const server = createCoachServer(provider);
+  const server = createCoachServer(provider, {}, rateLimiter ? { rateLimiter } : {});
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const address = server.address();
@@ -39,6 +41,41 @@ describe("coach HTTP contract", () => {
       expect(await response.json()).toEqual({ status: "ok" });
     }, provider);
     expect(providerCalls).toBe(0);
+  });
+
+  it("returns 429 and does not call the provider after a client exhausts its quota", async () => {
+    let providerCalls = 0;
+    const provider: CoachProvider = {
+      ...fakeCoachProvider,
+      async generate(statistics, context) {
+        providerCalls += 1;
+        return fakeCoachProvider.generate(statistics, context);
+      },
+    };
+    const rateLimiter = createRequestRateLimiter({ limit: 1, windowMs: 60_000 });
+    const body = JSON.stringify({
+      finalScore: 1,
+      startingWidth: 100,
+      drops: [
+        { floor: 1, offsetPx: 10, direction: 1, timing: "late", widthBefore: 100, widthAfter: 90 },
+        { floor: 2, offsetPx: 90, direction: 1, timing: "late", widthBefore: 90, widthAfter: 0 },
+      ],
+    });
+
+    await withServer(async (url) => {
+      const request = () => fetch(`${url}/api/ai/coach`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-forwarded-for": "203.0.113.8" },
+        body,
+      });
+      expect((await request()).status).toBe(200);
+      const limited = await request();
+      expect(limited.status).toBe(429);
+      expect(limited.headers.get("retry-after")).toBe("60");
+      expect(await limited.json()).toEqual({ success: false, message: "AI analiza trenutno nije dostupna." });
+    }, provider, rateLimiter);
+
+    expect(providerCalls).toBe(1);
   });
 
   it("rejects wrong methods and routes with safe responses", async () => {
