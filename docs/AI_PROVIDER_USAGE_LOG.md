@@ -19,3 +19,16 @@ provider usage odgovor ne sadrži billing status.
 Automatski runtime zapis sadrži samo provider, model, ISO timestamp,
 latenciju, ishod, broj pokušaja i token usage kada postoji. Ne sadrži secret,
 prompt, run log ili sirov provider payload.
+
+## Produkcijska potvrda 2026-09-28
+
+| Provider/model | Put | Pozivi | Ishod | Attempts | Tokeni | Cena |
+| --- | --- | ---: | --- | ---: | --- | --- |
+| `gemini/gemini-3.1-flash-lite` | Vercel `/api/ai/coach` | 1 | success, 0.980 s | 1 | 154 input + 73 output = 227 | USD 0.000148 list-price ekvivalent |
+
+Produkcijski zapis: `2026-09-28T08:57:18.001Z`. Obračun koristi iste
+zabeležene jedinične cene kao prethodna provera: `154 × 0.25 / 1,000,000 +
+73 × 1.50 / 1,000,000 = USD 0.000148`. Ukupno su tokom dve ograničene live
+provere napravljena 2 Gemini poziva sa 310 input i 147 output tokena, odnosno
+457 tokena ukupno i USD 0.000298 list-price ekvivalentom. Stvarno zaduženje
+može biti drugačije u zavisnosti od free tier-a i billing statusa naloga.

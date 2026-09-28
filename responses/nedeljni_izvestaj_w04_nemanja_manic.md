@@ -31,7 +31,7 @@ Takođe sam primenio popravke prema prethodnom izveštaju i feedbacku profesora 
 
 Tokom rada koristio sam Claude, Gemini i Codex/ChatGPT kao podršku pri analizi zadatka, planiranju i proveri implementacije. AI izlaze sam proveravao poređenjem sa zahtevima zadatka, API ugovorom, kodom, fake-provider testovima i završnom verify komandom. Nisam tretirao AI predlog kao dokaz završetka bez testova i pregleda stvarnog diff-a. Korisna lekcija iz ove nedelje bila mi je da se AI integracija lakše i pouzdanije razvija kada je provider iza jasnog interfejsa, a većina grešaka može da se reprodukuje fake providerom. Pomoć tutora mi trenutno nije potrebna.
 
-Završna aplikacija dostupna je na `https://skyline-stack.vercel.app`. Backend ugovor je prilagođen Vercel serverless endpointu bez menjanja validacije zahteva i odgovora. Javni frontend i validan fake-provider API zahtev provereni su nakon deploy-a i oba su vratila HTTP 200. Produkcija trenutno koristi fake režim i ne sadrži Gemini ključ; pravi adapter je ranije proveren zasebnim ograničenim live pozivom.
+Završna aplikacija dostupna je na `https://skyline-stack.vercel.app`. Backend ugovor je prilagođen Vercel serverless endpointu bez menjanja validacije zahteva i odgovora. Produkcija koristi Gemini, dok je ključ sačuvan isključivo kao Vercel Production secret i nije deo repozitorijuma. Kontrolisani produkcijski zahtev vraća HTTP 200. Dodat je serverski limit od pet zahteva na deset minuta po klijentskoj IP adresi, uz bezbedan `429` odgovor preko kvote i bez dodatnog provider poziva; limit je best-effort po aktivnoj serverless instanci.
 
 ## 4. Sledeći korak
 

@@ -25,7 +25,7 @@ Ove nedelje sam nastavila razvoj funkcionalnosti „AI Crane Coach“ kao drugi 
 
 Najpre sam radila sa fake providerom, kako bi većina ponašanja mogla da se proveri bez trošenja live API poziva. Pokriveni su uspešan zahtev, nevalidan input bez poziva provideru, provider greška, timeout, neispravan JSON ili šema, semantički neispravan odgovor i ograničenje retry pokušaja. `biggestMistakeFloor` je obavezan broj i odgovor sa vrednošću `null` nije prihvaćen. Dodati su timeout i abort, ograničen retry i bezbedan fallback kada AI analiza nije dostupna.
 
-Nakon fake validacije povezala sam eksplicitno izabrani Gemini model u TypeScript backend-u. API ključ je korišćen samo kroz lokalni serverski `.env` i nije dodat u repozitorijum, frontend kod ili dokumentaciju. Ograničena live provera završena je uspešno jednim pozivom. Poziv je trajao 1.459 sekundi i vratio usage od 156 ulaznih i 74 izlazna tokena, ukupno 230. Provider evidencija beleži model, vreme, ishod, broj pokušaja, latenciju i tokene, bez ključa i sirovih privatnih payload-a.
+Nakon fake validacije povezala sam eksplicitno izabrani Gemini model u TypeScript backend-u. API ključ nije dodat u repozitorijum, frontend kod ili dokumentaciju. Prva ograničena live provera završena je uspešno lokalnim pozivom koji je trajao 1.459 sekundi i koristio ukupno 230 tokena. Nakon objave izvršen je još jedan kontrolisani produkcijski poziv preko Vercela: trajao je 0.980 sekundi i koristio 227 tokena. Provider evidencija beleži model, vreme, ishod, broj pokušaja, latenciju i tokene, bez ključa i sirovih privatnih payload-a.
 
 U korisničkom toku dodala sam dugme „Analiziraj partiju“, dostupno tek posle Game Over stanja. Implementirana su loading, uspešno i bezbedno neuspešno stanje. Sprečeni su dupli zahtevi i prikaz zastarelog odgovora ako korisnik u međuvremenu restartuje igru. Proverila sam i da osnovna igra nastavlja da radi kada AI server nije dostupan.
 
@@ -33,7 +33,7 @@ Dodatno sam popravila vizuelno ponašanje tornja: tokom gradnje prvih pet sprato
 
 Koristila sam Claude, Gemini, Codex/ChatGPT i Gemini API kao podršku tokom razvoja. AI predloge nisam uzimala kao dovoljan dokaz da rešenje radi: proveravala sam ih kroz kod, fake scenarije, testove, browser tok i završni `npm run verify`. Važna lekcija mi je bila da API ključ mora ostati na serveru i da se live integracija ne proverava samo kroz browser. Browser testovi koriste kontrolisani fake tok, dok je pravi Gemini poziv izveden odvojeno i ograničeno. Pomoć tutora mi trenutno nije potrebna.
 
-Završna aplikacija dostupna je na `https://skyline-stack.vercel.app`. Vercel verzija koristi serverless endpoint za isti validirani `/api/ai/coach` ugovor. Javni frontend i validan fake-provider zahtev provereni su nakon deploy-a i oba su vratila HTTP 200. Gemini ključ nije dodat u repozitorijum niti u deploy; produkcija trenutno koristi bezbedni fake režim, dok je pravi Gemini adapter prethodno proveravan odvojenim ograničenim live pozivom.
+Završna aplikacija dostupna je na `https://skyline-stack.vercel.app`. Vercel verzija koristi serverless endpoint za isti validirani `/api/ai/coach` ugovor. Gemini ključ je sačuvan isključivo kao Vercel Production secret, a produkcijski Gemini odgovor je potvrđen sa HTTP 200. Dodat je serverski limit od pet zahteva na deset minuta po klijentskoj IP adresi; zahtev preko kvote dobija bezbedan `429` odgovor bez poziva provideru. Ovaj ugrađeni limit je best-effort po aktivnoj serverless instanci.
 
 ## 4. Sledeći korak
 

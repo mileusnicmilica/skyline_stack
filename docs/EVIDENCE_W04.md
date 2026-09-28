@@ -1,8 +1,8 @@
 # W04 evidence — AI Crane Coach
 
 **Datum:** 2026-09-26  
-**Stanje:** fake/end-to-end, live-adapter testovi i jedan ograničeni stvarni
-Gemini poziv su PASS. Nemanjin finalni review i šestominutni zajednički demo
+**Stanje:** fake/end-to-end, live-adapter testovi i dva ograničena stvarna
+Gemini poziva su PASS. Nemanjin finalni review i šestominutni zajednički demo
 su još otvoreni.
 
 ## Arhitektura i granica
@@ -40,8 +40,8 @@ neslaganje sa server činjenicom su odbijeni.
 | Secret boundary u `verify` | PASS: tracked files, Git history i `dist` |
 | API + preview proxy | PASS: health i fake coach success |
 | Edge production smoke | PASS: Game Over dugme, fake success, safe failure, restart; 0 browser/console grešaka |
-| Provider usage | 2 fake poziva i 1 live poziv; sva tri success u jednom attempt-u |
-| Stvarni Gemini poziv | PASS: `gemini-3.1-flash-lite`, 1.459 s, 156 input + 74 output = 230 tokena |
+| Provider usage | 2 fake poziva i 2 live poziva; sva četiri success u jednom attempt-u |
+| Stvarni Gemini pozivi | PASS: lokalno 1.459 s i 230 tokena; Vercel 0.980 s i 227 tokena; ukupno 457 tokena |
 
 Prvi sandbox pokušaj `verify` stigao je do 116/116 testova, build-a i secret
 gate-a, ali je `tsx` pre server koda dobio poznato ograničenje okruženja
@@ -82,6 +82,6 @@ provider usage odgovora.
 
 ## Poznata ograničenja / sledeći gate
 
-Live gate je zatvoren jednim kontrolisanim pozivom. Pre finalne predaje
+Live gate je zatvoren jednim lokalnim i jednim produkcijskim kontrolisanim pozivom. Pre finalne predaje
 Nemanja još pregleda diff, ponavlja `npm.cmd run verify` i security checklist,
 a par evidentira stvarni zajednički šestominutni demo i zamenu uloga.
