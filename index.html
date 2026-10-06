@@ -44,6 +44,7 @@
         <div class="game-actions">
           <button id="restart-button" type="button" disabled>Restart</button>
           <button id="analyze-button" type="button" hidden>Analiziraj partiju</button>
+          <button id="next-drill-button" type="button" hidden>Predloži vežbu</button>
         </div>
       </footer>
 
@@ -54,6 +55,16 @@
           <p><strong>Tajming:</strong> <span id="coach-timing"></span></p>
           <p><strong>Najveća greška:</strong> sprat <span id="coach-floor"></span></p>
           <p id="coach-tip"></p>
+        </div>
+      </section>
+
+      <section id="next-drill-panel" class="coach-panel" aria-live="polite" aria-busy="false" hidden>
+        <p id="next-drill-message" class="coach-message"></p>
+        <div id="next-drill-result" hidden>
+          <h2 id="next-drill-title"></h2>
+          <p id="next-drill-instruction"></p>
+          <p id="next-drill-finding"></p>
+          <p><strong>Puštanja:</strong> rana <span id="next-drill-early"></span>, kasna <span id="next-drill-late"></span>, centrirana <span id="next-drill-centered"></span>.</p>
         </div>
       </section>
     </main>

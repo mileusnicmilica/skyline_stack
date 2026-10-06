@@ -28,11 +28,12 @@ npm.cmd install
 ## Run locally
 
 ```powershell
-npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run dev
 ```
 
-Open the local URL printed by Vite. Press `Space` or click/tap the canvas to
-release the suspended floor. After Game Over, press `R` or use Restart.
+This starts both Vite and the local API used by the AI buttons. Open the local
+URL printed by Vite. Press `Space` or click/tap the canvas to release the
+suspended floor. After Game Over, press `R` or use Restart.
 
 The entire city scene is drawn procedurally: sky, clouds, distant buildings,
 crane, facade bands, windows, rubble, dust, and the rising camera use no
@@ -68,7 +69,7 @@ the checked-in W03 screenshot.
 To exercise Vite's development server, start it in one terminal:
 
 ```powershell
-npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run dev
 ```
 
 Then run the smoke in another terminal:
@@ -77,8 +78,10 @@ Then run the smoke in another terminal:
 npm.cmd run smoke -- http://127.0.0.1:5173/ artifacts/crane-tower/smoke.png
 ```
 
-This checks the existing game UI. To use the W04 `/api` path during development,
-start both processes with `npm.cmd run dev:full` instead.
+This checks the existing game UI. The default `npm.cmd run dev` starts both
+the frontend and API. Use `npm.cmd run dev:web` only when you need the
+frontend by itself; AI requests require the API process too. `npm.cmd run
+dev:full` remains an explicit alias for the full-stack command.
 
 ### Smoke against production preview
 
@@ -114,17 +117,18 @@ safe to keep under `artifacts/crane-tower/`.
 The camera begins following before the hanging floor reaches the crane boom.
 It preserves the original drop distance and keeps roughly the top three placed
 floors visible as the tower grows. A minimum camera clearance keeps a newly
-spawned floor below the boom even while the camera is easing. The 2026-09-28
-local verification passed: 17 test files/120 tests, browser/server typecheck,
-production build, secret boundary, API proxy, and production-preview Edge smoke.
-The automated render regression covers newly spawned floors one through eight.
+spawned floor below the boom even while the camera is easing. The current
+repository verification on 2026-10-06 passed: 25 test files/161 tests,
+browser/server typechecks, production build, secret boundary, API proxies,
+production-entrypoint rate-limit check, and production-preview Edge smoke. The
+automated render regression covers newly spawned floors one through eight.
 
 ### W04 AI Crane Coach development boundary
 
 The W04 feature is tracked separately in
 [`specs/003-ai-crane-coach/`](specs/003-ai-crane-coach/spec.md). The browser
-and TypeScript API run as separate local processes. Start both with
-`npm.cmd run dev:full`; Vite proxies `/api` to the loopback API. Check the
+and TypeScript API run as separate local processes. `npm.cmd run dev` starts
+both; Vite proxies `/api` to the loopback API. Check the
 split with `Invoke-RestMethod http://127.0.0.1:5173/api/health`. Fake mode is
 the default and needs no Gemini key. After Game Over, "Analiziraj partiju"
 shows pending, validated advice, or one safe unavailable state; duplicate
@@ -145,13 +149,38 @@ are in `docs/AI_FEATURE_PROMPT.md`, `docs/AI_PROVIDER_CONTRACT.md`,
 `docs/AI_EVALS.md`, `docs/AI_PROVIDER_USAGE_LOG.md`, and
 `docs/EVIDENCE_W04.md`.
 
+### W05 bounded next-drill agent
+
+The W05 feature is tracked in [`specs/004-next-drill-agent/`](specs/004-next-drill-agent/spec.md).
+After Game Over, **Predloži vežbu** runs a server-side, bounded agent: it proposes
+one of three timing drills, the application checks it with the deterministic
+read-only `evaluate_drill` tool, then validates the final evidence before showing
+the result. Routine verification forces the fake provider even when ignored
+`.env` selects Gemini:
+
+```powershell
+npm.cmd run verify
+```
+
+For an intentional local live run, set `AI_COACH_PROVIDER=gemini` and
+`GEMINI_API_KEY` only in ignored `.env`; never use a `VITE_` variable. W05 limits
+each run to three model steps, two tool calls, four provider attempts, and a
+25-second server deadline. Current fake verification and remaining evidence are
+recorded in `docs/EVIDENCE_W05.md`.
+
+Run `npm.cmd run evidence:w05` for reproducible fake success, rejected-tool,
+and provider-failure traces without a Gemini request. The local API applies
+separate W04 and W05 quotas of five requests per ten minutes.
+
 ## Documentation
 
 - [Game specification V2](docs/GAME_SPEC_V2.md) — current gameplay and visual contract
 - [Build prompt V2](docs/BUILD_PROMPT_V2.md) — current implementation and maintenance instructions
 - [V2 evals](docs/EVALS_V2.md) — required checks and measured results
 - [Feature 002 Spec Kit package](specs/002-crane-tower-gameplay/spec.md) — specification, plan, contracts, quickstart, and tasks
+- [Feature 004 W05 agent package](specs/004-next-drill-agent/spec.md) — bounded agent spec, plan, flow, tool contract, evals, and tasks
 - [Current context manifest](docs/CONTEXT_MANIFEST.md) — authoritative project map and lifecycle status
+- [Current state summary 2026-10-06](docs/CURRENT_STATE_2026-10-06.md) — HEAD commit, verification, and production-entrypoint rate-limit evidence
 - [Crane Tower validation results](artifacts/crane-tower/RESULTS.md) — automated and browser evidence
 
 `docs/GAME_SPEC.md`, `docs/BUILD_PROMPT_V1.md`, `docs/EVALS.md`,

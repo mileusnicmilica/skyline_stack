@@ -1,9 +1,9 @@
 # Context Manifest — Skyline Stack
 
-**Updated**: 2026-09-26
-**Current feature**: `002-crane-tower-gameplay`
+**Updated**: 2026-10-05
+**Current feature**: `004-next-drill-agent` (W05, fake-verified; live attempt failed safely; joint demo pending)
 **Current branch at audit**: `main`
-**Current state**: V2 implemented and verified; project documentation synchronized locally
+**Current state**: W03/V2 remain stable; W05 bounded next-drill agent is implemented and fake-verified; live Gemini and pair demo evidence are recorded separately
 
 ## Purpose
 
@@ -16,13 +16,14 @@ Originalni Phase A snapshot ostaje proverljiv u Git tagu `phase-a-approved` i co
 | Izvor | Postoji? | Trenutna uloga | Prioritet | Napomena / rizik |
 | --- | --- | --- | --- | --- |
 | Aktuelne eksplicitne odluke korisnika | Da | Najnoviji odobreni scope i korekcije | 0 | Ne proširivati implicitno; konflikt koji menja gameplay traži novu odluku |
-| `.specify/memory/constitution.md` | Da, v1.0.0 | Governance, dokazivanje, bezbednost i kontrola scope-a | 1 | Ustav ima prednost nad planom i taskovima |
+| `.specify/memory/constitution.md` | Da, v1.1.0 | Governance, dokazivanje, bezbednost i kontrola scope-a | 1 | Ustav ima prednost nad planom i taskovima |
 | `docs/GAME_SPEC_V2.md` | Da, v2.0 | Trenutni gameplay, vizuelni, no-lives i scope ugovor | 2 | Kreiran je naknadno radi zatvaranja dokumentacionog propusta; to je eksplicitno zabeleženo |
 | `docs/BUILD_PROMPT_V2.md` | Da, v2.0 | Trenutni build/maintenance postupak i zabrane | 2 | Ne sme se predstavljati kao pre-implementation lock |
 | `specs/002-crane-tower-gameplay/spec.md` | Da; implemented and verified | User stories, FR-001–FR-020, SC-001–SC-008 i acceptance scenariji | 3 | City Bloxx je samo gameplay inspiracija |
 | `specs/002-crane-tower-gameplay/plan.md` | Da | Aktuelna arhitektura, alati i struktura modula | 3 | Plan čuva istorijski razvojni kontekst grane `phase-b/crane-tower-v2`; trenutni checkout je `main` |
 | Feature 002 research, data model i contracts | Da | Obrazloženje sway/camera/debris odluka i precizni ugovori | 3 | Proceduralni vizuelni sloj; bez tuđih runtime asseta |
 | `specs/002-crane-tower-gameplay/tasks.md` | Da; 30/30 završeno | Izvršeni implementacioni redosled i traceability | 4 | Nema otvorenog implementacionog taska |
+| `specs/004-next-drill-agent/` | Da; W05 implementiran i fake-verified | Ograničeni agent sa `evaluate_drill`, ugovorom, evalima i preostalim pair-demo taskom | 2 | Live Gemini pokušaj 503; `T030` joint demo je otvoren; detalji u `docs/EVIDENCE_W05.md` |
 | `docs/EVALS_V2.md` | Da | Zaključana V2-E1–V2-E6 očekivanja i stvarni rezultati | 2 za V2 evale | V2-E4 proverava odsustvo lives sistema |
 | `tests/v2-evals.test.ts` | Da | Izvršna V2-E1–V2-E5 provera | 4 | 5/5 PASS 2026-09-21 |
 | `docs/AI_USAGE_LOG.md` | Da | Hronološki zapis Session 003 i naknadnog V2 rada | 4 | Redovi se dodaju; istorijski ishodi se ne prepisuju |
@@ -56,8 +57,12 @@ Sledeći izvori ostaju autoritativni samo za feature 001 / Session 003 istoriju:
 - Feature 001 implementacija je sačuvana u commitu `dccbbb9`.
 - Feature 002 crane/city implementacija je sačuvana u commitu `90e6259`.
 - `README.md`, `package.json`, `package-lock.json`, `index.html`, `src/`, `tests/` i `tsconfig.json` postoje.
-- Stvarni npm scripts su `dev`, `build`, `preview`, `smoke`, `typecheck`, `test` i `verify`.
+- Stvarni npm scripts uključuju `dev`, `dev:api`, `dev:web`, `dev:full`, `build`, `preview`, `smoke`, `typecheck`, `test`, `evidence:w05` i `verify`.
 - Poslednja puna lokalna provera 2026-09-26: typecheck PASS, 9 test fajlova/55 testova PASS, build PASS i automatizovani production-preview Edge smoke PASS.
+- W05 `npm.cmd run verify` 2026-10-05: 23 test fajla / 150 testova PASS, typechecks/build/secret boundary/preview API/Edge smoke PASS. Routine verify forces fake mode for its API process.
+- Current verification 2026-10-06: `npm.cmd run verify` PASS, 25 test files / 161 tests, typechecks/build/secret boundary/preview API/Edge smoke; production `api/ai/coach` handler rate-limit test PASS (5 requests allowed, sixth 429). Commit and scope caveat are in `docs/CURRENT_STATE_2026-10-06.md`.
+- W05 fake-only `evidence:w05` records success/rejection/provider-failure traces. Local W04/W05 rate limits are independent. Pair role record and joint demo remain pending.
+- One bounded W05 Gemini run on 2026-10-05 returned HTTP 503 after two provider attempts and zero tool calls; no successful live recommendation is claimed.
 - V2 browser smoke je stvarno izvršen 2026-09-20, ponovljen 2026-09-21 nakon crane-bound korekcije i 2026-09-26 protiv dev servera i production preview-a; sačuvan je u `artifacts/crane-tower/`.
 - Session 003 baseline je `artifacts/session-003/baseline.zip`, 158.941 bajt, read-only, SHA-256 `AB531FCFD7277167B49368346FC4044A1EEB7E6FA54C019EEF512206A691123E`.
 
@@ -75,6 +80,8 @@ Sledeći izvori ostaju autoritativni samo za feature 001 / Session 003 istoriju:
 | Input gating i restart | `src/game/input.ts` |
 | Proceduralni city/building renderer | `src/game/render.ts` |
 | DOM/HUD/frame wiring | `src/main.ts` |
+| W05 agent orchestration and read-only tool | `server/agent/` |
+| W05 browser client | `src/agent/` |
 | Responsive prikaz | `src/style.css`, `index.html` |
 | Determinističke provere | `tests/*.test.ts` |
 | Real-browser flow | `tests/browser-smoke.mjs` |

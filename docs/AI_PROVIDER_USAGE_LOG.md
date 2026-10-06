@@ -32,3 +32,11 @@ zabeležene jedinične cene kao prethodna provera: `154 × 0.25 / 1,000,000 +
 provere napravljena 2 Gemini poziva sa 310 input i 147 output tokena, odnosno
 457 tokena ukupno i USD 0.000298 list-price ekvivalentom. Stvarno zaduženje
 može biti drugačije u zavisnosti od free tier-a i billing statusa naloga.
+
+## Production handler rate-limit regression check 2026-10-06
+
+The test runs the production `api/ai/coach` handler factory with a fake
+provider: five requests succeed; a sixth request from the same forwarded
+client address receives HTTP 429 and does not call the provider. This is a
+local test of the production entrypoint configuration, not a request to the
+deployed Vercel service. No Gemini call or live provider usage was generated.

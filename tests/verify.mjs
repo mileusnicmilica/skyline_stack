@@ -110,6 +110,30 @@ async function verifyCoachProxy() {
   }
 }
 
+async function verifyAgentProxy() {
+  const response = await fetch(`${previewUrl}api/ai/next-drill`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      goal: "choose_next_drill",
+      finalScore: 1,
+      startingWidth: 100,
+      drops: [
+        { floor: 1, offsetPx: 10, direction: 1, timing: "late", widthBefore: 100, widthAfter: 90 },
+        { floor: 2, offsetPx: 90, direction: 1, timing: "late", widthBefore: 90, widthAfter: 0 },
+      ],
+    }),
+    signal: AbortSignal.timeout(2_500),
+  });
+  const result = await response.json();
+  if (response.status !== 200 || result.success !== true ||
+      result.recommendation?.drillId !== "release_earlier" ||
+      result.recommendation?.evidence?.lateCount !== 2 ||
+      result.recommendation?.stopReason !== "goal_completed") {
+    throw new Error(`Next-drill API preview proxy check failed with HTTP ${response.status}.`);
+  }
+}
+
 let preview;
 let api;
 let stoppingPreview;
@@ -176,7 +200,9 @@ try {
   await runStep("Provider secret boundary", tools.secrets);
 
   process.stdout.write("\n[verify] Starting local fake-provider API\n");
-  api = spawnNode(tools.tsx, [resolve(projectRoot, "server/main.ts")]);
+  api = spawnNode(tools.tsx, [resolve(projectRoot, "server/main.ts")], {
+    env: { ...process.env, AI_COACH_PROVIDER: "fake" },
+  });
   await waitForApi(api);
 
   process.stdout.write(`\n[verify] Starting Vite preview at ${previewUrl}\n`);
@@ -191,6 +217,8 @@ try {
   await waitForPreview(preview);
   process.stdout.write("\n[verify] Checking preview /api proxy and fake coach response\n");
   await verifyCoachProxy();
+  process.stdout.write("\n[verify] Checking next-drill agent through preview proxy\n");
+  await verifyAgentProxy();
   screenshotDir = await mkdtemp(join(tmpdir(), "skyline-stack-w04-verify-"));
   await runStep("Production preview browser smoke", tools.smoke, [
     previewUrl,

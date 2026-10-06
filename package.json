@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev-full.mjs",
     "dev:api": "tsx server/main.ts",
     "dev:web": "vite --host 127.0.0.1",
     "dev:full": "node scripts/dev-full.mjs",
@@ -14,6 +14,7 @@
     "check:secrets": "node scripts/check-secret-boundary.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
+    "evidence:w05": "tsx scripts/agent-evidence.ts",
     "verify": "node tests/verify.mjs"
   },
   "devDependencies": {

@@ -131,6 +131,14 @@ async function readUi(send) {
       restartDisabled: document.querySelector('#restart-button')?.disabled,
       analyzeHidden: document.querySelector('#analyze-button')?.hidden,
       analyzeDisabled: document.querySelector('#analyze-button')?.disabled,
+      nextDrillHidden: document.querySelector('#next-drill-button')?.hidden,
+      nextDrillDisabled: document.querySelector('#next-drill-button')?.disabled,
+      nextDrillPanelHidden: document.querySelector('#next-drill-panel')?.hidden,
+      nextDrillMessageHidden: document.querySelector('#next-drill-message')?.hidden,
+      nextDrillResultHidden: document.querySelector('#next-drill-result')?.hidden,
+      nextDrillMessage: document.querySelector('#next-drill-message')?.textContent,
+      nextDrillTitle: document.querySelector('#next-drill-title')?.textContent,
+      nextDrillFinding: document.querySelector('#next-drill-finding')?.textContent,
       coachPanelHidden: document.querySelector('#coach-panel')?.hidden,
       coachMessage: document.querySelector('#coach-message')?.textContent,
       coachHeadline: document.querySelector('#coach-headline')?.textContent,
@@ -185,6 +193,7 @@ async function clickElement(send, selector) {
   const point = await evaluate(send, `(() => {
     const element = document.querySelector(${JSON.stringify(selector)});
     if (!element) return null;
+    element.scrollIntoView({ block: 'center', inline: 'center' });
     const rect = element.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
   })()`);
@@ -266,7 +275,7 @@ try {
   const gameOver = await pollUi(
     cdp.send,
     (ui) => ui.status === "Game Over" && ui.score === "2" && !ui.restartDisabled &&
-      !ui.analyzeHidden && !ui.analyzeDisabled,
+      !ui.analyzeHidden && !ui.analyzeDisabled && !ui.nextDrillHidden && !ui.nextDrillDisabled,
     "Game Over state",
   );
 
@@ -278,11 +287,20 @@ try {
     "Fake coach success state",
   );
 
+  await clickElement(cdp.send, "#next-drill-button");
+  const nextDrillSuccess = await pollUi(
+    cdp.send,
+    (ui) => !ui.nextDrillPanelHidden && ui.nextDrillMessageHidden && !ui.nextDrillResultHidden &&
+      Boolean(ui.nextDrillTitle) && Boolean(ui.nextDrillFinding) &&
+      !ui.nextDrillDisabled && !ui.restartDisabled,
+    "Fake next-drill success state",
+  );
+
   await pressKey(cdp.send, { key: "r", code: "KeyR", keyCode: 82 });
   const afterRestart = await pollUi(
     cdp.send,
     (ui) => ui.status === "Ready" && ui.score === "0" && ui.restartDisabled &&
-      ui.analyzeHidden && ui.coachPanelHidden,
+      ui.analyzeHidden && ui.coachPanelHidden && ui.nextDrillHidden && ui.nextDrillPanelHidden,
     "Restarted Ready state",
   );
 
@@ -306,13 +324,53 @@ try {
   );
   await cdp.send("Network.setBlockedURLs", { urls: [] });
 
+  await cdp.send("Network.setBlockedURLs", { urls: ["*/api/ai/next-drill"] });
+  await clickElement(cdp.send, "#next-drill-button");
+  const nextDrillUnavailable = await pollUi(
+    cdp.send,
+    (ui) => ui.nextDrillMessage === "Sledeća vežba trenutno nije dostupna." &&
+      !ui.restartDisabled && !ui.nextDrillDisabled,
+    "Fake next-drill failure state",
+  );
+  await cdp.send("Network.setBlockedURLs", { urls: [] });
+
+  await evaluate(cdp.send, `(() => {
+    window.__originalFetch = window.fetch;
+    window.__nextDrillResolve = null;
+    window.fetch = (input, options) => String(input).includes('/api/ai/next-drill')
+      ? new Promise((resolve) => { window.__nextDrillResolve = resolve; })
+      : window.__originalFetch(input, options);
+    return true;
+  })()`);
+  await clickElement(cdp.send, "#next-drill-button");
+  const nextDrillPending = await pollUi(
+    cdp.send,
+    (ui) => ui.nextDrillDisabled && ui.nextDrillMessage === "Tražim sledeću vežbu…",
+    "Pending next-drill state",
+  );
+
   await pressKey(cdp.send, { key: "r", code: "KeyR", keyCode: 82 });
-  const afterUnavailableRestart = await pollUi(
+  const afterPendingRestart = await pollUi(
     cdp.send,
     (ui) => ui.status === "Ready" && ui.score === "0" && ui.restartDisabled &&
-      ui.analyzeHidden && ui.coachPanelHidden,
-    "Restart after unavailable coach state",
+      ui.analyzeHidden && ui.coachPanelHidden && ui.nextDrillHidden && ui.nextDrillPanelHidden,
+    "Restart while next-drill request is pending",
   );
+  await evaluate(cdp.send, `(() => {
+    window.__nextDrillResolve(new Response(JSON.stringify({ success: true, recommendation: {
+      drillId: 'release_earlier', title: 'Vežbaj ranije puštanje',
+      instruction: 'Pusti blok malo pre sredine tornja.',
+      evidence: { earlyCount: 0, lateCount: 2, centeredCount: 0, finding: 'Kasna puštanja su češća od ranih.' },
+      runId: 'stale-smoke', stopReason: 'goal_completed'
+    }}), { status: 200, headers: { 'content-type': 'application/json' } }));
+    window.fetch = window.__originalFetch;
+    return true;
+  })()`);
+  await wait(150);
+  const afterStaleResponse = await readUi(cdp.send);
+  if (!afterStaleResponse.nextDrillPanelHidden || afterStaleResponse.nextDrillTitle !== "") {
+    throw new Error(`Stale next-drill response appeared after Restart: ${JSON.stringify(afterStaleResponse)}`);
+  }
 
   const result = {
     browser: chrome,
@@ -323,9 +381,13 @@ try {
     afterPartial,
     gameOver,
     coachSuccess,
+    nextDrillSuccess,
     afterRestart,
     coachUnavailable,
-    afterUnavailableRestart,
+    nextDrillUnavailable,
+    nextDrillPending,
+    afterPendingRestart,
+    afterStaleResponse,
     browserErrors: cdp.browserErrors,
     browserLogErrors: cdp.browserLogErrors,
   };

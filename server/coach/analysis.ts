@@ -37,7 +37,7 @@ function expectedTiming(offsetPx: number, direction: -1 | 1): DropTiming {
   return offsetPx * direction > 0 ? "late" : "early";
 }
 
-function parseRequest(value: unknown): CoachRequest | null {
+export function parseRequest(value: unknown): CoachRequest | null {
   if (!isRecord(value) || !hasExactKeys(value, REQUEST_KEYS) ||
       !Number.isInteger(value.finalScore) ||
       (value.finalScore as number) < 0 || (value.finalScore as number) > MAX_SCORE ||
@@ -103,7 +103,7 @@ function getTimingBias(earlyCount: number, lateCount: number, centeredCount: num
   return "mixed";
 }
 
-function deriveStatistics(request: CoachRequest): RunStatistics {
+export function deriveStatistics(request: CoachRequest): RunStatistics {
   let earlyCount = 0;
   let lateCount = 0;
   let centeredCount = 0;

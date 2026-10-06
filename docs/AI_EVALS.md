@@ -1,7 +1,10 @@
 # W04 AI Crane Coach evals
 
-Stvarni rezultati su iz `npm.cmd run verify` i jednog ograničenog live Gemini
-poziva izvršenih 2026-09-26.
+Live eval A14 je izvršen 2026-09-26. Kompletan trenutni test/build/browser
+rezultat ponovljen je 2026-10-06 kroz `npm.cmd run verify` u fake režimu:
+25 test fajlova / 161 test, uz typecheck, build, secret boundary, W04/W05
+preview API i Edge smoke. Produkcijski serverless rate-limit entrypoint je
+posebno pokriven A15.
 
 | ID | Scenario | Očekivanje | Rezultat |
 | --- | --- | --- | --- |
@@ -19,6 +22,7 @@ poziva izvršenih 2026-09-26.
 | A12 | Browser fake success | Savet prikazan posle Game Over-a | PASS |
 | A13 | Browser unavailable | Safe poruka; Restart pokreće novu partiju | PASS |
 | A14 | Stvarni Gemini poziv | Strukturisan live odgovor i usage | PASS — success, 1 attempt, 1.459 s, 230 tokena |
+| A15 | Produkcijski `api/ai/coach` serverless entrypoint: 5 zahteva, zatim 6. sa istom prosleđenom IP adresom | Prvih 5 su 200; 6. je bez provider poziva 429 i `Retry-After: 600` | PASS — test koristi produkcijski handler factory i fake provider; bez live Gemini poziva |
 
 Komande:
 

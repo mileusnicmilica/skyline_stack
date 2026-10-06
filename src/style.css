@@ -160,6 +160,7 @@ kbd {
   display: flex;
   align-self: stretch;
   gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 button {

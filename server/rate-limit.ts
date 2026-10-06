@@ -9,6 +9,7 @@ type RateLimiterOptions = {
   windowMs: number;
   maxClients?: number;
   now?: () => number;
+  trustProxyHeaders?: boolean;
 };
 
 type ClientWindow = {
@@ -20,9 +21,9 @@ function firstHeader(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function clientKey(request: IncomingMessage): string {
-  const forwarded = firstHeader(request.headers["x-forwarded-for"])?.split(",")[0]?.trim();
-  const realIp = firstHeader(request.headers["x-real-ip"])?.trim();
+function clientKey(request: IncomingMessage, trustProxyHeaders: boolean): string {
+  const forwarded = trustProxyHeaders ? firstHeader(request.headers["x-forwarded-for"])?.split(",")[0]?.trim() : undefined;
+  const realIp = trustProxyHeaders ? firstHeader(request.headers["x-real-ip"])?.trim() : undefined;
   return (forwarded || realIp || request.socket.remoteAddress || "unknown").slice(0, 64);
 }
 
@@ -40,7 +41,7 @@ export function createRequestRateLimiter(options: RateLimiterOptions): RequestRa
         if (window.resetAt <= timestamp) clients.delete(key);
       }
 
-      const key = clientKey(request);
+      const key = clientKey(request, options.trustProxyHeaders === true);
       let window = clients.get(key);
       if (!window || window.resetAt <= timestamp) {
         if (clients.size >= maxClients) {

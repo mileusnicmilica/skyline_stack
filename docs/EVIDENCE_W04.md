@@ -1,9 +1,7 @@
 # W04 evidence — AI Crane Coach
 
-**Datum:** 2026-09-26  
-**Stanje:** fake/end-to-end, live-adapter testovi i dva ograničena stvarna
-Gemini poziva su PASS. Nemanja je potvrdio da je pregledao Miličin završni
-diff; šestominutni zajednički demo još nije evidentiran.
+**W04 live evidence datum:** 2026-09-26
+**Current repository verification:** 2026-10-06, fake mode; 25 test files / 161 tests PASS. The W04 live results below are historical and unchanged. Nemanja's earlier diff review is recorded; the joint demo remains unverified.
 
 ## Arhitektura i granica
 
@@ -36,10 +34,11 @@ neslaganje sa server činjenicom su odbijeni.
 
 | Provera | Rezultat |
 | --- | --- |
-| `npm.cmd run verify` | PASS: 16 test fajlova / 117 testova, oba TypeScript typecheck-a, production build |
+| `npm.cmd run verify` (current repository; fake mode) | PASS: 25 test fajlova / 161 test, oba TypeScript typecheck-a, production build |
 | Secret boundary u `verify` | PASS: tracked files, Git history i `dist` |
-| API + preview proxy | PASS: health i fake coach success |
+| API + preview proxy | PASS: health i fake W04/W05 success |
 | Edge production smoke | PASS: Game Over dugme, fake success, safe failure, restart; 0 browser/console grešaka |
+| Production serverless rate-limit entrypoint | PASS: 5 zahteva uspešno; šesti isti-klijent zahtev vraća 429 sa `Retry-After: 600`; provider pozvan tačno 5 puta |
 | Provider usage | 2 fake poziva i 2 live poziva; sva četiri success u jednom attempt-u |
 | Stvarni Gemini pozivi | PASS: lokalno 1.459 s i 230 tokena; Vercel 0.980 s i 227 tokena; ukupno 457 tokena |
 
@@ -47,6 +46,14 @@ Prvi sandbox pokušaj `verify` stigao je do 116/116 testova, build-a i secret
 gate-a, ali je `tsx` pre server koda dobio poznato ograničenje okruženja
 `uv_os_get_passwd/ENOMEM`. Ista komanda je zatim ponovljena u normalnom
 lokalnom procesu i kompletno je prošla.
+
+Aktuelni `npm.cmd run verify` rezultat je ponovljen 2026-10-06 posle ažuriranja
+evidence-a. Komanda je radila sa `AI_COACH_PROVIDER=fake`; produkcijska
+rate-limit provera koristi fake provider u testu i ne šalje Gemini zahtev.
+Provera potvrđuje limiter u produkcionom handleru na jednoj instanci; ne
+potvrđuje deljeni limit između zasebnih Vercel serverless instanci. Detalji,
+HEAD commit i kompletni rezultati su u
+[`CURRENT_STATE_2026-10-06.md`](CURRENT_STATE_2026-10-06.md).
 
 ## Security checklist
 

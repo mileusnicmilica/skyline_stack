@@ -2,6 +2,8 @@ import { DEFAULT_GAME_CONFIG, selectGameConfig } from "./game/config";
 import { requestCoachAnalysis, SAFE_ANALYSIS_MESSAGE } from "./coach/coach-client";
 import type { CoachAdvice } from "./coach/coach-client";
 import { AnalysisRequestGate } from "./coach/request-gate";
+import { requestNextDrill, SAFE_DRILL_MESSAGE } from "./agent/next-drill-client";
+import type { NextDrillRecommendation } from "./agent/next-drill-client";
 import { advanceSession, createGameSession } from "./game/engine";
 import {
   requestKeyboardDrop,
@@ -43,6 +45,16 @@ const coachHeadline = requireElement<HTMLElement>("#coach-headline");
 const coachTiming = requireElement<HTMLElement>("#coach-timing");
 const coachFloor = requireElement<HTMLElement>("#coach-floor");
 const coachTip = requireElement<HTMLElement>("#coach-tip");
+const nextDrillButton = requireElement<HTMLButtonElement>("#next-drill-button");
+const nextDrillPanel = requireElement<HTMLElement>("#next-drill-panel");
+const nextDrillMessage = requireElement<HTMLElement>("#next-drill-message");
+const nextDrillResult = requireElement<HTMLElement>("#next-drill-result");
+const nextDrillTitle = requireElement<HTMLElement>("#next-drill-title");
+const nextDrillInstruction = requireElement<HTMLElement>("#next-drill-instruction");
+const nextDrillFinding = requireElement<HTMLElement>("#next-drill-finding");
+const nextDrillEarly = requireElement<HTMLElement>("#next-drill-early");
+const nextDrillLate = requireElement<HTMLElement>("#next-drill-late");
+const nextDrillCentered = requireElement<HTMLElement>("#next-drill-centered");
 const warningRegion = requireElement<HTMLElement>("#config-warning");
 const configurableWindow = window as Window & { SKYLINE_STACK_CONFIG?: unknown };
 const suppliedConfig = Object.hasOwn(configurableWindow, "SKYLINE_STACK_CONFIG")
@@ -55,6 +67,9 @@ let previousTimestamp = performance.now();
 const analysisGate = new AnalysisRequestGate();
 let analysisController: AbortController | null = null;
 let analysisState: "idle" | "pending" | "advice" | "unavailable" = "idle";
+const nextDrillGate = new AnalysisRequestGate();
+let nextDrillController: AbortController | null = null;
+let nextDrillState: "idle" | "pending" | "result" | "unavailable" = "idle";
 
 const timingLabels: Record<CoachAdvice["timingBias"], string> = {
   early: "uglavnom rano",
@@ -87,8 +102,43 @@ function resetAnalysis(): void {
   renderAnalysisState();
 }
 
+function renderNextDrillState(recommendation?: NextDrillRecommendation): void {
+  nextDrillPanel.hidden = nextDrillState === "idle";
+  nextDrillPanel.setAttribute("aria-busy", String(nextDrillState === "pending"));
+  nextDrillMessage.hidden = nextDrillState === "result";
+  nextDrillResult.hidden = nextDrillState !== "result";
+  if (nextDrillState === "idle") {
+    nextDrillMessage.textContent = "";
+    nextDrillTitle.textContent = "";
+    nextDrillInstruction.textContent = "";
+    nextDrillFinding.textContent = "";
+    nextDrillEarly.textContent = "";
+    nextDrillLate.textContent = "";
+    nextDrillCentered.textContent = "";
+  }
+  if (nextDrillState === "pending") nextDrillMessage.textContent = "Tražim sledeću vežbu…";
+  if (nextDrillState === "unavailable") nextDrillMessage.textContent = SAFE_DRILL_MESSAGE;
+  if (nextDrillState === "result" && recommendation) {
+    nextDrillTitle.textContent = recommendation.title;
+    nextDrillInstruction.textContent = recommendation.instruction;
+    nextDrillFinding.textContent = recommendation.evidence.finding;
+    nextDrillEarly.textContent = String(recommendation.evidence.earlyCount);
+    nextDrillLate.textContent = String(recommendation.evidence.lateCount);
+    nextDrillCentered.textContent = String(recommendation.evidence.centeredCount);
+  }
+}
+
+function resetNextDrill(): void {
+  nextDrillGate.invalidate();
+  nextDrillController?.abort();
+  nextDrillController = null;
+  nextDrillState = "idle";
+  renderNextDrillState();
+}
+
 function restart(nextSession = requestRestart(session, config)): void {
   resetAnalysis();
+  resetNextDrill();
   session = nextSession;
   previousTimestamp = performance.now();
   updatePage();
@@ -107,6 +157,8 @@ function updatePage(): void {
   restartButton.disabled = session.phase !== "gameOver";
   analyzeButton.hidden = session.phase !== "gameOver";
   analyzeButton.disabled = session.phase !== "gameOver" || analysisState === "pending";
+  nextDrillButton.hidden = session.phase !== "gameOver";
+  nextDrillButton.disabled = session.phase !== "gameOver" || nextDrillState === "pending";
   renderGame(context, session, config);
 }
 
@@ -161,6 +213,35 @@ analyzeButton.addEventListener("click", async () => {
   } else {
     analysisState = "unavailable";
     renderAnalysisState();
+  }
+  updatePage();
+});
+
+nextDrillButton.addEventListener("click", async () => {
+  if (session.phase !== "gameOver" || nextDrillState === "pending") return;
+  const requestId = nextDrillGate.begin();
+  if (requestId === null) return;
+  nextDrillState = "pending";
+  nextDrillController = new AbortController();
+  renderNextDrillState();
+  updatePage();
+
+  const result = await requestNextDrill({
+    goal: "choose_next_drill",
+    finalScore: session.score,
+    startingWidth: config.startingBlockWidth,
+    drops: session.drops.map((drop) => ({ ...drop })),
+  }, { signal: nextDrillController.signal });
+
+  if (!nextDrillGate.isCurrent(requestId) || session.phase !== "gameOver") return;
+  nextDrillGate.finish(requestId);
+  nextDrillController = null;
+  if (result.ok) {
+    nextDrillState = "result";
+    renderNextDrillState(result.recommendation);
+  } else {
+    nextDrillState = "unavailable";
+    renderNextDrillState();
   }
   updatePage();
 });
