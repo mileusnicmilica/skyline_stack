@@ -5,6 +5,8 @@ Time one-button drops from a swaying construction cable and raise a detailed
 city tower. Only supported overlap becomes the next floor; unsupported facade
 breaks into falling masonry.
 
+Live demo: https://skyline-stack.vercel.app
+
 ## Requirements
 
 - Node.js 24 or newer
