@@ -20,6 +20,7 @@ describe("W08 agent and tool boundary", () => {
     "T07/T09 rejects forbidden tool %s after one provider decision", async (name) => {
       const { provider, generate } = scriptedAgent(toolCall("release_earlier", name));
       const tool = vi.fn(evaluateDrill);
+      const before = JSON.stringify(w08Run);
       const result = await runNextDrill(w08Run, provider, { tool });
       expect(result.ok).toBe(false);
       expect(result.usage.stopReason).toBe("unknown_tool");
@@ -27,6 +28,7 @@ describe("W08 agent and tool boundary", () => {
       expect(result.usage.toolCallCount).toBe(0);
       expect(generate).toHaveBeenCalledTimes(1);
       expect(tool).not.toHaveBeenCalled();
+      expect(JSON.stringify(w08Run)).toBe(before);
     },
   );
 
