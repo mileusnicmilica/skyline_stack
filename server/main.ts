@@ -2,7 +2,7 @@ import { createCoachServer, coachServerConfig } from "./index.js";
 import { recordProviderUsage } from "./provider-usage.js";
 import { createCoachProvider } from "./providers/provider-config.js";
 import { createAgentProvider } from "./providers/agent-provider-config.js";
-import { recordAgentUsage } from "./agent/usage.js";
+import { recordAgentSecurityEvent, recordAgentUsage } from "./agent/usage.js";
 import { createRequestRateLimiter } from "./rate-limit.js";
 import { recordHttpSecurityEvent } from "./http-security-events.js";
 
@@ -23,7 +23,7 @@ const server = createCoachServer(
     onAgentSecurityEvent: recordHttpSecurityEvent,
   },
   agentProvider,
-  { onUsage: recordAgentUsage },
+  { onUsage: recordAgentUsage, onSecurityEvent: recordAgentSecurityEvent },
 );
 server.listen(coachServerConfig.port, coachServerConfig.host, () => {
   process.stdout.write(

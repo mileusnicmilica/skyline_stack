@@ -37,6 +37,7 @@ export type AgentStepUsage = {
 };
 export type AgentUsage = {
   runId: string;
+  correlationId?: string;
   provider: string;
   model: string;
   startedAt: string;
@@ -60,9 +61,11 @@ export type AgentRunResult =
   | { ok: false; reason: AgentStopReason; usage: AgentUsage };
 export type AgentExecutionOptions = {
   signal?: AbortSignal;
+  correlationId?: string;
   totalDeadlineMs?: number;
   attemptTimeoutMs?: number;
   retryDelayMs?: number;
   tool?: (args: unknown, counts: TimingCounts, evidenceId: string, signal: AbortSignal) => unknown | Promise<unknown>;
   onUsage?: (usage: AgentUsage) => void;
+  onSecurityEvent?: (event: import("./usage.js").AgentSecurityEvent) => void;
 };

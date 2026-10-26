@@ -18,7 +18,6 @@ const AGENT_PATH = "/api/ai/next-drill";
 const HEALTH_PATH = "/api/health";
 const MAX_BODY_BYTES = 64 * 1024;
 const AGENT_BODY_TIMEOUT_MS = 5_000;
-const MAX_AGENT_GEOMETRY_PX = 4_096;
 const SAFE_MESSAGE = "AI analiza trenutno nije dostupna.";
 const SAFE_AGENT_MESSAGE = "Sledeća vežba trenutno nije dostupna.";
 
@@ -35,10 +34,12 @@ class BodyReadTimeoutError extends Error {}
 
 async function readJson(request: IncomingMessage, deadlineMs?: number): Promise<unknown> {
   const declared = request.headers["content-length"];
-  if (typeof declared === "string" && Number(declared) > MAX_BODY_BYTES) throw new RangeError("body-too-large");
   return await new Promise<unknown>((resolve, reject) => {
     const chunks: Buffer[] = [];
     let bytes = 0;
+    // Drain excess bytes without retaining or parsing them, so a client uploading the
+    // last chunk can reliably receive 413 rather than an early socket reset.
+    let overLimit = typeof declared === "string" && Number(declared) > MAX_BODY_BYTES;
     let settled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const cleanup = () => {
@@ -56,15 +57,21 @@ async function readJson(request: IncomingMessage, deadlineMs?: number): Promise<
       reject(error);
     };
     const onData = (chunk: Buffer | string) => {
+      if (overLimit) return;
       const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
       bytes += buffer.byteLength;
-      if (bytes > MAX_BODY_BYTES) { fail(new RangeError("body-too-large")); return; }
+      if (bytes > MAX_BODY_BYTES) {
+        overLimit = true;
+        chunks.length = 0;
+        return;
+      }
       chunks.push(buffer);
     };
     const onEnd = () => {
       if (settled) return;
       settled = true;
       cleanup();
+      if (overLimit) { reject(new RangeError("body-too-large")); return; }
       try { resolve(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks)))); }
       catch (error) { reject(error); }
     };
@@ -74,7 +81,8 @@ async function readJson(request: IncomingMessage, deadlineMs?: number): Promise<
     request.once("end", onEnd);
     request.once("error", onError);
     request.once("aborted", onAborted);
-    if (deadlineMs !== undefined) timer = setTimeout(() => fail(new BodyReadTimeoutError("body-timeout")), deadlineMs);
+    if (deadlineMs !== undefined) timer = setTimeout(() => fail(overLimit
+      ? new RangeError("body-too-large") : new BodyReadTimeoutError("body-timeout")), deadlineMs);
     request.resume();
   });
 }
@@ -108,24 +116,6 @@ function isSameBrowserOrigin(request: IncomingMessage): boolean {
       origin.host.toLowerCase() === request.headers.host.toLowerCase() &&
       origin.pathname === "/" && origin.search === "" && origin.hash === "";
   } catch { return false; }
-}
-
-/** The W08 AI profile has a smaller geometry envelope than the W04 game parser. */
-function withinAgentGeometryEnvelope(input: unknown): boolean {
-  if (typeof input !== "object" || input === null || Array.isArray(input)) return false;
-  const record = input as Record<string, unknown>;
-  if (typeof record.startingWidth !== "number" || !Number.isFinite(record.startingWidth) ||
-      record.startingWidth <= 0 || record.startingWidth > MAX_AGENT_GEOMETRY_PX || !Array.isArray(record.drops)) return false;
-  return record.drops.every((value: unknown) => {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
-    const drop = value as Record<string, unknown>;
-    return typeof drop.offsetPx === "number" && Number.isFinite(drop.offsetPx) &&
-      Math.abs(drop.offsetPx) <= MAX_AGENT_GEOMETRY_PX &&
-      typeof drop.widthBefore === "number" && Number.isFinite(drop.widthBefore) &&
-      drop.widthBefore > 0 && drop.widthBefore <= MAX_AGENT_GEOMETRY_PX &&
-      typeof drop.widthAfter === "number" && Number.isFinite(drop.widthAfter) &&
-      drop.widthAfter >= 0 && drop.widthAfter <= MAX_AGENT_GEOMETRY_PX;
-  });
 }
 
 type CoachRequestHandlerOptions = {
@@ -250,7 +240,7 @@ export function createCoachRequestHandler(
       }
 
       if (isAgent) {
-        if (!parseNextDrillRequest(input) || !withinAgentGeometryEnvelope(input)) {
+        if (!parseNextDrillRequest(input)) {
           deny(400, "INVALID_REQUEST");
           return;
         }
@@ -272,6 +262,7 @@ export function createCoachRequestHandler(
           };
           const result = await runNextDrill(input, trackedProvider, {
             ...agentOptions,
+            ...(correlationId ? { correlationId } : {}),
             tool: (args, counts, evidenceId, signal) =>
               lease.track(() => tool(args, counts, evidenceId, signal)),
             signal: controller.signal,

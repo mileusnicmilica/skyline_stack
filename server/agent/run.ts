@@ -3,6 +3,8 @@ import type { ProviderTokenUsage } from "../coach/types.js";
 import { ProviderError } from "../providers/provider-error.js";
 import { composeRecommendation } from "./drills.js";
 import { evaluateDrill, parseDrillArgs, validateToolEvidence } from "./evaluate-drill.js";
+import { jsonWithinBytes, MAX_MODEL_CONTEXT_BYTES, MAX_MODEL_DECISION_BYTES } from "./limits.js";
+import { createAgentSecurityEvent } from "./usage.js";
 import { parseNextDrillRequest } from "./validate-request.js";
 import type {
   AgentExecutionOptions, AgentProvider, AgentRunResult, AgentStepUsage,
@@ -17,6 +19,7 @@ const DEFAULT_DEADLINE_MS = 25_000;
 const DEFAULT_ATTEMPT_MS = 8_000;
 const DEFAULT_RETRY_DELAY_MS = 250;
 const TOOL_TIMEOUT_MS = 50;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 class ToolTimeoutError extends Error {}
 
@@ -193,6 +196,8 @@ export async function runNextDrill(
   const deadline = started + Math.min(duration(options.totalDeadlineMs, DEFAULT_DEADLINE_MS), DEFAULT_DEADLINE_MS);
   const usage: AgentUsage = {
     runId: randomUUID(), provider: provider.name, model: provider.model,
+    ...(typeof options.correlationId === "string" && UUID.test(options.correlationId)
+      ? { correlationId: options.correlationId } : {}),
     startedAt: new Date(started).toISOString(), latencyMs: 0,
     stepCount: 0, providerAttempts: 0, toolCallCount: 0,
     stopReason: "incomplete", steps: [],
@@ -206,6 +211,7 @@ export async function runNextDrill(
     }
     usage.stopReason = reason;
     usage.latencyMs = Math.max(0, Date.now() - started);
+    try { options.onSecurityEvent?.(createAgentSecurityEvent(usage)); } catch { /* Events cannot alter result. */ }
     try { options.onUsage?.(structuredClone(usage)); } catch { /* Log failure cannot alter result. */ }
     return recommendation
       ? { ok: true, recommendation, usage }
@@ -240,13 +246,19 @@ export async function runNextDrill(
       if (options.signal?.aborted) return finish("cancelled");
       const remaining = deadline - Date.now();
       if (remaining <= 0) return finish("deadline");
+      const context = {
+        goal: "choose_next_drill" as const, finalScore: statistics.finalScore, ...counts,
+        step, evidence: evidence.map((item) => ({ ...item })),
+      };
+      if (!jsonWithinBytes(context, MAX_MODEL_CONTEXT_BYTES)) {
+        stepUsage.status = "invalid_model_output";
+        return finish("invalid_model_output");
+      }
       usage.providerAttempts += 1;
       stepUsage.attempts += 1;
       try {
-        const response = await generateAttempt(provider, {
-          goal: "choose_next_drill", finalScore: statistics.finalScore, ...counts,
-          step, evidence: evidence.map((item) => ({ ...item })),
-        }, attempt, Math.min(duration(options.attemptTimeoutMs, DEFAULT_ATTEMPT_MS), DEFAULT_ATTEMPT_MS, remaining), options.signal);
+        const response = await generateAttempt(provider, context, attempt,
+          Math.min(duration(options.attemptTimeoutMs, DEFAULT_ATTEMPT_MS), DEFAULT_ATTEMPT_MS, remaining), options.signal);
         if (options.signal?.aborted) return finish("cancelled");
         if (Date.now() >= deadline) return finish("deadline");
         output = response.output;
@@ -268,6 +280,10 @@ export async function runNextDrill(
     }
     if (!generated) { stepUsage.status = "provider_failure"; return finish("provider_failure"); }
 
+    if (!jsonWithinBytes(output, MAX_MODEL_DECISION_BYTES)) {
+      stepUsage.status = "invalid_model_output";
+      return finish("invalid_model_output");
+    }
     const decision = parseDecision(output);
     if (decision.kind === "unknown_tool" || decision.kind === "invalid_tool_args" || decision.kind === "invalid_model_output") {
       stepUsage.status = decision.kind;
@@ -305,7 +321,9 @@ export async function runNextDrill(
     }
     if (options.signal?.aborted) return finish("cancelled");
     if (Date.now() >= deadline) return finish("deadline");
-    const normalized = validateToolEvidence(raw, counts, evidenceId);
+    let normalized: ToolEvidence | null;
+    try { normalized = validateToolEvidence(raw, counts, evidenceId); }
+    catch { normalized = null; }
     if (!normalized) { stepUsage.status = "invalid_tool_result"; return finish("invalid_tool_result"); }
     evidence.push(normalized);
     stepUsage.status = normalized.supported ? "tool_supported" : "tool_unsupported";

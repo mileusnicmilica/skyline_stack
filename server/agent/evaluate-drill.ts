@@ -12,6 +12,11 @@ export function parseDrillArgs(value: unknown): { drillId: DrillId } | null {
 }
 
 export function expectedDrill(counts: TimingCounts): { drillId: DrillId; findingCode: FindingCode } {
+  const values = [counts.earlyCount, counts.lateCount, counts.centeredCount];
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (values.some((value) => !Number.isSafeInteger(value) || value < 0 || value > 501) || total < 1 || total > 501) {
+    throw new TypeError("invalid-tool-counts");
+  }
   if (counts.lateCount > counts.earlyCount) return { drillId: "release_earlier", findingCode: "late_dominant" };
   if (counts.earlyCount > counts.lateCount) return { drillId: "release_later", findingCode: "early_dominant" };
   return { drillId: "center_alignment", findingCode: "balanced" };
@@ -38,12 +43,18 @@ export function validateToolEvidence(value: unknown, counts: TimingCounts, evide
   const candidate = value as Record<string, unknown>;
   if (Object.keys(candidate).length !== KEYS.size || !Object.keys(candidate).every((key) => KEYS.has(key))) return null;
   const args = parseDrillArgs({ drillId: candidate.drillId });
-  const expected = expectedDrill(counts);
+  let expected: ReturnType<typeof expectedDrill>;
+  try { expected = expectedDrill(counts); } catch { return null; }
   if (!args || candidate.evidenceId !== evidenceId || typeof candidate.supported !== "boolean" ||
       candidate.earlyCount !== counts.earlyCount || candidate.lateCount !== counts.lateCount ||
       candidate.centeredCount !== counts.centeredCount ||
       candidate.totalDrops !== counts.earlyCount + counts.lateCount + counts.centeredCount ||
       candidate.findingCode !== expected.findingCode || candidate.supported !== (args.drillId === expected.drillId) ||
-      Buffer.byteLength(JSON.stringify(candidate), "utf8") > 256) return null;
+      !evidenceWithinLimit(candidate)) return null;
   return candidate as ToolEvidence;
+}
+
+function evidenceWithinLimit(value: unknown): boolean {
+  try { return Buffer.byteLength(JSON.stringify(value), "utf8") <= 256; }
+  catch { return false; }
 }

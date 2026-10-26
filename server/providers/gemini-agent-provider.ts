@@ -1,5 +1,6 @@
 import type { ProviderGeneration, ProviderTokenUsage } from "../coach/types.js";
 import type { AgentModelContext, AgentProvider } from "../agent/types.js";
+import { jsonWithinBytes, MAX_GENERATED_TOKENS, MAX_MODEL_CONTEXT_BYTES, MAX_PROVIDER_ENVELOPE_BYTES } from "../agent/limits.js";
 import { GEMINI_MODEL } from "./gemini-provider.js";
 import { ProviderError } from "./provider-error.js";
 
@@ -60,6 +61,40 @@ function prompt(context: AgentModelContext): string {
   ].join("\n");
 }
 
+async function boundedEnvelope(response: Response, signal: AbortSignal): Promise<unknown> {
+  const declared = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > MAX_PROVIDER_ENVELOPE_BYTES) {
+    void response.body?.cancel().catch(() => undefined);
+    throw new ProviderError("Gemini agent response envelope was too large.", false);
+  }
+  if (!response.body) throw new ProviderError("Gemini agent response envelope was empty.", false);
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      if (signal.aborted) throw new ProviderError("Gemini agent response was cancelled.", false, "timeout");
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_PROVIDER_ENVELOPE_BYTES) {
+        void reader.cancel().catch(() => undefined);
+        throw new ProviderError("Gemini agent response envelope was too large.", false);
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+  } catch (error) {
+    if (error instanceof ProviderError) throw error;
+    throw new ProviderError("Gemini agent response envelope was invalid.", false);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export class GeminiAgentProvider implements AgentProvider {
   readonly name = "gemini";
   readonly model = GEMINI_MODEL;
@@ -73,6 +108,9 @@ export class GeminiAgentProvider implements AgentProvider {
   }
 
   async generate(context: AgentModelContext, { signal }: { signal: AbortSignal; attempt: number }): Promise<ProviderGeneration> {
+    if (!jsonWithinBytes(context, MAX_MODEL_CONTEXT_BYTES)) {
+      throw new ProviderError("Gemini agent context was too large.", false);
+    }
     let response: Response;
     try {
       response = await this.#fetch(ENDPOINT, {
@@ -80,7 +118,8 @@ export class GeminiAgentProvider implements AgentProvider {
         headers: { "content-type": "application/json", "x-goog-api-key": this.#apiKey },
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt(context) }] }],
-          generationConfig: { responseMimeType: "application/json", responseJsonSchema: SCHEMA, temperature: 0.1 },
+          generationConfig: { responseMimeType: "application/json", responseJsonSchema: SCHEMA,
+            temperature: 0.1, maxOutputTokens: MAX_GENERATED_TOKENS },
         }),
         signal,
       });
@@ -94,9 +133,7 @@ export class GeminiAgentProvider implements AgentProvider {
           : response.status === 401 || response.status === 403 ? "unauthorized" : "provider";
       throw new ProviderError(`Gemini agent request failed with HTTP ${response.status}.`, response.status === 429 || response.status >= 500, kind);
     }
-    let body: unknown;
-    try { body = await response.json(); }
-    catch { throw new ProviderError("Gemini agent response envelope was invalid.", false); }
+    const body = await boundedEnvelope(response, signal);
     const text = candidateText(body);
     if (text === null) throw new ProviderError("Gemini agent returned no decision.", false);
     let output: unknown;

@@ -1,4 +1,4 @@
-import { recordAgentUsage } from "../../server/agent/usage.js";
+import { recordAgentSecurityEvent, recordAgentUsage } from "../../server/agent/usage.js";
 import type { AgentProvider } from "../../server/agent/types.js";
 import { createCoachRequestHandler } from "../../server/index.js";
 import { createAgentProvider } from "../../server/providers/agent-provider-config.js";
@@ -20,7 +20,7 @@ export function createProductionNextDrillHandler(selectedProvider: AgentProvider
     {},
     { agentRateLimiter, onAgentSecurityEvent: recordHttpSecurityEvent },
     selectedProvider,
-    { onUsage: recordAgentUsage },
+    { onUsage: recordAgentUsage, onSecurityEvent: recordAgentSecurityEvent },
   );
 }
 

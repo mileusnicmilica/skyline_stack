@@ -12,6 +12,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "smoke": "node tests/browser-smoke.mjs",
     "test:security:w08:milica": "node scripts/w08-milica-check.mjs",
+    "test:security:w08": "node scripts/w08-security-check.mjs",
     "check:secrets": "node scripts/check-secret-boundary.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
