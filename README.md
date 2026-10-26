@@ -180,6 +180,15 @@ do not aggregate across deployed instances.
 
 ### W08 security verification
 
+[![CI](https://github.com/mileusnicmilica/skyline_stack/actions/workflows/ci.yml/badge.svg)](https://github.com/mileusnicmilica/skyline_stack/actions/workflows/ci.yml)
+
+GitHub Actions runs the basic CI check on every push and pull request, with a
+manual **Run workflow** option in the repository's Actions tab. On Ubuntu with
+Node.js 24 it installs the lockfile dependencies, checks TypeScript, runs all
+unit/HTTP tests, builds the frontend and checks the secret boundary. It forces
+the fake provider and needs no API key. Browser/CSP and controlled build-secret
+proof remain in the local W08 command below.
+
 The [W08 security package](specs/005-secure-the-arcade/spec.md) hardens the
 existing Next Drill HTTP, agent, provider and browser boundaries. Run the
 fake-only checks, including server adversarial tests, build, browser CSP/XSS

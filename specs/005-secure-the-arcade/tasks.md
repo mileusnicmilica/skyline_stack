@@ -74,16 +74,19 @@
 - [x] **T035** Supply the same synthetic credential to environment-backed adapter tests and the production build; generate source maps, positively validate the artifact scanner and scan all output without a live request.
 - [x] **T036** Enforce trusted Origin scheme in addition to host/port for local HTTP and Vercel HTTPS; prove a forged forwarded protocol cannot change the policy and valid traffic still succeeds.
 - [x] **T037** Reconcile the evidence, checkpoint, policy and actual linked events after the fixes; add a precise Serbian pair review/demo guide, rerun W08/full verification and leave human contribution/approval/demo gates open until reported.
+- [x] **T038** Add the user-requested basic `.github/workflows/ci.yml`: push/PR/manual triggers, Node 24, fake provider, locked install, typecheck, all unit/HTTP tests, production build and existing secret scan. Use read-only permissions, fetch history for the scan and no provider secret; document where to see the Actions result and validate the commands.
 
 ## Phase 6 — One optional extension after mandatory completion
 
-- [ ] **T033** If T001–T032 and T034–T037 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
+- [ ] **T033** If T001–T032 and T034–T038 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
 
 ## Dependencies and execution order
 
 T001 remains the explicit pair approval record; each technical block was separately authorized by its owner on 2026-10-26. T002–T031 technical implementation, test and reproducibility work is recorded in `docs/EVIDENCE_W08.md`. T030 remains open for factual personally attributable pair activity; T032 requires both members' role rotation and demo. T033 is optional and cannot compensate for a mandatory gap.
 
 T034–T037 are completed, user-authorized follow-up audit corrections at tested code checkpoint `bc7de67`: 46 W08 tests, 207 full regression tests and a controlled build-secret proof. They do not close T001/T030/T032 or change human contribution claims.
+
+T038 adds only basic GitHub CI. Its typecheck, 207 unit/HTTP tests, build and secret-scan commands passed locally on 2026-10-26; this local result does not claim a remote Actions run passed. The README badge links to actual remote runs. Browser/CSP and controlled build-secret proof remain in the local W08 suite.
 
 ## Requirement coverage
 

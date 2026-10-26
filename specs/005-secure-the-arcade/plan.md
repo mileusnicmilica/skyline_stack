@@ -96,6 +96,7 @@ The concrete Milica/Nemanja file split and authorization history are in [handoff
 - Supply the same synthetic server credential to the environment-backed adapter test and production build. Stub transport, force fake mode, generate source maps, positively check the scanner, then scan every client artifact.
 - Check Origin scheme as well as host/port through trusted listener/ingress configuration; do not trust forwarded protocol headers. Local HTTP and simulated HTTPS ingress each need accepted and denied cases.
 - Replace mismatched event examples with a genuinely linked request trace, reconcile historical/current results and prepare personal review/demo steps. Do not close human gates using AI-generated assertions.
+- The user subsequently requested a basic GitHub test control: one GitHub Actions workflow on push, pull request and manual dispatch, using Node 24, locked dependency installation, fake-only typecheck/tests/build/secret scan, read-only repository permissions and a bounded job timeout. Browser checks remain in the local W08 suite; no new dependency or application behavior is introduced.
 
 ## Complexity and limits
 
