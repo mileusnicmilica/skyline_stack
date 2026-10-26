@@ -172,7 +172,24 @@ recorded in `docs/EVIDENCE_W05.md`.
 
 Run `npm.cmd run evidence:w05` for reproducible fake success, rejected-tool,
 and provider-failure traces without a Gemini request. The local API applies
-separate W04 and W05 quotas of five requests per ten minutes.
+separate W04 and W05 quotas: W04 allows five requests per ten minutes; W05
+allows five per 60 seconds per local process and at most two active underlying
+jobs. These W05 limits do not aggregate across deployed instances.
+
+### W08 security verification
+
+The [W08 security package](specs/005-secure-the-arcade/spec.md) hardens the
+existing Next Drill HTTP, agent, provider and browser boundaries. Run the
+fake-only checks, including server adversarial tests, build, browser CSP/XSS
+proof and secret scan:
+
+```powershell
+npm.cmd run test:security:w08
+```
+
+The measured results and remaining pair review/demo steps are in
+[W08 evidence](docs/EVIDENCE_W08.md). Local tests do not establish a shared
+quota across Vercel instances or a successful live Gemini request.
 
 ## Documentation
 
@@ -181,6 +198,7 @@ separate W04 and W05 quotas of five requests per ten minutes.
 - [V2 evals](docs/EVALS_V2.md) — required checks and measured results
 - [Feature 002 Spec Kit package](specs/002-crane-tower-gameplay/spec.md) — specification, plan, contracts, quickstart, and tasks
 - [Feature 004 W05 agent package](specs/004-next-drill-agent/spec.md) — bounded agent spec, plan, flow, tool contract, evals, and tasks
+- [Feature 005 W08 security package](specs/005-secure-the-arcade/spec.md) — security spec, plan, tests, tasks, and evidence
 - [Current context manifest](docs/CONTEXT_MANIFEST.md) — authoritative project map and lifecycle status
 - [Current state summary 2026-10-06](docs/CURRENT_STATE_2026-10-06.md) — HEAD commit, verification, and production-entrypoint rate-limit evidence
 - [Crane Tower validation results](artifacts/crane-tower/RESULTS.md) — automated and browser evidence

@@ -1,9 +1,9 @@
 # Feature Specification: W08 Secure the Arcade
 
-**Feature branch**: `main` (Milica's block in progress; no branch switch)  
+**Feature branch**: `main` (local W08 implementation; no branch switch)
 **Created**: 2026-10-26  
-**Status**: Milica's HTTP/browser half implemented and locally verified on 2026-10-26; Nemanja's half and full pair review remain pending  
-**Input**: W08 assignment `weekly-assignment (2).md`; existing Skyline Stack W03–W05 game, Coach and Next Drill Agent.
+**Status**: Both technical blocks implemented and locally verified on 2026-10-26; explicit full pair approval, personal contribution record, role rotation and demo remain pending
+**Input**: W08 assignment `weekly-assignment 08.md`; existing Skyline Stack W03–W05 game, Coach and Next Drill Agent.
 
 ## User Scenarios & Testing
 

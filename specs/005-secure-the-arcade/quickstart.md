@@ -13,9 +13,9 @@ Checkout at planning start: `fe4029c67e1d3f1f1bd9046227e13983b8f9f32f` on `main`
 
 The W05 success fixture uses `goal=choose_next_drill`, score 1, starting width 100 and two late drops (one terminal miss). Observed fake result: 2 model steps, 2 provider attempts, 1 `evaluate_drill`, `release_earlier`, `goal_completed`; unknown-tool fixture executed 0 tools. These results do not establish W08 test coverage.
 
-## Current Milica-block verification and planned pair integration
+## Current integrated verification and pair follow-up
 
-Milica's focused probes can be repeated with one fake-forced command: `npm.cmd run test:security:w08:milica`. It runs both TypeScript checks, her HTTP/security tests, a production build and the T04/T05/T16 Edge/Chromium browser proof. The browser command needs local Edge or Chromium. For identical starting-commit comparisons, use the preparation and `baseline`/`current` commands recorded in `docs/EVIDENCE_W08.md`. Set `AI_COACH_PROVIDER=fake` before other full-stack commands. The final T00–T17 suite and pair evidence require Nemanja's block.
+Run the fake-forced integrated command `npm.cmd run test:security:w08` for two TypeScript checks, 9 W08 server files / 42 tests, production build, Edge T04/T05/T15/T16, secret scan and a built-artifact sentinel scan. `npm.cmd run test:security:w08:milica` remains available for her focused block. Edge/Chromium must be installed locally. Use the recorded baseline/current commands in `docs/EVIDENCE_W08.md` for the identical-fixture comparisons. No real API key is required.
 
 1. Set fake mode explicitly before any full-stack check so a local `.env` cannot select the live provider:
 
@@ -27,7 +27,7 @@ Milica's focused probes can be repeated with one fake-forced command: `npm.cmd r
    npm.cmd run check:secrets
    ```
 
-   `test:security:w08` is a **planned script**, not an existing command. Its implementation task is T027. No real API key is required. Capture actual exit codes and counts in `docs/EVIDENCE_W08.md`.
+   `test:security:w08` exists and forces fake mode. Actual exit codes and counts are in `docs/EVIDENCE_W08.md`.
 
 2. Run direct HTTP tests against the local W05 handler. Use synthetic valid and invalid runs from the contract. Measure provider attempts, tool executions, active underlying work, response statuses and state before/after. Test valid boundary and rejected boundary separately.
 

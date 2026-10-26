@@ -1,9 +1,11 @@
 # Context Manifest — Skyline Stack
 
-**Updated**: 2026-10-05
-**Current feature**: `004-next-drill-agent` (W05, fake-verified; live attempt failed safely; joint demo pending)
+**Updated**: 2026-10-26
+**Current feature**: `005-secure-the-arcade` (W08 technical blocks locally verified; pair signoff/demo pending)
 **Current branch at audit**: `main`
-**Current state**: W03/V2 remain stable; W05 bounded next-drill agent is implemented and fake-verified; live Gemini and pair demo evidence are recorded separately
+**Current state**: W03/V2 remain stable; W05 Next Drill is bounded and W08 hardening is locally fake-verified. W08 pair signoff, personal contribution record, role rotation and demo remain open; live Gemini and distributed quota are not proved.
+
+For current W08 requirements and observed results, use [the W08 spec](../specs/005-secure-the-arcade/spec.md), [tasks](../specs/005-secure-the-arcade/tasks.md) and [evidence](EVIDENCE_W08.md). The older verification counts below are historical snapshots; the W08 integrated check passed 42 focused tests and the full regression passed 203 tests on 2026-10-26.
 
 ## Purpose
 

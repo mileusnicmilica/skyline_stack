@@ -1,7 +1,7 @@
 # Implementation Plan: W08 Secure the Arcade
 
 **Branch**: `main` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)  
-**Status**: Phase A plan for review; no W08 implementation started
+**Status**: Implemented locally at code checkpoint `0b880f9`; pair signoff and demo remain open
 
 ## Summary
 
@@ -10,7 +10,7 @@ Harden the existing Game Over → `POST /api/ai/next-drill` → server agent →
 ## Technical Context
 
 **Language/Version**: Existing TypeScript 7.0.2; Node observed `v24.20.0` on 2026-10-26.  
-**Dependencies**: Vite 8.3.0, Vitest 5.0.1, `tsx` 4.23.13; no new runtime package planned.  
+**Dependencies**: Locked Vite 8.3.5, Vitest 5.0.5, `tsx` 4.23.13; no runtime package added.
 **Storage**: Browser session in memory; bounded in-process usage records; no database, user accounts or verified leaderboard.  
 **Testing**: Vitest unit and live local HTTP integration tests, existing Edge/Chromium CDP smoke harness, typecheck, build, secret scan, dependency audit.  
 **Platform**: Existing local Node API and Vite production preview; Vercel route/config reviewed separately for equivalent headers and known multi-instance limits.  
@@ -24,13 +24,13 @@ Observed 2026-10-26: `npm.cmd run typecheck` passed; `npm.cmd test` passed 25 fi
 
 ## Constitution Check
 
-- **I, specification before implementation**: This separate W08 package follows specify → plan → tasks. The user's 2026-10-26 instruction explicitly authorized Milica's half after reviewing the plan; full pair approval and Nemanja's half remain open.
+- **I, specification before implementation**: This separate W08 package follows specify → plan → tasks. Both technical blocks were separately authorized and implemented; explicit full pair approval remains open.
 - **II, bounded later-week feature**: W08 expressly extends W05. It does not rewrite W03/V2 artifacts, add a login, database, write tool or game rule. Any new dependency needs its own justification.
 - **III, honest evidence**: Baseline commands above were run. W08 outcomes are recorded only as they are measured in `docs/EVIDENCE_W08.md`; unrun rows remain `NOT RUN`. Pair contribution and demo are `TBD` until the people perform them. Real baseline gaps were measured before the corresponding Milica-block fixes.
 - **IV, runtime contracts**: Existing `GameConfig` rule stays intact; W08 adds explicit runtime boundaries for agent input/output.
 - **V, historical Session 003 experiment**: This rule applies to the old locked experiment; W08 uses its own approved spec, plan, tasks and evaluation set.
 
-**After design**: PASS for planning. Milica's implementation gate is open by the user's explicit instruction; full T001 pair review remains pending and is not inferred from the partial authorization.
+**Current gate**: Both technical blocks were tested locally. The user's report confirms joint document/code review; T001 still requires an explicit full pair approval record and planned role rotation.
 
 ## Architecture and risk decisions
 
