@@ -4,6 +4,7 @@ import { createCoachProvider } from "./providers/provider-config.js";
 import { createAgentProvider } from "./providers/agent-provider-config.js";
 import { recordAgentUsage } from "./agent/usage.js";
 import { createRequestRateLimiter } from "./rate-limit.js";
+import { recordHttpSecurityEvent } from "./http-security-events.js";
 
 try {
   process.loadEnvFile();
@@ -18,7 +19,8 @@ const server = createCoachServer(
   { onUsage: recordProviderUsage },
   {
     rateLimiter: createRequestRateLimiter({ limit: 5, windowMs: 10 * 60 * 1_000 }),
-    agentRateLimiter: createRequestRateLimiter({ limit: 5, windowMs: 10 * 60 * 1_000 }),
+    agentRateLimiter: createRequestRateLimiter({ limit: 5, windowMs: 60_000, scope: "global" }),
+    onAgentSecurityEvent: recordHttpSecurityEvent,
   },
   agentProvider,
   { onUsage: recordAgentUsage },

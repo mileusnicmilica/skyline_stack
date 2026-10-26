@@ -83,7 +83,9 @@ describe("next drill HTTP contract", () => {
       const limited = await sendAgent("203.0.113.2");
       expect(limited.status).toBe(429);
       expect(limited.headers.get("retry-after")).toBe("60");
-      expect(await limited.json()).toEqual({ success: false, message: "Sledeća vežba trenutno nije dostupna." });
+      expect(await limited.json()).toEqual({
+        success: false, message: "Sledeća vežba trenutno nije dostupna.", errorCode: "RATE_LIMITED",
+      });
       expect(generate).toHaveBeenCalledTimes(2);
 
       const { goal: _goal, ...coachBody } = body;
@@ -101,7 +103,7 @@ describe("next drill HTTP contract", () => {
       });
       expect(response.status).toBe(429);
       expect(await response.json()).toMatchObject({
-        success: false, message: "Sledeća vežba trenutno nije dostupna.", stopReason: "provider_rate_limit",
+        success: false, message: "Sledeća vežba trenutno nije dostupna.", errorCode: "PROVIDER_RATE_LIMITED",
       });
     }, {
       name: "fake", model: "rate-limit-fixture",

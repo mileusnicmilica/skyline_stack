@@ -11,6 +11,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "smoke": "node tests/browser-smoke.mjs",
+    "test:security:w08:milica": "node scripts/w08-milica-check.mjs",
     "check:secrets": "node scripts/check-secret-boundary.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
@@ -21,7 +22,7 @@
     "@types/node": "24.13.6",
     "tsx": "4.23.13",
     "typescript": "7.0.2",
-    "vite": "8.3.0",
-    "vitest": "5.0.1"
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
   }
 }

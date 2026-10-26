@@ -4,20 +4,21 @@ import { createCoachRequestHandler } from "../../server/index.js";
 import { createAgentProvider } from "../../server/providers/agent-provider-config.js";
 import { fakeCoachProvider } from "../../server/providers/fake-provider.js";
 import { createRequestRateLimiter } from "../../server/rate-limit.js";
+import { recordHttpSecurityEvent } from "../../server/http-security-events.js";
 
 const agentProvider = createAgentProvider();
 
 export function createProductionNextDrillHandler(selectedProvider: AgentProvider = agentProvider) {
   const agentRateLimiter = createRequestRateLimiter({
     limit: 5,
-    windowMs: 10 * 60 * 1_000,
-    trustProxyHeaders: true,
+    windowMs: 60_000,
+    scope: "global",
   });
 
   return createCoachRequestHandler(
     fakeCoachProvider,
     {},
-    { agentRateLimiter },
+    { agentRateLimiter, onAgentSecurityEvent: recordHttpSecurityEvent },
     selectedProvider,
     { onUsage: recordAgentUsage },
   );

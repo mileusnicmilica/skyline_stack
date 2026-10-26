@@ -14,3 +14,5 @@ Thumbs.db
 reports/
 artifacts/.smoke-profile-*/
 .vercel
+.w08-baseline/
+.w08-baseline.zip

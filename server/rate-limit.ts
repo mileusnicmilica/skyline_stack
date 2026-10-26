@@ -10,6 +10,8 @@ type RateLimiterOptions = {
   maxClients?: number;
   now?: () => number;
   trustProxyHeaders?: boolean;
+  /** Local unauthenticated endpoint policy: one process-wide window. */
+  scope?: "client" | "global";
 };
 
 type ClientWindow = {
@@ -41,7 +43,7 @@ export function createRequestRateLimiter(options: RateLimiterOptions): RequestRa
         if (window.resetAt <= timestamp) clients.delete(key);
       }
 
-      const key = clientKey(request, options.trustProxyHeaders === true);
+      const key = options.scope === "global" ? "all-next-drill-requests" : clientKey(request, options.trustProxyHeaders === true);
       let window = clients.get(key);
       if (!window || window.resetAt <= timestamp) {
         if (clients.size >= maxClients) {
