@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// T04/T05/T16: run against the built page, with actual Chromium rendering.
+// T04/T05/T15/T16: run against the built page, with actual Chromium rendering.
 // The HTTP responses are synthetic and intercepted at the network boundary;
 // the application code and its CSP run unchanged.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -189,6 +189,7 @@ try {
   await once(probeServer, "listening");
   assert.equal((await fetch(probeUrl)).status, 200, "CSP probe must be a reachable script");
   const baselineProbeRequests = probeRequests;
+  const drillRequests = [];
 
   preview = spawn(process.execPath, [vite, "preview", "--host", "127.0.0.1", "--port", String(previewPort), "--strictPort"], {
     cwd: root, stdio: "ignore",
@@ -239,6 +240,10 @@ try {
   await cdp.send("Log.enable");
   cdp.setRequestHandler(async ({ requestId, request }) => {
     const path = new URL(request.url).pathname;
+    if (path === "/api/ai/next-drill") {
+      assert.ok(request.postData, "W05 browser request body must be observable");
+      drillRequests.push(JSON.parse(request.postData));
+    }
     const response = replies[path]?.shift();
     if (!response) throw new Error(`Unexpected intercepted request: ${path}`);
     await cdp.send("Fetch.fulfillRequest", {
@@ -293,6 +298,13 @@ try {
   assert.equal(hostileCoach.xssExecuted, false);
   assert.equal(hostileCoach.url, previewUrl, "W04 URL text must not navigate");
 
+  // The visible score and local storage are browser controlled. Neither is a
+  // server-side verified result or a source of agent policy fields.
+  await evaluate(cdp, `(() => {
+    document.querySelector("#score").textContent = "999999";
+    localStorage.setItem("w08-forged-score", "999999");
+    return true;
+  })()`);
   await click(cdp, "#next-drill-button");
   const hostileDrill = await poll(async () => {
     const state = await ui(cdp);
@@ -302,6 +314,9 @@ try {
   assert.equal(hostileDrill.dangerousNodeCount, 0);
   assert.equal(hostileDrill.xssExecuted, false);
   assert.equal(hostileDrill.url, previewUrl, "W05 URL text must not navigate");
+  assert.equal(drillRequests[0]?.finalScore, 2, "DOM score change must not rewrite the game run");
+  assert.equal(drillRequests[0]?.maxSteps, undefined);
+  assert.equal(drillRequests[0]?.verified, undefined);
 
   await click(cdp, "#analyze-button");
   const normalCoach = await poll(async () => {
@@ -323,7 +338,7 @@ try {
   assert.equal(cdp.events.filter((event) => event.method === "Runtime.exceptionThrown").length, 0);
 
   process.stdout.write(`${JSON.stringify({
-    tests: ["T04", "T05", "T16"],
+    tests: ["T04", "T05", "T15", "T16"],
     browser: chrome,
     previewUrl,
     headers: { csp, nosniff, referrer },
@@ -332,6 +347,8 @@ try {
     cspViolation: violation.params.entry.text,
     dangerousNodeCount: normalDrill.dangerousNodeCount,
     xssExecuted: normalDrill.xssExecuted,
+    tamperedDomScore: "999999",
+    submittedRunScore: drillRequests[0]?.finalScore,
     normalCoach: { headline: normalCoach.coachHeadline, tip: normalCoach.coachTip },
     normalDrill: { title: normalDrill.drillTitle, instruction: normalDrill.drillInstruction },
     gameplayStatus: normalDrill.status,
