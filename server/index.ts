@@ -106,13 +106,13 @@ function agentFailure(reason: AgentStopReason): { status: number; code: AgentErr
   return { status: 503, code: "AGENT_UNAVAILABLE" };
 }
 
-function isSameBrowserOrigin(request: IncomingMessage): boolean {
+function isSameBrowserOrigin(request: IncomingMessage, protocol: "http:" | "https:"): boolean {
   const value = request.headers.origin;
   if (value === undefined) return true;
   if (typeof value !== "string" || typeof request.headers.host !== "string") return false;
   try {
     const origin = new URL(value);
-    return (origin.protocol === "http:" || origin.protocol === "https:") &&
+    return origin.protocol === protocol && origin.username === "" && origin.password === "" &&
       origin.host.toLowerCase() === request.headers.host.toLowerCase() &&
       origin.pathname === "/" && origin.search === "" && origin.hash === "";
   } catch { return false; }
@@ -123,6 +123,8 @@ type CoachRequestHandlerOptions = {
   agentRateLimiter?: RequestRateLimiter;
   agentAdmission?: AgentAdmission;
   onAgentSecurityEvent?: (event: HttpSecurityEvent) => void;
+  /** Trusted listener/ingress setting; never derived from forwarding headers. */
+  agentOriginProtocol?: "http:" | "https:";
 };
 
 export function createCoachServer(
@@ -205,7 +207,7 @@ export function createCoachRequestHandler(
         else sendJson(response, 400, { success: false, message: safeMessage });
         return;
       }
-      if (isAgent && !isSameBrowserOrigin(request)) {
+      if (isAgent && !isSameBrowserOrigin(request, handlerOptions.agentOriginProtocol ?? "http:")) {
         deny(400, "INVALID_REQUEST");
         return;
       }

@@ -22,8 +22,11 @@ async function withServer(
   agentProvider: AgentProvider = fakeAgentProvider,
   agentRateLimiter?: RequestRateLimiter,
   agentOptions: AgentExecutionOptions = {},
+  handlerOptions: Parameters<typeof createCoachServer>[2] = {},
 ): Promise<void> {
-  const server = createCoachServer(fakeCoachProvider, {}, agentRateLimiter ? { agentRateLimiter } : {}, agentProvider, agentOptions);
+  const server = createCoachServer(fakeCoachProvider, {}, {
+    ...handlerOptions, ...(agentRateLimiter ? { agentRateLimiter } : {}),
+  }, agentProvider, agentOptions);
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const address = server.address();
@@ -63,6 +66,7 @@ describe("W08 HTTP ingress", () => {
 
   it("T01/T02 rejects malformed, missing, null, type, domain and policy fields before provider work", async () => {
     const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
     const invalid = [
       "{", JSON.stringify({ ...validRun, goal: null }),
       JSON.stringify({ ...validRun, goal: "admin" }),
@@ -91,12 +95,14 @@ describe("W08 HTTP ingress", () => {
       const response = await send(url, JSON.stringify(missing));
       expect(response.status).toBe(400);
       expect(await response.json()).toMatchObject({ success: false, errorCode: "INVALID_REQUEST" });
-    }, { ...fakeAgentProvider, generate }, noLimit);
+    }, { ...fakeAgentProvider, generate }, noLimit, { tool });
     expect(generate).not.toHaveBeenCalled();
+    expect(tool).not.toHaveBeenCalled();
   });
 
   it("T01 accepts the 4096 px AI boundary and rejects larger width or offset", async () => {
     const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
     const boundary = {
       goal: "choose_next_drill", finalScore: 0, startingWidth: 4_096,
       drops: [{ floor: 1, offsetPx: 4_096, direction: 1, timing: "late", widthBefore: 4_096, widthAfter: 0 }],
@@ -115,12 +121,14 @@ describe("W08 HTTP ingress", () => {
       }));
       expect(tooFar.status).toBe(400);
       expect(await tooFar.json()).toMatchObject({ errorCode: "INVALID_REQUEST" });
-    }, { ...fakeAgentProvider, generate });
+    }, { ...fakeAgentProvider, generate }, undefined, { tool });
     expect(generate).toHaveBeenCalledTimes(2);
+    expect(tool).toHaveBeenCalledTimes(1);
   });
 
   it("T01 returns stable method and content-type errors with no provider effect", async () => {
     const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
     await withServer(async (url) => {
       const wrongMethod = await fetch(`${url}/api/ai/next-drill`);
       expect(wrongMethod.status).toBe(405);
@@ -132,12 +140,14 @@ describe("W08 HTTP ingress", () => {
       const malformedType = await send(url, JSON.stringify(validRun), { "content-type": "application/json; bogus=1" });
       expect(malformedType.status).toBe(400);
       expect(await malformedType.json()).toMatchObject({ errorCode: "INVALID_REQUEST" });
-    }, { ...fakeAgentProvider, generate });
+    }, { ...fakeAgentProvider, generate }, undefined, { tool });
     expect(generate).not.toHaveBeenCalled();
+    expect(tool).not.toHaveBeenCalled();
   });
 
   it("T01 enforces 64 KiB UTF-8 bytes before JSON parsing, including the exact boundary", async () => {
     const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
     const serialized = JSON.stringify(validRun);
     const boundary = serialized + " ".repeat(65_536 - Buffer.byteLength(serialized));
     expect(Buffer.byteLength(boundary)).toBe(65_536);
@@ -147,12 +157,14 @@ describe("W08 HTTP ingress", () => {
       const denied = await send(url, `${boundary} `);
       expect(denied.status).toBe(413);
       expect(await denied.json()).toMatchObject({ success: false, errorCode: "REQUEST_TOO_LARGE" });
-    }, { ...fakeAgentProvider, generate });
+    }, { ...fakeAgentProvider, generate }, undefined, { tool });
     expect(generate).toHaveBeenCalledTimes(2);
+    expect(tool).toHaveBeenCalledTimes(1);
   });
 
   it("T01 stops a stalled body at five seconds with zero provider calls", async () => {
     const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
     await withServer(async (url) => {
       const response = await new Promise<{ status: number; body: string }>((resolve, reject) => {
         const request = httpRequest(`${url}/api/ai/next-drill`, {
@@ -168,8 +180,9 @@ describe("W08 HTTP ingress", () => {
       });
       expect(response.status).toBe(408);
       expect(JSON.parse(response.body)).toMatchObject({ errorCode: "REQUEST_TIMEOUT" });
-    }, { ...fakeAgentProvider, generate });
+    }, { ...fakeAgentProvider, generate }, undefined, { tool });
     expect(generate).not.toHaveBeenCalled();
+    expect(tool).not.toHaveBeenCalled();
   }, 8_000);
 
   it("Origin applicability: a second origin is denied while same-origin JSON succeeds", async () => {
@@ -193,5 +206,44 @@ describe("W08 HTTP ingress", () => {
       expect(sameOrigin.status).toBe(200);
     }, { ...fakeAgentProvider, generate });
     expect(generate).toHaveBeenCalledTimes(2);
+  });
+
+  it("Origin applicability: rejects a different scheme and ignores forged proxy protocol", async () => {
+    const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
+    await withServer(async (url) => {
+      const denied = await send(url, JSON.stringify(validRun), {
+        origin: url.replace("http:", "https:"), "x-forwarded-proto": "https",
+      });
+      expect(denied.status).toBe(400);
+      expect(await denied.json()).toMatchObject({ errorCode: "INVALID_REQUEST" });
+      expect(generate).not.toHaveBeenCalled();
+      expect(tool).not.toHaveBeenCalled();
+      const accepted = await send(url, JSON.stringify(validRun), {
+        origin: url, "x-forwarded-proto": "https",
+      });
+      expect(accepted.status).toBe(200);
+    }, { ...fakeAgentProvider, generate }, noLimit, { tool });
+    expect(generate).toHaveBeenCalledTimes(2);
+    expect(tool).toHaveBeenCalledTimes(1);
+  });
+
+  it("Origin applicability: uses the trusted HTTPS ingress setting behind a proxy", async () => {
+    const generate = vi.fn(fakeAgentProvider.generate);
+    const tool = vi.fn(evaluateDrill);
+    await withServer(async (url) => {
+      const denied = await send(url, JSON.stringify(validRun), {
+        origin: url, "x-forwarded-proto": "http",
+      });
+      expect(denied.status).toBe(400);
+      expect(generate).not.toHaveBeenCalled();
+      expect(tool).not.toHaveBeenCalled();
+      const accepted = await send(url, JSON.stringify(validRun), {
+        origin: url.replace("http:", "https:"), "x-forwarded-proto": "http",
+      });
+      expect(accepted.status).toBe(200);
+    }, { ...fakeAgentProvider, generate }, noLimit, { tool }, { agentOriginProtocol: "https:" });
+    expect(generate).toHaveBeenCalledTimes(2);
+    expect(tool).toHaveBeenCalledTimes(1);
   });
 });

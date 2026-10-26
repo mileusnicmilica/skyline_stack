@@ -18,7 +18,7 @@ export function createProductionNextDrillHandler(selectedProvider: AgentProvider
   return createCoachRequestHandler(
     fakeCoachProvider,
     {},
-    { agentRateLimiter, onAgentSecurityEvent: recordHttpSecurityEvent },
+    { agentRateLimiter, onAgentSecurityEvent: recordHttpSecurityEvent, agentOriginProtocol: "https:" },
     selectedProvider,
     { onUsage: recordAgentUsage, onSecurityEvent: recordAgentSecurityEvent },
   );

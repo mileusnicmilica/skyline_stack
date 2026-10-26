@@ -58,7 +58,7 @@ describe("next drill limits and failure policy", () => {
     expect(result.usage.stopReason).toBe("provider_failure");
   });
 
-  it("applies the per-attempt timeout and reports bounded timeout retries", async () => {
+  it("applies the per-attempt timeout without starting an overlapping retry", async () => {
     const generate = vi.fn(async (_context: AgentModelContext, { signal }: { signal: AbortSignal; attempt: number }): Promise<ProviderGeneration> => await new Promise((_, reject) => {
       signal.addEventListener("abort", () => reject(signal.reason), { once: true });
     }));
@@ -66,8 +66,11 @@ describe("next drill limits and failure policy", () => {
       totalDeadlineMs: 500, attemptTimeoutMs: 15, retryDelayMs: 1,
     });
     expect(result.usage.stopReason).toBe("provider_timeout");
-    expect(result.usage.providerAttempts).toBe(2);
-    expect(generate).toHaveBeenCalledTimes(2);
+    expect(result.usage.steps[0]?.status).toBe("provider_timeout");
+    expect(result.usage.providerAttempts).toBe(1);
+    expect(result.usage.toolCallCount).toBe(0);
+    expect(result.usage.latencyMs).toBeGreaterThanOrEqual(15);
+    expect(generate).toHaveBeenCalledTimes(1);
   });
 
   it("enforces total deadline even when provider never answers", async () => {
@@ -88,11 +91,19 @@ describe("next drill limits and failure policy", () => {
       const run = runNextDrill(input, provider(generate), {
         totalDeadlineMs: 60_000, attemptTimeoutMs: 60_000, retryDelayMs: 1,
       });
-      await vi.advanceTimersByTimeAsync(17_000);
+      let settled = false;
+      void run.then(() => { settled = true; });
+      await vi.advanceTimersByTimeAsync(7_999);
+      expect(settled).toBe(false);
+      expect(generate).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1);
       const result = await run;
       expect(result.usage.stopReason).toBe("provider_timeout");
-      expect(result.usage.providerAttempts).toBe(2);
-      expect(result.usage.latencyMs).toBeLessThan(17_000);
+      expect(result.usage.steps[0]?.status).toBe("provider_timeout");
+      expect(result.usage.providerAttempts).toBe(1);
+      expect(result.usage.toolCallCount).toBe(0);
+      expect(result.usage.latencyMs).toBe(8_000);
+      expect(generate).toHaveBeenCalledTimes(1);
     } finally {
       vi.useRealTimers();
     }

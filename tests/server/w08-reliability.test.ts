@@ -8,6 +8,19 @@ import { finalCall, scriptedAgent, toolCall, trackedDelayedAgent, w08Run } from 
 const delayed = (milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 
 describe("W08 agent work budgets", () => {
+  it("T11 retries a settled unavailable provider and completes within the attempt budget", async () => {
+    const { provider, generate } = scriptedAgent(
+      new ProviderError("synthetic unavailable", true, "unavailable"), toolCall(), finalCall(),
+    );
+    const tool = vi.fn(evaluateDrill);
+    const result = await runNextDrill(w08Run, provider, { tool, retryDelayMs: 1 });
+    expect(result.ok).toBe(true);
+    expect(result.usage.stopReason).toBe("goal_completed");
+    expect(result.usage.providerAttempts).toBe(3);
+    expect(generate).toHaveBeenCalledTimes(3);
+    expect(tool).toHaveBeenCalledTimes(1);
+  });
+
   it("T11 counts retries across decisions without a fifth provider call", async () => {
     const { provider, generate } = scriptedAgent(
       new ProviderError("synthetic retry", true, "unavailable"), toolCall("release_later"),
@@ -92,11 +105,14 @@ describe("W08 agent work budgets", () => {
       await vi.advanceTimersByTimeAsync(25);
       const result = await run;
       expect(result.usage.stopReason).toBe("provider_timeout");
-      expect(result.usage.providerAttempts).toBe(2);
-      expect(delayedProvider.generate).toHaveBeenCalledTimes(2);
+      expect(result.usage.providerAttempts).toBe(1);
+      expect(delayedProvider.generate).toHaveBeenCalledTimes(1);
+      expect(delayedProvider.active()).toBe(1);
+      expect(delayedProvider.peak()).toBe(1);
       expect(tool).not.toHaveBeenCalled();
       await vi.advanceTimersByTimeAsync(40);
       expect(delayedProvider.active()).toBe(0);
+      expect(tool).not.toHaveBeenCalled();
     } finally {
       vi.useRealTimers();
     }

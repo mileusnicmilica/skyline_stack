@@ -93,7 +93,7 @@ describe("W08 local HTTP admission", () => {
     let calls = 0;
     const generate = vi.fn<AgentProvider["generate"]>(async (context, options) => {
       calls += 1;
-      if (calls <= 2) await new Promise<void>((resolve) => { pending.push(resolve); });
+      if (calls === 1) await new Promise<void>((resolve) => { pending.push(resolve); });
       return fakeAgentProvider.generate(context, options);
     });
     const admission = createAgentAdmission(1);
@@ -101,19 +101,69 @@ describe("W08 local HTTP admission", () => {
       const timedOut = await send(url, validRun);
       expect(timedOut.status).toBe(504);
       expect(await timedOut.json()).toMatchObject({ errorCode: "AGENT_TIMEOUT" });
-      expect(pending).toHaveLength(2);
+      expect(pending).toHaveLength(1);
       expect(admission.active()).toBe(1);
 
       const blocked = await send(url, validRun);
       expect(blocked.status).toBe(429);
       expect(await blocked.json()).toMatchObject({ errorCode: "CONCURRENCY_LIMIT" });
-      expect(generate).toHaveBeenCalledTimes(2);
+      expect(generate).toHaveBeenCalledTimes(1);
 
       pending.forEach((resolve) => resolve());
       await waitFor(() => admission.active() === 0);
       const recovered = await send(url, validRun);
       expect(recovered.status).toBe(200);
       expect((await recovered.json()).recommendation.drillId).toBe("release_earlier");
+    }, { ...fakeAgentProvider, generate }, { agentAdmission: admission }, {
+      attemptTimeoutMs: 15, retryDelayMs: 1, totalDeadlineMs: 100,
+    });
+  });
+
+  it("T12/T13 never overlaps timeout retries across two abort-ignoring admitted runs", async () => {
+    const pending: Array<() => void> = [];
+    let hold = true;
+    let active = 0;
+    let peak = 0;
+    const generate = vi.fn<AgentProvider["generate"]>(async (context, options) => {
+      active += 1;
+      peak = Math.max(peak, active);
+      try {
+        if (hold) await new Promise<void>((resolve) => { pending.push(resolve); });
+        return await fakeAgentProvider.generate(context, options);
+      } finally {
+        active -= 1;
+      }
+    });
+    const admission = createAgentAdmission(2);
+    await withServer(async (url) => {
+      try {
+        const responses = await Promise.all([send(url, validRun), send(url, validRun)]);
+        for (const response of responses) {
+          expect(response.status).toBe(504);
+          expect(await response.json()).toMatchObject({ errorCode: "AGENT_TIMEOUT" });
+        }
+        expect(generate).toHaveBeenCalledTimes(2);
+        expect(pending).toHaveLength(2);
+        expect(peak).toBe(2);
+        expect(active).toBe(2);
+        expect(admission.active()).toBe(2);
+
+        const blocked = await send(url, validRun);
+        expect(blocked.status).toBe(429);
+        expect(await blocked.json()).toMatchObject({ errorCode: "CONCURRENCY_LIMIT" });
+        expect(generate).toHaveBeenCalledTimes(2);
+
+        hold = false;
+        pending.forEach((resolve) => resolve());
+        await waitFor(() => admission.active() === 0 && active === 0);
+        const recovered = await send(url, validRun);
+        expect(recovered.status).toBe(200);
+        expect((await recovered.json()).recommendation.drillId).toBe("release_earlier");
+        expect(peak).toBe(2);
+      } finally {
+        hold = false;
+        pending.forEach((resolve) => resolve());
+      }
     }, { ...fakeAgentProvider, generate }, { agentAdmission: admission }, {
       attemptTimeoutMs: 15, retryDelayMs: 1, totalDeadlineMs: 100,
     });

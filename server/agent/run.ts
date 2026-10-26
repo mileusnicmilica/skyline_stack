@@ -271,7 +271,10 @@ export async function runNextDrill(
         if (Date.now() >= deadline) return finish("deadline");
         const providerError = error instanceof ProviderError ? error : null;
         const reason = providerStopReason(error);
-        const canRetry = providerError?.retryable === true && attempt < MAX_ATTEMPTS_PER_STEP &&
+        // A timed-out provider may ignore abort and still be running. Retrying here
+        // would overlap real work inside one admission lease and exceed its limit.
+        const canRetry = providerError?.retryable === true && providerError.kind !== "timeout" &&
+          attempt < MAX_ATTEMPTS_PER_STEP &&
           usage.providerAttempts < MAX_PROVIDER_ATTEMPTS;
         if (!canRetry) { stepUsage.status = reason; return finish(reason); }
         const delay = Math.min(duration(options.retryDelayMs, DEFAULT_RETRY_DELAY_MS), Math.max(0, deadline - Date.now()));

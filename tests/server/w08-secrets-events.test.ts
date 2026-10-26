@@ -14,7 +14,17 @@ import { w08Run } from "./w08-fixtures";
 const SENTINEL = "W08_SERVER_SECRET_DO_NOT_EXPOSE";
 
 describe("W08 secret and event boundary", () => {
-  it("T14 loads a synthetic server credential without placing its value in model context", async () => {
+  it("T14/T16 loads the build-proof credential from server environment without placing its value in model context", async () => {
+    // The W08 runner supplies this marker to both this test and the build.
+    // Standalone tests override any local credential before choosing an adapter.
+    if (process.env.W08_SECRET_BOUNDARY_PROOF === "1") {
+      expect(process.env["GEMINI_API_KEY"] === SENTINEL).toBe(true);
+      expect(process.env.AI_COACH_PROVIDER).toBe("fake");
+    }
+    const originalKey = process.env.GEMINI_API_KEY;
+    const originalProvider = process.env.AI_COACH_PROVIDER;
+    vi.stubEnv("GEMINI_API_KEY", SENTINEL);
+    vi.stubEnv("AI_COACH_PROVIDER", "gemini");
     let sentBody = "";
     let loadedHeader = "";
     vi.stubGlobal("fetch", vi.fn(async (_url: string, options: RequestInit) => {
@@ -25,7 +35,7 @@ describe("W08 secret and event boundary", () => {
       }) }] } }] });
     }));
     try {
-      const provider = createAgentProvider({ AI_COACH_PROVIDER: "gemini", GEMINI_API_KEY: SENTINEL });
+      const provider = createAgentProvider();
       const context: AgentModelContext = {
         goal: "choose_next_drill", finalScore: 1, earlyCount: 0, lateCount: 2,
         centeredCount: 0, step: 1, evidence: [],
@@ -37,6 +47,9 @@ describe("W08 secret and event boundary", () => {
       expect(JSON.stringify(context)).not.toContain(SENTINEL);
     } finally {
       vi.unstubAllGlobals();
+      vi.unstubAllEnvs();
+      expect(process.env["GEMINI_API_KEY"] === originalKey).toBe(true);
+      expect(process.env.AI_COACH_PROVIDER).toBe(originalProvider);
     }
   });
 
