@@ -47,7 +47,9 @@ Decision variants are exactly `{action:"call_tool",tool:"evaluate_drill",args:{d
 
 The request has no arbitrary text field; the generated labels have fixed text and size. The model context contains at most two evidence items, and the final recommendation cannot cite an evidence ID from another run.
 
-The server-owned budgets are in [spec.md](../spec.md#local-security-profile-server-owned-targets). Serialize and check the at-most-2 KiB model context before send; include at most two validated evidence items. The Gemini adapter sets a 512-token output cap where supported, bounds the transport envelope to 32 KiB before full JSON parsing, then enforces the 4 KiB decision bound. Every explicit or adapter retry consumes a provider attempt; the raw fetch adapter must not add hidden SDK retries. After deadline/cancel, no new step begins and no late output is accepted as success. Active-work accounting follows underlying work, not only the timeout race.
+The server-owned budgets are in [spec.md](../spec.md#local-security-profile-server-owned-targets). Serialize and check the at-most-2 KiB model context before send; include at most two validated evidence items. The Gemini adapter sets a 512-token output cap where supported, bounds the transport envelope to 32 KiB before full JSON parsing, then enforces the 4 KiB decision bound. Every explicit or adapter retry consumes a provider attempt; the raw fetch adapter must not add hidden SDK retries. Settled transient failures may retry, but a provider timeout is terminal: no retry may overlap its unfinished operation. After deadline/cancel, no new step begins and no late output is accepted as success. Active-work accounting follows underlying work, not only the timeout race.
+
+The Origin gate compares protocol, host and port. The local HTTP listener uses `http:`; the Vercel entrypoint explicitly uses its HTTPS ingress policy. A caller's `X-Forwarded-Proto` cannot choose the trusted protocol. This is a browser-origin admission check, not authentication; a direct non-browser caller can omit Origin but still faces validation, quotas and capacity limits.
 
 ## Conditional boundaries
 
@@ -55,7 +57,7 @@ Current code has no account, private resource, session cookie, imported replay, 
 
 ## Predeclared scenario matrix
 
-All tests use synthetic input and fake providers. These are expected outcomes; **no W08 result is claimed yet**.
+All tests use synthetic input and fake or stubbed provider transport. This table records predeclared expectations; current observed results are maintained in `docs/EVIDENCE_W08.md`.
 
 | ID | Probe and required observation |
 |---|---|

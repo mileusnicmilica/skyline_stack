@@ -1,7 +1,7 @@
 # Tasks: W08 Secure the Arcade
 
 **Input**: [spec](spec.md), [plan](plan.md), [research](research.md), [data model](data-model.md), [security contract](contracts/next-drill-security.md), [quickstart](quickstart.md)  
-**Status**: Both technical blocks and the fake-only W08 suite are locally implemented and verified at code checkpoint `0b880f9` on 2026-10-26. Explicit full pair approval, personally attributable protection/test activity, role rotation and demo remain open; see [pair handoff](handoff-milica-nemanja.md).
+**Status**: Both technical blocks are implemented; follow-up audit corrections are tracked as T034–T037 below. Current tested checkpoint and command results are in `docs/EVIDENCE_W08.md`. Explicit full pair approval, personally attributable protection/test activity, role rotation and demo remain open; see [pair handoff](handoff-milica-nemanja.md) and [precise demo/review steps](demo-guide.md).
 
 ## Phase 1 — Approval and checkpoint
 
@@ -68,13 +68,22 @@
 - [x] **T031 [US3]** Execute the final fake-only typecheck, W08 security suite, full tests, build, local production browser smoke, existing secret scan and audit decision checks. Record commands, exit codes and counts; review the final diff for raw secrets/private data and untracked-file preservation.
 - [ ] **T032 [US3]** Have both members each contribute at least one protection and one negative test, review one successful and two different denied traces, swap driver/reviewer roles, and rehearse the eight-minute demo. Record only actual actions and explanations. Prepare the evidence commit and submission summary; do not send mail or deploy without separate user action.
 
+## Follow-up audit corrections authorized after `cf0e09f`
+
+- [x] **T034** Reproduce timeout/retry overlap with two actual HTTP requests, make provider timeout terminal without disabling retries for settled transient failures, and prove peak underlying provider work 2, excess 429, no late tool and recovery 200.
+- [x] **T035** Supply the same synthetic credential to environment-backed adapter tests and the production build; generate source maps, positively validate the artifact scanner and scan all output without a live request.
+- [x] **T036** Enforce trusted Origin scheme in addition to host/port for local HTTP and Vercel HTTPS; prove a forged forwarded protocol cannot change the policy and valid traffic still succeeds.
+- [x] **T037** Reconcile the evidence, checkpoint, policy and actual linked events after the fixes; add a precise Serbian pair review/demo guide, rerun W08/full verification and leave human contribution/approval/demo gates open until reported.
+
 ## Phase 6 — One optional extension after mandatory completion
 
-- [ ] **T033** If T001–T032 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
+- [ ] **T033** If T001–T032 and T034–T037 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
 
 ## Dependencies and execution order
 
 T001 remains the explicit pair approval record; each technical block was separately authorized by its owner on 2026-10-26. T002–T031 technical implementation, test and reproducibility work is recorded in `docs/EVIDENCE_W08.md`. T030 remains open for factual personally attributable pair activity; T032 requires both members' role rotation and demo. T033 is optional and cannot compensate for a mandatory gap.
+
+T034–T037 are completed, user-authorized follow-up audit corrections at tested code checkpoint `bc7de67`: 46 W08 tests, 207 full regression tests and a controlled build-secret proof. They do not close T001/T030/T032 or change human contribution claims.
 
 ## Requirement coverage
 
@@ -83,9 +92,9 @@ T001 remains the explicit pair approval record; each technical block was separat
 | FR-001–FR-004 | T005, T008–T014, T031 |
 | FR-005–FR-007 | T009–T012, T014, T026 |
 | FR-008–FR-009 | T015, T019, T023–T025 |
-| FR-010–FR-011 | T013, T016–T017, T020–T021, T025 |
-| FR-012–FR-014 | T018, T022, T029, T031 |
-| FR-015–FR-016 | T003, T017, T026, T028 |
-| FR-017–FR-019 | T001–T004, T007, T025, T027, T030–T032 |
+| FR-010–FR-011 | T013, T016–T017, T020–T021, T025, T034 |
+| FR-012–FR-014 | T018, T022, T029, T031, T035 |
+| FR-015–FR-016 | T003, T017, T026, T028, T036 |
+| FR-017–FR-019 | T001–T004, T007, T025, T027, T030–T032, T037 |
 
 Independent work can be split by file: one partner writes server fake/HTTP tests while the other prepares browser/header tests; swap roles for implementation review. The tasks are a plan, not a claim that either member has done work. All final evidence must come from actual runs.

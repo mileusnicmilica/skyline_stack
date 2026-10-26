@@ -1,7 +1,7 @@
 # Implementation Plan: W08 Secure the Arcade
 
 **Branch**: `main` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)  
-**Status**: Implemented locally at code checkpoint `0b880f9`; pair signoff and demo remain open
+**Status**: Technical blocks implemented with follow-up audit corrections; current tested checkpoint is recorded in `docs/EVIDENCE_W08.md`. Pair signoff, factual contributions and demo remain open.
 
 ## Summary
 
@@ -83,12 +83,19 @@ docs/EVIDENCE_W08.md         observed final evidence after implementation
 
 ## Pair workflow and gates
 
-The concrete Milica/Nemanja file split and current authorization state are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). The user's 2026-10-26 instruction authorizes Milica's HTTP/browser implementation block now. Nemanja's work and the full pair review are not yet observed.
+The concrete Milica/Nemanja file split and authorization history are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). Both technical blocks were separately authorized and implemented with Codex assistance; joint document/code review is user-reported. The user subsequently authorized correction of all independently actionable audit findings. Exact personal contributions, explicit full pair approval, role rotation and the demo remain open. [The demo guide](demo-guide.md) gives the members repeatable commands and a factual completion template.
 
 1. Pair reviews and explicitly approves `spec.md`, `plan.md`, `tasks.md` before W08 source changes. Record actual names/roles only when confirmed. Suggested rotation: one person drives API/agent controls while the other challenges with negative tests; swap for browser/headers/evidence. Each contributes a protection and a negative test.
 2. Confirm baseline and lock expected outcomes for T00–T17. Add tests that fail for observed missing controls, then implement the smallest appropriate fix. Preserve positive tests for every main boundary.
 3. Run the full fake suite, local production browser checks, audit and secret-sentinel check. Reconcile docs against actual output and open risks. Prepare the eight-minute demo and individual explanations.
 4. Commit only after code, tests and evidence are accurate. The assignment's submission mail is a separate user action; this plan authorizes no mail or deployment.
+
+### Follow-up audit corrections
+
+- Make provider timeout terminal, so a retry cannot overlap an abort-ignoring operation inside one lease. Retry settled transient failures within the unchanged total attempt budget. Combine two HTTP runs, timeouts, active-provider counts, denial and recovery in one regression.
+- Supply the same synthetic server credential to the environment-backed adapter test and production build. Stub transport, force fake mode, generate source maps, positively check the scanner, then scan every client artifact.
+- Check Origin scheme as well as host/port through trusted listener/ingress configuration; do not trust forwarded protocol headers. Local HTTP and simulated HTTPS ingress each need accepted and denied cases.
+- Replace mismatched event examples with a genuinely linked request trace, reconcile historical/current results and prepare personal review/demo steps. Do not close human gates using AI-generated assertions.
 
 ## Complexity and limits
 

@@ -174,7 +174,9 @@ Run `npm.cmd run evidence:w05` for reproducible fake success, rejected-tool,
 and provider-failure traces without a Gemini request. The local API applies
 separate W04 and W05 quotas: W04 allows five requests per ten minutes; W05
 allows five per 60 seconds per local process and at most two active underlying
-jobs. These W05 limits do not aggregate across deployed instances.
+jobs. Provider timeouts end the run without an overlapping retry; settled
+transient failures may retry within the shared attempt budget. These W05 limits
+do not aggregate across deployed instances.
 
 ### W08 security verification
 
@@ -186,6 +188,12 @@ proof and secret scan:
 ```powershell
 npm.cmd run test:security:w08
 ```
+
+The command supplies a synthetic server credential to the adapter fixture and
+production build, generates source maps, and scans every built artifact. It
+forces fake mode and uses a stubbed provider transport for the credential test.
+The [pair review and demo guide](specs/005-secure-the-arcade/demo-guide.md) lists
+the exact remaining personal checks and the eight-minute walkthrough.
 
 The measured results and remaining pair review/demo steps are in
 [W08 evidence](docs/EVIDENCE_W08.md). Local tests do not establish a shared

@@ -2,7 +2,7 @@
 
 **Feature branch**: `main` (local W08 implementation; no branch switch)
 **Created**: 2026-10-26  
-**Status**: Both technical blocks implemented and locally verified on 2026-10-26; explicit full pair approval, personal contribution record, role rotation and demo remain pending
+**Status**: Both technical blocks implemented; follow-up audit corrects timeout overlap, the controlled build-secret proof and full Origin comparison. Current measured checkpoint/results are in `docs/EVIDENCE_W08.md`; explicit full pair approval, personal contributions, role rotation and demo remain pending.
 **Input**: W08 assignment `weekly-assignment 08.md`; existing Skyline Stack W03–W05 game, Coach and Next Drill Agent.
 
 ## User Scenarios & Testing
@@ -104,10 +104,12 @@ The pair can explain and reproduce each important claim from a documented checkp
 | Model decisions / provider attempts | 3 decisions / 4 total attempts, at most 2 attempts per decision |
 | Tool executions | 2 per run; deterministic bounded evaluator |
 | Provider attempt / total run | 8 s / 25 s, including retry and tool work |
-| Simultaneous W05 runs | 2 active in one local server process, including unfinished underlying work |
+| Simultaneous W05 runs / provider calls | 2 active runs and at most 2 unfinished underlying provider calls in one local process; provider timeout is terminal and never retried |
 | Admission | At most 5 W05 runs per 60 seconds globally in unauthenticated local demo mode; no client-supplied IP trust |
 
 These are project targets, not universal security constants. An in-memory process limit is not a distributed production quota.
+
+Settled transient provider failures may retry within the shared attempt budget. A provider timeout ends that run without another attempt, because cancellation does not prove the previous operation stopped. Its admission lease drains until the underlying provider/tool promise settles. Browser Origin checks compare scheme, host and port using a trusted server setting: HTTP for the local listener and HTTPS for the Vercel entrypoint, never a caller's forwarding header.
 
 The 4096 px AI-analysis envelope is a server-owned demo policy. Custom browser game configurations outside it may still run the game, but their AI request receives a safe unavailable result; browser configuration cannot raise this limit.
 

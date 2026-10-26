@@ -5,7 +5,7 @@
 **Current branch at audit**: `main`
 **Current state**: W03/V2 remain stable; W05 Next Drill is bounded and W08 hardening is locally fake-verified. W08 pair signoff, personal contribution record, role rotation and demo remain open; live Gemini and distributed quota are not proved.
 
-For current W08 requirements and observed results, use [the W08 spec](../specs/005-secure-the-arcade/spec.md), [tasks](../specs/005-secure-the-arcade/tasks.md) and [evidence](EVIDENCE_W08.md). The older verification counts below are historical snapshots; the W08 integrated check passed 42 focused tests and the full regression passed 203 tests on 2026-10-26.
+For current W08 requirements and observed results, use [the W08 spec](../specs/005-secure-the-arcade/spec.md), [tasks](../specs/005-secure-the-arcade/tasks.md) and [evidence](EVIDENCE_W08.md). At final tested code checkpoint `bc7de67`, the W08 check passed **46 focused tests** and full regression passed **207 tests** on 2026-10-26, including timeout/retry concurrency, controlled build-secret/source-map proof and trusted full Origin checks. Earlier counts below are historical snapshots. [The personal review/demo guide](../specs/005-secure-the-arcade/demo-guide.md) lists the remaining human actions.
 
 ## Purpose
 

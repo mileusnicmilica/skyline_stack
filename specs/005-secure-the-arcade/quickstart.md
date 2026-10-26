@@ -15,7 +15,7 @@ The W05 success fixture uses `goal=choose_next_drill`, score 1, starting width 1
 
 ## Current integrated verification and pair follow-up
 
-Run the fake-forced integrated command `npm.cmd run test:security:w08` for two TypeScript checks, 9 W08 server files / 42 tests, production build, Edge T04/T05/T15/T16, secret scan and a built-artifact sentinel scan. `npm.cmd run test:security:w08:milica` remains available for her focused block. Edge/Chromium must be installed locally. Use the recorded baseline/current commands in `docs/EVIDENCE_W08.md` for the identical-fixture comparisons. No real API key is required.
+Run the fake-forced integrated command `npm.cmd run test:security:w08` for two TypeScript checks, 9 W08 server files, production build, Edge T04/T05/T15/T16, secret scan and a controlled built-artifact sentinel scan including source maps. Read current counts from `docs/EVIDENCE_W08.md` and the command output. `npm.cmd run test:security:w08:milica` remains available for her focused block. Edge/Chromium must be installed locally. Use the recorded baseline/current commands in `docs/EVIDENCE_W08.md` for the identical-fixture comparisons. No real API key is required.
 
 1. Set fake mode explicitly before any full-stack check so a local `.env` cannot select the live provider:
 
@@ -39,7 +39,7 @@ Run the fake-forced integrated command `npm.cmd run test:security:w08` for two T
 
 6. Complete [the declared T00–T17 matrix](contracts/next-drill-security.md#predeclared-scenario-matrix). Record three genuine before/after comparisons using the same fixtures and expectations. Mark every unperformed row `NOT RUN`, not PASS. Document the one-process admission limit and any public multi-instance exposure.
 
-7. Ask both pair members to verify and record their actual changes, negative tests and demo explanation. Prepare the eight-minute walkthrough from the assignment; send submission mail only through the user's own authorized process.
+7. Both pair members follow [the precise review/demo guide](demo-guide.md), record their actual changes, negative tests and explanations, exchange reviewer/driver roles and return the factual confirmation template. Keep T001/T030/T032 open until this happens. Submission mail is a separate user action.
 
 ## Completion gate
 
