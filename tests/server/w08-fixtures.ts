@@ -29,3 +29,25 @@ export function scriptedAgent(...outputs: unknown[]): {
   });
   return { provider: { name: "fake", model: "w08-scripted", generate }, generate };
 }
+
+/** Deliberately ignores AbortSignal so tests can observe unfinished underlying work. */
+export function trackedDelayedAgent(delayMs: number, output: unknown) {
+  let active = 0;
+  let peak = 0;
+  const generate = vi.fn(async () => {
+    active += 1;
+    peak = Math.max(peak, active);
+    try {
+      await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+      return { output };
+    } finally {
+      active -= 1;
+    }
+  });
+  return {
+    provider: { name: "fake", model: "w08-delayed", generate } satisfies AgentProvider,
+    generate,
+    active: () => active,
+    peak: () => peak,
+  };
+}

@@ -3,7 +3,7 @@ import { runNextDrill } from "../../server/agent/run";
 import type { AgentProvider } from "../../server/agent/types";
 import { ProviderError } from "../../server/providers/provider-error";
 import { evaluateDrill } from "../../server/agent/evaluate-drill";
-import { finalCall, scriptedAgent, toolCall, w08Run } from "./w08-fixtures";
+import { finalCall, scriptedAgent, toolCall, trackedDelayedAgent, w08Run } from "./w08-fixtures";
 
 const delayed = (milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 
@@ -61,20 +61,42 @@ describe("W08 agent work budgets", () => {
   it("T12 does not turn an abort-ignoring late model response into success", async () => {
     vi.useFakeTimers();
     try {
-      const generate = vi.fn(async () => {
-        await delayed(40);
-        return { output: toolCall() };
-      });
+      const delayedProvider = trackedDelayedAgent(40, toolCall());
       const tool = vi.fn(evaluateDrill);
-      const run = runNextDrill(w08Run, { name: "fake", model: "late", generate }, {
+      const run = runNextDrill(w08Run, delayedProvider.provider, {
         tool, totalDeadlineMs: 20, attemptTimeoutMs: 20,
       });
-      await vi.advanceTimersByTimeAsync(60);
+      await vi.advanceTimersByTimeAsync(21);
       const result = await run;
       expect(result.ok).toBe(false);
       expect(result.usage.stopReason).toBe("deadline");
-      expect(generate).toHaveBeenCalledTimes(1);
+      expect(delayedProvider.generate).toHaveBeenCalledTimes(1);
+      expect(delayedProvider.active()).toBe(1);
       expect(tool).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(30);
+      expect(delayedProvider.active()).toBe(0);
+      expect(delayedProvider.peak()).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("T12 enforces an individual attempt limit with no late tool execution", async () => {
+    vi.useFakeTimers();
+    try {
+      const delayedProvider = trackedDelayedAgent(40, toolCall());
+      const tool = vi.fn(evaluateDrill);
+      const run = runNextDrill(w08Run, delayedProvider.provider, {
+        tool, totalDeadlineMs: 100, attemptTimeoutMs: 10, retryDelayMs: 1,
+      });
+      await vi.advanceTimersByTimeAsync(25);
+      const result = await run;
+      expect(result.usage.stopReason).toBe("provider_timeout");
+      expect(result.usage.providerAttempts).toBe(2);
+      expect(delayedProvider.generate).toHaveBeenCalledTimes(2);
+      expect(tool).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(40);
+      expect(delayedProvider.active()).toBe(0);
     } finally {
       vi.useRealTimers();
     }
