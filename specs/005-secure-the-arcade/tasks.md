@@ -1,13 +1,13 @@
 # Tasks: W08 Secure the Arcade
 
 **Input**: [spec](spec.md), [plan](plan.md), [research](research.md), [data model](data-model.md), [security contract](contracts/next-drill-security.md), [quickstart](quickstart.md)  
-**Status**: Both technical blocks are implemented; follow-up audit corrections are tracked as T034–T037 below. Current tested checkpoint and command results are in `docs/EVIDENCE_W08.md`. Explicit full pair approval, personally attributable protection/test activity, role rotation and demo remain open; see [pair handoff](handoff-milica-nemanja.md) and [precise demo/review steps](demo-guide.md).
+**Status**: Both technical blocks are implemented; follow-up audit corrections are tracked as T034–T037 below. Current tested checkpoint and command results are in `docs/EVIDENCE_W08.md`. Both members' document approvals are recorded; personally attributable protection/test activity and exact role rotation/demo observations remain open; see [pair handoff](handoff-milica-nemanja.md) and [precise demo/review steps](demo-guide.md).
 
 ## Phase 1 — Approval and checkpoint
 
-**Gate**: Milica authorized her block, and Nemanja explicitly authorized completion of his block on 2026-10-26. Nemanja reports that both members reviewed the W08 documents and code. T001 remains open because a distinct, explicit full-pair approval and planned role rotation have not been recorded.
+**Gate**: Milica authorized her block, and Nemanja explicitly authorized completion of his block on 2026-10-26. Nemanja reports that both members reviewed the W08 documents and code. Milica Mileusnić explicitly approved all three W08 documents on 2026-10-27; Nemanja Manić's earlier explicit approval is recorded in his confirmation, and Milica reports his authorization for her to confirm it. The proposed driver/reviewer rotation is recorded in [demo-guide.md](demo-guide.md); actual observations remain for T032.
 
-- [ ] **T001** Record explicit pair review/approval of `specs/005-secure-the-arcade/spec.md`, `plan.md`, and `tasks.md`; record actual participant names and proposed role rotation in `docs/EVIDENCE_W08.md`. Do not infer approval from this draft.
+- [x] **T001** Record explicit pair review/approval of `specs/005-secure-the-arcade/spec.md`, `plan.md`, and `tasks.md`; record actual participant names and proposed role rotation in `docs/EVIDENCE_W08.md`. Both approvals were stated in conversation; this does not close the separate personal-contribution and observed-demo tasks.
 - [x] **T002** Copy the observed initial commit and baseline command results from `plan.md`/`quickstart.md` into `docs/EVIDENCE_W08.md`; preserve the unrelated untracked report and capture a new `git status` before code edits.
 - [x] **T003** Recheck `src/`, `server/`, `api/` and Vercel configuration for actual data sources, cookies, private resources, origin behavior and all browser sinks, including W04 Coach; finalize six risk scenarios, three priorities, an architecture diagram and a per-field inventory (controller, check, use, model exposure, storage) in `docs/EVIDENCE_W08.md` without claiming unrun outcomes.
 - [x] **T004** Select and run three baseline probes using identical future fixtures and predeclared expectations, starting with T13, T16 and T06/T12 candidates; lock their input/output in `docs/EVIDENCE_W08.md`. If already safe, retain a regression case and choose another measured gap.
@@ -75,18 +75,19 @@
 - [x] **T036** Enforce trusted Origin scheme in addition to host/port for local HTTP and Vercel HTTPS; prove a forged forwarded protocol cannot change the policy and valid traffic still succeeds.
 - [x] **T037** Reconcile the evidence, checkpoint, policy and actual linked events after the fixes; add a precise Serbian pair review/demo guide, rerun W08/full verification and leave human contribution/approval/demo gates open until reported.
 - [x] **T038** Add the user-requested basic `.github/workflows/ci.yml`: push/PR/manual triggers, Node 24, fake provider, locked install, typecheck, all unit/HTTP tests, production build and existing secret scan. Use read-only permissions, fetch history for the scan and no provider secret; document where to see the Actions result and validate the commands.
+- [x] **T039** Extend the existing GitHub Actions workflow with a separate fake-only W08 security job on push/PR/manual dispatch: pinned Ubuntu/Node, locked install, W08 server tests, real-browser CSP/XSS checks and controlled build-secret proof. Verify locally and document where to inspect the remote run; do not claim remote PASS before observing it.
 
 ## Phase 6 — One optional extension after mandatory completion
 
-- [ ] **T033** If T001–T032 and T034–T038 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
+- [ ] **T033** If T001–T032 and T034–T039 are complete, add one seeded, bounded property-based request-validation test (T01/T02 invariant) in `tests/server/w08-property.test.ts`; pin seed/trial count and record the observed result. Do not add a second optional challenge.
 
 ## Dependencies and execution order
 
-T001 remains the explicit pair approval record; each technical block was separately authorized by its owner on 2026-10-26. T002–T031 technical implementation, test and reproducibility work is recorded in `docs/EVIDENCE_W08.md`. T030 remains open for factual personally attributable pair activity; T032 requires both members' role rotation and demo. T033 is optional and cannot compensate for a mandatory gap.
+T001 records both members' explicit document approval and the proposed role rotation; each technical block was separately authorized by its owner on 2026-10-26. T002–T031 technical implementation, test and reproducibility work is recorded in `docs/EVIDENCE_W08.md`. T030 remains open for factual personally attributable pair activity; T032 requires observed role rotation and demo details. T033 is optional and cannot compensate for a mandatory gap.
 
-T034–T037 are completed, user-authorized follow-up audit corrections at tested code checkpoint `bc7de67`: 46 W08 tests, 207 full regression tests and a controlled build-secret proof. They do not close T001/T030/T032 or change human contribution claims.
+T034–T037 are completed, user-authorized follow-up audit corrections at tested code checkpoint `bc7de67`: 46 W08 tests, 207 full regression tests and a controlled build-secret proof. They do not change human contribution claims.
 
-T038 adds only basic GitHub CI. Its typecheck, 207 unit/HTTP tests, build and secret-scan commands passed locally on 2026-10-26; this local result does not claim a remote Actions run passed. The README badge links to actual remote runs. Browser/CSP and controlled build-secret proof remain in the local W08 suite.
+T038 added basic GitHub CI. Its typecheck, 207 unit/HTTP tests, build and secret-scan commands passed locally on 2026-10-26. T039 adds the full W08 suite as a separate CI job; `npm.cmd run test:security:w08` passed locally on 2026-10-27 with 46/46 tests, browser/CSP checks and controlled artifact scan. Neither local result claims that a remote Actions run passed. The README badge links to remote runs.
 
 ## Requirement coverage
 

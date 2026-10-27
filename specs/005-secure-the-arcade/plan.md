@@ -1,7 +1,7 @@
 # Implementation Plan: W08 Secure the Arcade
 
 **Branch**: `main` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)  
-**Status**: Technical blocks implemented with follow-up audit corrections; current tested checkpoint is recorded in `docs/EVIDENCE_W08.md`. Pair signoff, factual contributions and demo remain open.
+**Status**: Technical blocks implemented with follow-up audit corrections; current tested checkpoint is recorded in `docs/EVIDENCE_W08.md`. Both document approvals are recorded; factual personal contributions and demo details remain open.
 
 ## Summary
 
@@ -24,13 +24,13 @@ Observed 2026-10-26: `npm.cmd run typecheck` passed; `npm.cmd test` passed 25 fi
 
 ## Constitution Check
 
-- **I, specification before implementation**: This separate W08 package follows specify → plan → tasks. Both technical blocks were separately authorized and implemented; explicit full pair approval remains open.
+- **I, specification before implementation**: This separate W08 package follows specify → plan → tasks. Both technical blocks were separately authorized and implemented; both members' approvals of the three documents are recorded on 2026-10-27.
 - **II, bounded later-week feature**: W08 expressly extends W05. It does not rewrite W03/V2 artifacts, add a login, database, write tool or game rule. Any new dependency needs its own justification.
 - **III, honest evidence**: Baseline commands above were run. W08 outcomes are recorded only as they are measured in `docs/EVIDENCE_W08.md`; unrun rows remain `NOT RUN`. Pair contribution and demo are `TBD` until the people perform them. Real baseline gaps were measured before the corresponding Milica-block fixes.
 - **IV, runtime contracts**: Existing `GameConfig` rule stays intact; W08 adds explicit runtime boundaries for agent input/output.
 - **V, historical Session 003 experiment**: This rule applies to the old locked experiment; W08 uses its own approved spec, plan, tasks and evaluation set.
 
-**Current gate**: Both technical blocks were tested locally. The user's report confirms joint document/code review; T001 still requires an explicit full pair approval record and planned role rotation.
+**Current gate**: Both technical blocks were tested locally. Milica explicitly approved the three W08 documents on 2026-10-27; Nemanja's earlier explicit approval is recorded in his confirmation draft, and Milica reports his authority for her to confirm it. The role rotation is planned in the demo guide; exact personal demo observations remain open.
 
 ## Architecture and risk decisions
 
@@ -83,7 +83,7 @@ docs/EVIDENCE_W08.md         observed final evidence after implementation
 
 ## Pair workflow and gates
 
-The concrete Milica/Nemanja file split and authorization history are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). Both technical blocks were separately authorized and implemented with Codex assistance; joint document/code review is user-reported. The user subsequently authorized correction of all independently actionable audit findings. Exact personal contributions, explicit full pair approval, role rotation and the demo remain open. [The demo guide](demo-guide.md) gives the members repeatable commands and a factual completion template.
+The concrete Milica/Nemanja file split and authorization history are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). Both technical blocks were separately authorized and implemented with Codex assistance; joint document/code review is user-reported. The user subsequently authorized correction of all independently actionable audit findings. Both W08 document approvals are recorded on 2026-10-27. Exact personal contributions and observed role rotation/demo traces remain open. [The demo guide](demo-guide.md) gives the members repeatable commands and a factual completion template.
 
 1. Pair reviews and explicitly approves `spec.md`, `plan.md`, `tasks.md` before W08 source changes. Record actual names/roles only when confirmed. Suggested rotation: one person drives API/agent controls while the other challenges with negative tests; swap for browser/headers/evidence. Each contributes a protection and a negative test.
 2. Confirm baseline and lock expected outcomes for T00–T17. Add tests that fail for observed missing controls, then implement the smallest appropriate fix. Preserve positive tests for every main boundary.

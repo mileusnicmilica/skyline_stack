@@ -1,6 +1,6 @@
 # W08 split and integration handoff: Milica and Nemanja
 
-**Decision recorded:** 2026-10-26. Milica and Nemanja separately authorized their technical blocks. Nemanja reports that both reviewed the documents and code. The split records responsibility; it does not prove personal code authorship, test execution, full pair approval or the demo. Codex assistance is not a second human contribution.
+**Decision recorded:** 2026-10-26. Milica and Nemanja separately authorized their technical blocks. Nemanja reports that both reviewed the documents and code. On 2026-10-27 Milica Mileusnić explicitly approved the three W08 documents, and Nemanja Manić's earlier explicit approval was recorded; Milica reports his authorization for her to confirm his draft. The split and approvals do not prove personal code authorship, test execution or exact demo observations. Codex assistance is not a second human contribution.
 
 ## Milica's block: HTTP and browser boundary
 
@@ -51,4 +51,4 @@ The public Vercel route currently runs in an instance-local process. A local in-
 3. Together: reconcile T00-T17, three comparable before/after probes, data inventory, six risks, dependency audit, synthetic-secret scan, complete evidence, swap reviewer/driver, and rehearse one success plus two denial traces.
 4. Commit and submission details must identify actual human contributions. Sending assignment email and deployment are separate actions; neither is implied by this handoff.
 
-**Current state:** Both technical blocks and follow-up timeout/build-secret/Origin corrections are implemented. Current counts, tested checkpoint and command results are maintained in `docs/EVIDENCE_W08.md`. Codex ran the recorded checks; Nemanja reports joint document/code review. Explicit full pair approval, each person's actual protection and negative test contribution, role rotation and the eight-minute demo remain open. Follow [demo-guide.md](demo-guide.md) and return its factual confirmation template; running a guide is not automatically evidence of code authorship.
+**Current state:** Both technical blocks and follow-up timeout/build-secret/Origin corrections are implemented. Current counts, tested checkpoint and command results are maintained in `docs/EVIDENCE_W08.md`. Codex ran the recorded checks; both document approvals and proposed role rotation are recorded. Each person's exact protection/test actions and observed role rotation/demo traces remain open. Follow [demo-guide.md](demo-guide.md) and return its factual confirmation template; running a guide is not automatically evidence of code authorship.

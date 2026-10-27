@@ -1,9 +1,13 @@
-# W08 lična potvrda — Nemanja (nacrt za lični pregled)
+# W08 lična potvrda — Nemanja Manić (odobren nacrt, čeka detalje demoa)
 
 **Datum:** 27.10.2026.
 
 **Proveren commit:** `f10e7dcde5865e5a94f8267017259c8ae25520d0` (`main`, posle `git pull --ff-only origin main`).
-**Puno prezime:** nije navedeno u ovom razgovoru; dopuniti pre potpisivanja.
+**Puno ime:** Nemanja Manić; Milica Mileusnić ga je dostavila u razgovoru 27.10.2026.
+
+**Naknadna tehnička potvrda, 27.10.2026:** na aktuelnom `main` commitu `853f221` ponovo je provereno pravilo za dozvoljeni alat u `server/agent/run.ts` i pokrenut `npm.cmd test -- tests/server/w08-agent.test.ts -t 'T07/T09 rejects forbidden tool read_file after one provider decision'`. Komanda je završena izlazom 0: jedan izabrani test je prošao, devet je preskočeno. Od `f10e7dc` do `853f221` promenjena su samo ova dva W08 nacrta. Ovo potvrđuje tehnički nalaz na sadašnjem checkout-u; ne pripisuje Nemanji lično pokretanje komande.
+
+**Ovlašćenje koje je prijavila Milica, 27.10.2026:** Milica Mileusnić kaže da ju je Nemanja ovlastio da potvrdi njegov nacrt i dostavila je njegovo puno ime. Time je njegov prethodno dokumentovan stav o odobrenju W08 dokumenata potvrđen za ovu predaju preko Milice; ta izjava ne dodaje lično pokrenute komande ili nepoznate detalje demonstracije.
 
 Pročitao sam W08 `spec.md`, `plan.md` i `tasks.md` za `005-secure-the-arcade`. **Izričito odobravam sva tri dokumenta bez primedbi.** Nemanja je ovu odluku potvrdio u razgovoru 27.10.2026. Codexov tehnički pregled istih dokumenata takođe nije našao primedbu koja blokira proveru.
 
@@ -36,4 +40,4 @@ Nemanja je u razgovoru potvrdio da su on i Milica **27.10.2026. održali zamenu 
 - **Krug B:** prema Nemanjinoj potvrdi, Nemanja driver za agent/tool, Milica reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T07/T09 lokalno potvrđuje `read_file`/`constructor` odbijanje sa provider 1 i tool 0.
 - **Tri demonstraciona traga:** korisnik je potvrdio održan osmominutni demo prema vodiču; nezavisne provere ovog commita potvrdile su T00 uspeh, T01/T02 HTTP odbijanje i T07/T09 agent odbijanje. Tačan zajednički prikaz tih tragova nije zasebno dokumentovan.
 
-**Preostalo pre zatvaranja T001/T030/T032:** Milicina zasebna izričita saglasnost i lična potvrda; Nemanjino puno ime, kao i dopuna tačnih osporenih varijanti i posmatranih tragova sa zajedničkog demoa. Ovaj nacrt nije završna evidencija ni osnova za slanje mejla.
+**Preostalo pre zatvaranja T030/T032:** Nemanjini lični detalji provere i tačne osporene varijante i posmatrani tragovi sa zajedničkog demoa; takođe Milicini nedostajući lični detalji. Obe odluke o dokumentima za T001 su zabeležene. Ovaj nacrt nije završna evidencija ni osnova za slanje mejla.

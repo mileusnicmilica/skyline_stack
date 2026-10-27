@@ -47,3 +47,29 @@ jobs:
 
       - name: Check secret boundary
         run: npm run check:secrets
+
+  w08-security:
+    name: W08 security, browser and secret proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      AI_COACH_PROVIDER: fake
+      GEMINI_API_KEY: ""
+    steps:
+      - name: Check out repository and history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run fake-only W08 security suite
+        run: npm run test:security:w08

@@ -1,6 +1,6 @@
 # W08 — lična provera i osmominutni demo
 
-Ovo je pripremljen vodič za Milicu i Nemanju. Njegovo postojanje ne znači da su lične provere, saglasnost, zamena uloga ili demo održani. Otvoreni zadaci su **T001, T030 i T032** u [tasks.md](tasks.md). Posle stvarnog rada upisujete činjenice u [EVIDENCE_W08.md](../../docs/EVIDENCE_W08.md); kod i dokazi ostaju jedinstveni izvori rezultata.
+Ovo je pripremljen vodič za Milicu i Nemanju. Obe odluke o W08 dokumentima i planirana zamena uloga sada su zabeležene kao T001. Vodič sam po sebi ne potvrđuje lične provere ni tačne opažene izlaze sa demoa. Otvoreni zadaci su **T030 i T032** u [tasks.md](tasks.md). Posle stvarnog rada upisujete činjenice u [EVIDENCE_W08.md](../../docs/EVIDENCE_W08.md); kod i dokazi ostaju jedinstveni izvori rezultata.
 
 ## 1. Priprema na oba računara
 
@@ -157,7 +157,7 @@ Moje individualno objašnjenje nove varijante:
 Preostala primedba ili prepreka (ako postoji):
 ```
 
-Na osnovu stvarnih potvrda i rezultata, [evidence](../../docs/EVIDENCE_W08.md) se dopunjava doprinosima i probom; tek zatim se zatvaraju T001, T030 i T032. Ako neko ne odobri dokumente, nije dao traženi doprinos ili proba nije održana, pripadajuća stavka ostaje otvorena. T033 je opcion i ne nadoknađuje obavezni rad u paru.
+Na osnovu stvarnih ličnih rezultata, [evidence](../../docs/EVIDENCE_W08.md) se dopunjava doprinosima i opaženim tragovima; tek zatim se zatvaraju T030 i T032. Odobrenje dokumenata i planirana zamena uloga već su zabeleženi za T001. Ako neko nije dao traženi doprinos ili stvarni detalji probe nisu poznati, pripadajuća stavka ostaje otvorena. T033 je opcion i ne nadoknađuje obavezni rad u paru.
 
 ## 7. Predaja posle ličnih potvrda
 
