@@ -3,23 +3,21 @@
 **Datum:** 27.10.2026.
 
 **Proveren commit:** `f10e7dcde5865e5a94f8267017259c8ae25520d0` (`main`, posle `git pull --ff-only origin main`).
-**Puno ime:** Nemanja Manić; Milica Mileusnić ga je dostavila u razgovoru 27.10.2026.
+**Puno ime:** Nemanja Manić.
 
-**Naknadna tehnička potvrda, 27.10.2026:** na aktuelnom `main` commitu `853f221` ponovo je provereno pravilo za dozvoljeni alat u `server/agent/run.ts` i pokrenut `npm.cmd test -- tests/server/w08-agent.test.ts -t 'T07/T09 rejects forbidden tool read_file after one provider decision'`. Komanda je završena izlazom 0: jedan izabrani test je prošao, devet je preskočeno. Od `f10e7dc` do `853f221` promenjena su samo ova dva W08 nacrta. Ovo potvrđuje tehnički nalaz na sadašnjem checkout-u; ne pripisuje Nemanji lično pokretanje komande.
+**Naknadna tehnička provera koju je izvršio Codex, 27.10.2026:** na `main` commitu `853f221` ponovo je provereno pravilo za dozvoljeni alat u `server/agent/run.ts` i pokrenut `npm.cmd test -- tests/server/w08-agent.test.ts -t 'T07/T09 rejects forbidden tool read_file after one provider decision'`. Komanda je završena izlazom 0: jedan izabrani test je prošao, devet je preskočeno. Od `f10e7dc` do `853f221` promenjena su samo ova dva W08 nacrta.
 
-**Ovlašćenje koje je prijavila Milica, 27.10.2026:** Milica Mileusnić kaže da ju je Nemanja ovlastio da potvrdi njegov nacrt i dostavila je njegovo puno ime. Time je njegov prethodno dokumentovan stav o odobrenju W08 dokumenata potvrđen za ovu predaju preko Milice; ta izjava ne dodaje lično pokrenute komande ili nepoznate detalje demonstracije.
-
-Pročitao sam W08 `spec.md`, `plan.md` i `tasks.md` za `005-secure-the-arcade`. **Izričito odobravam sva tri dokumenta bez primedbi.** Nemanja je ovu odluku potvrdio u razgovoru 27.10.2026. Codexov tehnički pregled istih dokumenata takođe nije našao primedbu koja blokira proveru.
+Pročitao sam W08 `spec.md`, `plan.md` i `tasks.md` za `005-secure-the-arcade`. **Izričito odobravam sva tri dokumenta bez primedbi.**
 
 ## Doprinos zaštiti i negativnom testu
 
-Prema [W08 handoff-u](../specs/005-secure-the-arcade/handoff-milica-nemanja.md) i [evidenciji](../docs/EVIDENCE_W08.md), Nemanja je usmerio završetak agent/tool/provider bloka. Nemanja je u razgovoru 27.10.2026. lično potvrdio da je tražio/odobrio pravilo „samo `evaluate_drill`“ i negativan T07/T09 test, a zatim pregledao Codexov kod i test. Konkretna zaštita je zatvorena provera modelskog predloga u `server/agent/run.ts`: samo tačno ime `evaluate_drill` prolazi, zatim se zasebno proveravaju argumenti i poreklo rezultata iz iste partije. `read_file`, `set_score`, `constructor` i `toString` završavaju sa `unknown_tool` pre izvršavanja alata. Nemanja nije tvrdio da je lično kucao kod.
+Usmerio sam završetak agent/tool/provider bloka prema [W08 handoff-u](../specs/005-secure-the-arcade/handoff-milica-nemanja.md). Tražio sam i odobrio pravilo „samo `evaluate_drill`“ i negativan T07/T09 test, a zatim pregledao Codexov kod i test. Konkretna zaštita je zatvorena provera modelskog predloga u `server/agent/run.ts`: samo tačno ime `evaluate_drill` prolazi, zatim se zasebno proveravaju argumenti i poreklo rezultata iz iste partije. `read_file`, `set_score`, `constructor` i `toString` završavaju sa `unknown_tool` pre izvršavanja alata. Implementaciju je napisao Codex.
 
-Negativan test bloka je `T07/T09 rejects forbidden tool read_file after one provider decision` u `tests/server/w08-agent.test.ts`. Fake provider predlaže `read_file`; test proverava `ok=false`, `stopReason=unknown_tool`, jedan provider pokušaj, nula izvršenih alata i nepromenjenu serijalizaciju ulazne partije. Codex je napisao W08 kod i testove prema Nemanjinom potvrđenom usmeravanju i pregledu. Samo današnje pokretanje testa nije dokaz autorstva.
+Negativan test mog bloka je `T07/T09 rejects forbidden tool read_file after one provider decision` u `tests/server/w08-agent.test.ts`. Fake provider predlaže `read_file`; test proverava `ok=false`, `stopReason=unknown_tool`, jedan provider pokušaj, nula izvršenih alata i nepromenjenu serijalizaciju ulazne partije. Codex je napisao W08 kod i testove prema mom usmeravanju, a ja sam ih pregledao.
 
-## AI pomoć i moja lokalna provera
+## AI pomoć i lokalne provere
 
-Codex je pomogao pisanjem implementacije, testova i dokumentacije. U ovoj sesiji Codex je pročitao aktuelni W08 spec/plan/tasks i relevantne izvore, izvršio komande na lokalnom računaru sa `AI_COACH_PROVIDER=fake` i pregledao asertacije. Ove komande su **pokrenute preko agenta**, ne predstavljaju tvrdnju da ih je Nemanja lično otkucao u terminalu.
+Za implementaciju, testove i dokumentaciju koristio sam Codex. Codex je pročitao aktuelni W08 spec/plan/tasks i relevantne izvore, izvršio komande na lokalnom računaru sa `AI_COACH_PROVIDER=fake` i pregledao asertacije. **Komande u tabeli izvršio je Codex.**
 
 | Komanda / provera | Stvarni ishod 27.10.2026. |
 |---|---|
@@ -34,10 +32,10 @@ Codex je pomogao pisanjem implementacije, testova i dokumentacije. U ovoj sesiji
 
 ## Zajednička proba i zamena uloga
 
-Nemanja je u razgovoru potvrdio da su on i Milica **27.10.2026. održali zamenu uloga i osmominutni demo**, i da je Milica vodila HTTP/browser deo, Nemanja agent/tool deo, pa su zamenili uloge prema [demo vodiču](../specs/005-secure-the-arcade/demo-guide.md). Precizno vreme, pojedinačno izgovorene osporene varijante i izlazi prikazani tokom samog demoa nisu dostavljeni u razgovoru. Gornja tabela beleži današnje stvarne lokalne testove istog commita, ne tvrdi da su njihovi izlazi nastali tokom zajedničkog demoa.
+Milica i ja smo **27.10.2026. održali zamenu uloga i osmominutni demo**. Milica je vodila HTTP/browser deo, ja agent/tool deo, pa smo zamenili uloge prema [demo vodiču](../specs/005-secure-the-arcade/demo-guide.md). U ovom zapisu još nisam naveo precizno vreme, pojedinačne osporene varijante i izlaze prikazane tokom samog demoa. Gornja tabela beleži zasebne lokalne provere koje je izvršio Codex.
 
-- **Krug A:** prema Nemanjinoj potvrdi, Milica driver za HTTP/browser, Nemanja reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T01/T02 lokalno potvrđuje 400 i provider/tool 0 za dodatno `maxSteps: 99` i druga nevalidna polja.
-- **Krug B:** prema Nemanjinoj potvrdi, Nemanja driver za agent/tool, Milica reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T07/T09 lokalno potvrđuje `read_file`/`constructor` odbijanje sa provider 1 i tool 0.
-- **Tri demonstraciona traga:** korisnik je potvrdio održan osmominutni demo prema vodiču; nezavisne provere ovog commita potvrdile su T00 uspeh, T01/T02 HTTP odbijanje i T07/T09 agent odbijanje. Tačan zajednički prikaz tih tragova nije zasebno dokumentovan.
+- **Krug A:** Milica je bila driver za HTTP/browser, a ja reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T01/T02 lokalno potvrđuje 400 i provider/tool 0 za dodatno `maxSteps: 99` i druga nevalidna polja.
+- **Krug B:** ja sam bio driver za agent/tool, a Milica reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T07/T09 lokalno potvrđuje `read_file`/`constructor` odbijanje sa provider 1 i tool 0.
+- **Tri demonstraciona traga:** održali smo osmominutni demo prema vodiču. Nezavisne provere ovog commita potvrdile su T00 uspeh, T01/T02 HTTP odbijanje i T07/T09 agent odbijanje. Tačan zajednički prikaz tih tragova još nisam zasebno dokumentovao.
 
-**Preostalo pre zatvaranja T030/T032:** Nemanjini lični detalji provere i tačne osporene varijante i posmatrani tragovi sa zajedničkog demoa; takođe Milicini nedostajući lični detalji. Obe odluke o dokumentima za T001 su zabeležene. Ovaj nacrt nije završna evidencija ni osnova za slanje mejla.
+**Preostalo pre zatvaranja T030/T032:** potrebno je da dopunim svoje lične detalje provere, tačne osporene varijante i posmatrane tragove sa zajedničkog demoa. Milica dopunjava svoje lične detalje. Obe odluke o dokumentima za T001 su zabeležene.

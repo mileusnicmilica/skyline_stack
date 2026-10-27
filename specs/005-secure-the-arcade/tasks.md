@@ -5,7 +5,7 @@
 
 ## Phase 1 — Approval and checkpoint
 
-**Gate**: Milica authorized her block, and Nemanja explicitly authorized completion of his block on 2026-10-26. Nemanja reports that both members reviewed the W08 documents and code. Milica Mileusnić explicitly approved all three W08 documents on 2026-10-27; Nemanja Manić's earlier explicit approval is recorded in his confirmation, and Milica reports his authorization for her to confirm it. The proposed driver/reviewer rotation is recorded in [demo-guide.md](demo-guide.md); actual observations remain for T032.
+**Gate**: Milica authorized her block, and Nemanja explicitly authorized completion of his block on 2026-10-26. Nemanja reports that both members reviewed the W08 documents and code. Milica Mileusnić explicitly approved all three W08 documents on 2026-10-27; Nemanja Manić's earlier explicit approval is recorded in his confirmation. The proposed driver/reviewer rotation is recorded in [demo-guide.md](demo-guide.md); actual observations remain for T032.
 
 - [x] **T001** Record explicit pair review/approval of `specs/005-secure-the-arcade/spec.md`, `plan.md`, and `tasks.md`; record actual participant names and proposed role rotation in `docs/EVIDENCE_W08.md`. Both approvals were stated in conversation; this does not close the separate personal-contribution and observed-demo tasks.
 - [x] **T002** Copy the observed initial commit and baseline command results from `plan.md`/`quickstart.md` into `docs/EVIDENCE_W08.md`; preserve the unrelated untracked report and capture a new `git status` before code edits.

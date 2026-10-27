@@ -1,6 +1,6 @@
 # W08 split and integration handoff: Milica and Nemanja
 
-**Decision recorded:** 2026-10-26. Milica and Nemanja separately authorized their technical blocks. Nemanja reports that both reviewed the documents and code. On 2026-10-27 Milica Mileusnić explicitly approved the three W08 documents, and Nemanja Manić's earlier explicit approval was recorded; Milica reports his authorization for her to confirm his draft. The split and approvals do not prove personal code authorship, test execution or exact demo observations. Codex assistance is not a second human contribution.
+**Decision recorded:** 2026-10-26. Milica and Nemanja separately authorized their technical blocks. Nemanja reports that both reviewed the documents and code. On 2026-10-27 Milica Mileusnić explicitly approved the three W08 documents, and Nemanja Manić's earlier explicit approval was recorded. The split and approvals do not prove personal code authorship, test execution or exact demo observations. Codex assistance is not a second human contribution.
 
 ## Milica's block: HTTP and browser boundary
 

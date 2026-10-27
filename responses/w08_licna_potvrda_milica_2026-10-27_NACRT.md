@@ -10,7 +10,7 @@
 
 ## Dokumenti i doprinos
 
-U poruci od 27.10.2026. Milica je izričito odobrila W08 `spec.md`, `plan.md` i `tasks.md` bez navedenih primedbi. Nemanjino zasebno odobrenje dokumentovano je u njegovom nacrtu. Milica kaže da ju je Nemanja ovlastio da potvrdi i njegov nacrt.
+U poruci od 27.10.2026. Milica je izričito odobrila W08 `spec.md`, `plan.md` i `tasks.md` bez navedenih primedbi. Nemanjino zasebno odobrenje dokumentovano je u njegovom nacrtu.
 
 Prema [handoff-u](../specs/005-secure-the-arcade/handoff-milica-nemanja.md), Milica je vodila HTTP/browser blok. Kao konkretan doprinos zaštiti može da potvrdi pravilo u `server/index.ts` i `server/agent/validate-request.ts` koje odbija nepoznata/politička polja u ulaznom zahtevu pre provider i tool rada, uz ograničenje veličine tela, prijemnog vremena i lokalni admission u `server/rate-limit.ts`/`server/admission.ts`. U browser delu [W08 evidence](../docs/EVIDENCE_W08.md) beleži tekstualni prikaz i CSP. Neka označi **koje je od tih pravila ona lično izabrala, tražila, pregledala i proverila**; dokumentovana raspodela posla sama po sebi ne dokazuje to.
 

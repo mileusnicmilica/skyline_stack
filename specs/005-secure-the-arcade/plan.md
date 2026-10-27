@@ -30,7 +30,7 @@ Observed 2026-10-26: `npm.cmd run typecheck` passed; `npm.cmd test` passed 25 fi
 - **IV, runtime contracts**: Existing `GameConfig` rule stays intact; W08 adds explicit runtime boundaries for agent input/output.
 - **V, historical Session 003 experiment**: This rule applies to the old locked experiment; W08 uses its own approved spec, plan, tasks and evaluation set.
 
-**Current gate**: Both technical blocks were tested locally. Milica explicitly approved the three W08 documents on 2026-10-27; Nemanja's earlier explicit approval is recorded in his confirmation draft, and Milica reports his authority for her to confirm it. The role rotation is planned in the demo guide; exact personal demo observations remain open.
+**Current gate**: Both technical blocks were tested locally. Milica explicitly approved the three W08 documents on 2026-10-27; Nemanja's earlier explicit approval is recorded in his confirmation draft. The role rotation is planned in the demo guide; exact personal demo observations remain open.
 
 ## Architecture and risk decisions
 
