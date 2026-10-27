@@ -87,7 +87,7 @@ T001 records both members' explicit document approval and the proposed role rota
 
 T034–T037 are completed, user-authorized follow-up audit corrections at tested code checkpoint `bc7de67`: 46 W08 tests, 207 full regression tests and a controlled build-secret proof. They do not change human contribution claims.
 
-T038 added basic GitHub CI. Its typecheck, 207 unit/HTTP tests, build and secret-scan commands passed locally on 2026-10-26. T039 adds the full W08 suite as a separate CI job; `npm.cmd run test:security:w08` passed locally on 2026-10-27 with 46/46 tests, browser/CSP checks and controlled artifact scan. Neither local result claims that a remote Actions run passed. The README badge links to remote runs.
+T038 added basic GitHub CI. Its typecheck, 207 unit/HTTP tests, build and secret-scan commands passed locally on 2026-10-26. T039 adds the full W08 suite as a separate CI job; `npm.cmd run test:security:w08` passed locally on 2026-10-27 with 46/46 tests, browser/CSP checks and controlled artifact scan. [GitHub Actions run 40583071582](https://github.com/mileusnicmilica/skyline_stack/actions/runs/40583071582) for `ea6bb56` was then observed with both jobs successful. The README badge links to remote runs.
 
 ## Requirement coverage
 
