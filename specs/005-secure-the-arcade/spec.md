@@ -2,7 +2,7 @@
 
 **Feature branch**: `main` (local W08 implementation; no branch switch)
 **Created**: 2026-10-26  
-**Status**: Both technical blocks implemented; follow-up audit corrects timeout overlap, the controlled build-secret proof and full Origin comparison. Current measured checkpoint/results are in `docs/EVIDENCE_W08.md`. Both document approvals are now recorded; personal contribution details and observed role rotation/demo traces remain pending.
+**Status**: Both technical blocks implemented; follow-up audit corrects timeout overlap, the controlled build-secret proof and full Origin comparison. Current measured checkpoint/results are in `docs/EVIDENCE_W08.md`. Both document approvals, attributed protection/test contributions and the pair-confirmed role rotation/demo outcomes are recorded there.
 **Input**: W08 assignment `weekly-assignment 08.md`; existing Skyline Stack W03–W05 game, Coach and Next Drill Agent.
 
 ## User Scenarios & Testing

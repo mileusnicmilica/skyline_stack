@@ -1,7 +1,7 @@
 # Implementation Plan: W08 Secure the Arcade
 
 **Branch**: `main` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)  
-**Status**: Technical blocks implemented with follow-up audit corrections; current tested checkpoint is recorded in `docs/EVIDENCE_W08.md`. Both document approvals are recorded; factual personal contributions and demo details remain open.
+**Status**: Technical blocks implemented with follow-up audit corrections; current tested checkpoint is recorded in `docs/EVIDENCE_W08.md`. Both document approvals, attributed personal contributions and the pair-confirmed demo outcomes/role swap are recorded there.
 
 ## Summary
 
@@ -26,11 +26,11 @@ Observed 2026-10-26: `npm.cmd run typecheck` passed; `npm.cmd test` passed 25 fi
 
 - **I, specification before implementation**: This separate W08 package follows specify → plan → tasks. Both technical blocks were separately authorized and implemented; both members' approvals of the three documents are recorded on 2026-10-27.
 - **II, bounded later-week feature**: W08 expressly extends W05. It does not rewrite W03/V2 artifacts, add a login, database, write tool or game rule. Any new dependency needs its own justification.
-- **III, honest evidence**: Baseline commands above were run. W08 outcomes are recorded only as they are measured in `docs/EVIDENCE_W08.md`; unrun rows remain `NOT RUN`. Pair contribution and demo are `TBD` until the people perform them. Real baseline gaps were measured before the corresponding Milica-block fixes.
+- **III, honest evidence**: Baseline commands above were run. W08 outcomes are recorded only as they are measured in `docs/EVIDENCE_W08.md`; unrun rows remain `NOT RUN`. Pair-confirmed demo actions are labelled as learner reports and kept separate from Codex-operated checks. Real baseline gaps were measured before the corresponding Milica-block fixes.
 - **IV, runtime contracts**: Existing `GameConfig` rule stays intact; W08 adds explicit runtime boundaries for agent input/output.
 - **V, historical Session 003 experiment**: This rule applies to the old locked experiment; W08 uses its own approved spec, plan, tasks and evaluation set.
 
-**Current gate**: Both technical blocks were tested locally. Milica explicitly approved the three W08 documents on 2026-10-27; Nemanja's earlier explicit approval is recorded in his confirmation draft. The role rotation is planned in the demo guide; exact personal demo observations remain open.
+**Current gate**: Both technical blocks were tested locally and in GitHub Actions. Milica and Nemanja approved the three W08 documents; the pair-confirmed role rotation, three demo outcomes and each member's explanation of the other's control are recorded in `docs/EVIDENCE_W08.md`.
 
 ## Architecture and risk decisions
 
@@ -83,7 +83,7 @@ docs/EVIDENCE_W08.md         observed final evidence after implementation
 
 ## Pair workflow and gates
 
-The concrete Milica/Nemanja file split and authorization history are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). Both technical blocks were separately authorized and implemented with Codex assistance; joint document/code review is user-reported. The user subsequently authorized correction of all independently actionable audit findings. Both W08 document approvals are recorded on 2026-10-27. Exact personal contributions and observed role rotation/demo traces remain open. [The demo guide](demo-guide.md) gives the members repeatable commands and a factual completion template.
+The concrete Milica/Nemanja file split and authorization history are in [handoff-milica-nemanja.md](handoff-milica-nemanja.md). Both technical blocks were separately authorized and implemented with Codex assistance; joint document/code review is user-reported. The user subsequently authorized correction of all independently actionable audit findings. Both W08 document approvals were recorded on 2026-10-27. The pair-confirmed protection/test directions, role swap, three outcomes and cross-explanations are recorded in `docs/EVIDENCE_W08.md`, with Codex-operated traces labelled separately. [The demo guide](demo-guide.md) remains a repeatable presentation aid.
 
 1. The planned sequence is specification, plan, tasks, tests, implementation and evidence. Technical blocks were separately approved before their implementation; the full document approval record was completed on 2026-10-27. Record actual names/roles only when confirmed. Suggested rotation: one person drives API/agent controls while the other challenges with negative tests; swap for browser/headers/evidence. Each contributes a protection and a negative test.
 2. Confirm baseline and lock expected outcomes for T00–T17. Add tests that fail for observed missing controls, then implement the smallest appropriate fix. Preserve positive tests for every main boundary.

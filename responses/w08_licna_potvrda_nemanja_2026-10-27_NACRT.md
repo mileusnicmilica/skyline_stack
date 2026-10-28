@@ -1,4 +1,4 @@
-# W08 lična potvrda — Nemanja Manić (odobren nacrt, čeka detalje demoa)
+# W08 lična potvrda — Nemanja Manić (nacrt sa naknadno potvrđenim demo zapisom)
 
 **Datum:** 27.10.2026.
 
@@ -32,10 +32,10 @@ Za implementaciju, testove i dokumentaciju koristio sam Codex. Codex je pročita
 
 ## Zajednička proba i zamena uloga
 
-Milica i ja smo **27.10.2026. održali zamenu uloga i osmominutni demo**. Milica je vodila HTTP/browser deo, ja agent/tool deo, pa smo zamenili uloge prema [demo vodiču](../specs/005-secure-the-arcade/demo-guide.md). U ovom zapisu još nisam naveo precizno vreme, pojedinačne osporene varijante i izlaze prikazane tokom samog demoa. Gornja tabela beleži zasebne lokalne provere koje je izvršio Codex.
+Milica i ja smo **27.10.2026. održali zamenu uloga i osmominutni demo**. Milica je vodila HTTP/browser deo, ja agent/tool deo, pa smo zamenili uloge prema [demo vodiču](../specs/005-secure-the-arcade/demo-guide.md). Dana 28.10. potvrdio sam tri prikazana ishoda ili ekvivalentne testove: uspeh 200/provider 2/tool 1, HTTP odbijanje 400/provider 0/tool 0 i agent odbijanje 503/provider 1/tool 0. Gornja tabela beleži zasebne lokalne provere koje je izvršio Codex; novi `evidence:w08` skript nije bio deo našeg demoa održanog dan ranije.
 
-- **Krug A:** Milica je bila driver za HTTP/browser, a ja reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T01/T02 lokalno potvrđuje 400 i provider/tool 0 za dodatno `maxSteps: 99` i druga nevalidna polja.
-- **Krug B:** ja sam bio driver za agent/tool, a Milica reviewer; konkretna osporena varijanta tokom probe nije zabeležena. T07/T09 lokalno potvrđuje `read_file`/`constructor` odbijanje sa provider 1 i tool 0.
-- **Tri demonstraciona traga:** održali smo osmominutni demo prema vodiču. Nezavisne provere ovog commita potvrdile su T00 uspeh, T01/T02 HTTP odbijanje i T07/T09 agent odbijanje. Tačan zajednički prikaz tih tragova još nisam zasebno dokumentovao.
+- **Krug A:** Milica je bila driver za HTTP/browser, a ja reviewer. Potvrdio sam svoje objašnjenje: `maxSteps: 99` je dodatno polje kojim klijent pokušava da bira serverov limit; HTTP validator ga odbija pre agenata, zato su rezultat 400/`INVALID_REQUEST`, provider 0 i tool 0.
+- **Krug B:** ja sam bio driver za agent/tool, a Milica reviewer. Preneo sam njenu potvrdu da je objasnila kako `parseDecision` prihvata samo `evaluate_drill`; `constructor`/`read_file` završava sa `unknown_tool` pre `runTool`, pa su provider 1, tool 0 i nepromenjena partija.
+- **Tri demonstraciona traga:** oboje smo potvrdili da smo prikazali uspešan tok i oba različita odbijanja ili njihove ekvivalentne testove. Codexovi kasniji sintetički tragovi sa istim brojačima odvojeno su upisani u `docs/EVIDENCE_W08.md`.
 
-**Preostalo pre zatvaranja T030/T032:** potrebno je da dopunim svoje lične detalje provere, tačne osporene varijante i posmatrane tragove sa zajedničkog demoa. Milica dopunjava svoje lične detalje. Obe odluke o dokumentima za T001 su zabeležene.
+**Status:** T001, T030 i T032 zatvoreni su u [W08 evidence](../docs/EVIDENCE_W08.md) na osnovu tehničkih rezultata i potvrđenog izveštaja para. Ovaj lični tekst ostaje `NACRT` dok ga ne pregledam kao celinu za konačnu upotrebu; Codexove komande nisu predstavljene kao moje lično pokrenute komande.

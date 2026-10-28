@@ -39,7 +39,7 @@ Run the fake-forced integrated command `npm.cmd run test:security:w08` for two T
 
 6. Complete [the declared T00–T17 matrix](contracts/next-drill-security.md#predeclared-scenario-matrix). Record three genuine before/after comparisons using the same fixtures and expectations. Mark every unperformed row `NOT RUN`, not PASS. Document the one-process admission limit and any public multi-instance exposure.
 
-7. Both pair members follow [the precise review/demo guide](demo-guide.md), record their actual changes, negative tests and explanations, exchange reviewer/driver roles and return the factual confirmation template. T001 records their document approvals and planned roles; T030 records the technical evidence and attributed contributions. Keep T032 open until the observed demo details and individual explanations are recorded. Submission mail is a separate user action.
+7. Both pair members use [the precise review/demo guide](demo-guide.md) and the pair-confirmed record in `docs/EVIDENCE_W08.md` to explain their protections, negative tests, role swap and three outcomes. T001, T030 and T032 are recorded as complete; Codex-operated traces and learner-reported demo actions remain clearly distinguished. Submission mail is a separate member action.
 
 ## Completion gate
 

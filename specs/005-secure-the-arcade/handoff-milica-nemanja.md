@@ -42,7 +42,7 @@ Milica's HTTP response contract follows `contracts/next-drill-security.md`: `INV
 
 The public Vercel route currently runs in an instance-local process. A local in-memory 5/60 limiter and two-slot cap cannot promise a global quota across separate serverless instances. Neither partner should claim public production cost control until a trustworthy deployment-wide admission mechanism is chosen and tested. The W08 local fake-provider exercise can state this as a residual risk.
 
-`docs/EVIDENCE_W08.md`, `package.json`, shared Spec Kit artifacts, final audit and full verification are integration-owned. The technical evidence is recorded; personally attributable pair work and the demo stay open until the people perform and describe them. Do not infer human authorship from Codex-assisted commits.
+`docs/EVIDENCE_W08.md`, `package.json`, shared Spec Kit artifacts, final audit and full verification are integration-owned. The technical evidence and the pair's later confirmed contributions/demo account are recorded there. Do not infer human code authorship from Codex-assisted commits.
 
 ## Review and delivery gates
 
@@ -51,4 +51,4 @@ The public Vercel route currently runs in an instance-local process. A local in-
 3. Together: reconcile T00-T17, three comparable before/after probes, data inventory, six risks, dependency audit, synthetic-secret scan, complete evidence, swap reviewer/driver, and rehearse one success plus two denial traces.
 4. Commit and submission details must identify actual human contributions. Sending assignment email and deployment are separate actions; neither is implied by this handoff.
 
-**Current state:** Both technical blocks and follow-up timeout/build-secret/Origin corrections are implemented. Current counts, tested checkpoint and command results are maintained in `docs/EVIDENCE_W08.md`. Codex ran the recorded checks; both document approvals and proposed role rotation are recorded. Each person's exact protection/test actions and observed role rotation/demo traces remain open. Follow [demo-guide.md](demo-guide.md) and return its factual confirmation template; running a guide is not automatically evidence of code authorship.
+**Current state:** Both technical blocks and follow-up corrections, including HTTP error-body cleanup, are implemented. Current counts, tested checkpoint, GitHub Actions outcome, attributed human direction/review, pair-confirmed role swap and three demo outcomes are maintained in `docs/EVIDENCE_W08.md`. Codex ran the recorded automated checks; the members' 2026-10-27 demo account and 2026-10-28 cross-explanations are reported separately. T001, T030 and T032 are complete. The submission email remains a separate member action.
