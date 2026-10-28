@@ -11,5 +11,5 @@
     "types": ["node"],
     "noEmit": true
   },
-  "include": ["api/**/*.ts", "server/**/*.ts", "tests/server/**/*.ts", "scripts/agent-evidence.ts", "src/game/model.ts"]
+  "include": ["api/**/*.ts", "server/**/*.ts", "tests/server/**/*.ts", "scripts/agent-evidence.ts", "scripts/w08-demo-evidence.ts", "src/game/model.ts"]
 }

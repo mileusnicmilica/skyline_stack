@@ -131,7 +131,14 @@ export class GeminiAgentProvider implements AgentProvider {
       const kind = response.status === 429 ? "rate_limit"
         : response.status >= 500 ? "unavailable"
           : response.status === 401 || response.status === 403 ? "unauthorized" : "provider";
-      throw new ProviderError(`Gemini agent request failed with HTTP ${response.status}.`, response.status === 429 || response.status >= 500, kind);
+      // Finish the rejected response stream before an agent retry can start.
+      // A stalled cancellation remains part of this provider attempt and its admission lease.
+      let bodyClosed = true;
+      try { await response.body?.cancel(); }
+      catch { bodyClosed = false; }
+      // Keep the status classification, but do not retry if local cleanup failed.
+      throw new ProviderError(`Gemini agent request failed with HTTP ${response.status}.`,
+        bodyClosed && (response.status === 429 || response.status >= 500), kind);
     }
     const body = await boundedEnvelope(response, signal);
     const text = candidateText(body);

@@ -14,8 +14,8 @@ concurrency:
 
 jobs:
   checks:
-    name: Typecheck, tests and build
-    runs-on: ubuntu-latest
+    name: Full verification, API and browser
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
       AI_COACH_PROVIDER: fake
@@ -36,17 +36,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Check TypeScript
-        run: npm run typecheck
-
-      - name: Run all unit and HTTP tests
-        run: npm test
-
-      - name: Build production frontend
-        run: npm run build
-
-      - name: Check secret boundary
-        run: npm run check:secrets
+      - name: Verify tests, build, fake API and production browser
+        run: npm run verify
 
   w08-security:
     name: W08 security, browser and secret proof

@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "test": "vitest run",
     "evidence:w05": "tsx scripts/agent-evidence.ts",
+    "evidence:w08": "tsx scripts/w08-demo-evidence.ts",
     "verify": "node tests/verify.mjs"
   },
   "devDependencies": {

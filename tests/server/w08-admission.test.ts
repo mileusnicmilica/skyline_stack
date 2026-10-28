@@ -5,8 +5,10 @@ import { createCoachServer } from "../../server/index";
 import { createAgentAdmission } from "../../server/admission";
 import type { AgentProvider } from "../../server/agent/types";
 import { fakeAgentProvider } from "../../server/providers/fake-agent-provider";
+import { GeminiAgentProvider } from "../../server/providers/gemini-agent-provider";
 import { fakeCoachProvider } from "../../server/providers/fake-provider";
 import { createRequestRateLimiter } from "../../server/rate-limit";
+import { finalCall, toolCall } from "./w08-fixtures";
 
 const validRun = {
   goal: "choose_next_drill", finalScore: 1, startingWidth: 100,
@@ -204,6 +206,51 @@ describe("W08 local HTTP admission", () => {
       expect(recovered.status).toBe(200);
     }, { ...fakeAgentProvider, generate }, { agentAdmission: admission }, {
       onUsage: (usage) => { stopReasons.push(usage.stopReason); },
+    });
+  });
+
+  it("T12/T13 retains capacity while an HTTP error body ignores cancellation", async () => {
+    let releaseCancel: (() => void) | undefined;
+    let cancelCount = 0;
+    const body = new ReadableStream<Uint8Array>({
+      cancel() {
+        cancelCount += 1;
+        return new Promise<void>((resolve) => { releaseCancel = resolve; });
+      },
+    });
+    let calls = 0;
+    const fetchImplementation = vi.fn(async () => {
+      calls += 1;
+      if (calls === 1) return new Response(body, { status: 503 });
+      const output = calls === 2 ? toolCall() : finalCall();
+      return Response.json({ candidates: [{ content: { parts: [{ text: JSON.stringify(output) }] } }] });
+    });
+    const provider = new GeminiAgentProvider("synthetic-key", fetchImplementation as typeof fetch);
+    const admission = createAgentAdmission(1);
+
+    await withServer(async (url) => {
+      try {
+        const timedOut = send(url, validRun);
+        await waitFor(() => cancelCount === 1);
+        expect((await timedOut).status).toBe(504);
+        expect(admission.active()).toBe(1);
+
+        const blocked = await send(url, validRun);
+        expect(blocked.status).toBe(429);
+        expect(await blocked.json()).toMatchObject({ errorCode: "CONCURRENCY_LIMIT" });
+        expect(fetchImplementation).toHaveBeenCalledTimes(1);
+
+        releaseCancel?.();
+        await waitFor(() => admission.active() === 0);
+        const recovered = await send(url, validRun);
+        expect(recovered.status).toBe(200);
+        expect((await recovered.json()).recommendation.drillId).toBe("release_earlier");
+        expect(fetchImplementation).toHaveBeenCalledTimes(3);
+      } finally {
+        releaseCancel?.();
+      }
+    }, provider, { agentAdmission: admission }, {
+      attemptTimeoutMs: 15, retryDelayMs: 1, totalDeadlineMs: 100,
     });
   });
 
