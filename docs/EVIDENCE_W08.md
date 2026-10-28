@@ -32,6 +32,12 @@ Commands run by **Codex** on 2026-10-28 against the code saved as `ad2e83b`:
 
 All three synthetic inputs remained unchanged; the successful real evaluator also preserved its arguments/counts. HTTP callers receive the safe public error, while the script observes the internal stop reason through the existing usage callback. These results supply material for the members to explain during T032.
 
+### Independent recheck after pulling `7055ff6`, 2026-10-28
+
+The [GitHub Actions run for `7055ff6`](https://github.com/mileusnicmilica/skyline_stack/actions/runs/40662652343) completed with a failed full-verification job. The W08 admission test at `tests/server/w08-admission.test.ts:246` expected recovery HTTP 200 but received 504. Its shared artificial provider timeout was 15 ms: it correctly expired the intentionally stalled first request but also applied to the later normal two-decision recovery request on the busy Ubuntu runner. This was a test timing defect; the log does not show a new production failure. The test now allows 500 ms per attempt and 2,500 ms total while still holding the first error-body cancellation until timeout and checking that the admission lease remains occupied. The focused test passed locally, 1 selected test / 6 skipped.
+
+Codex then reran `npm.cmd ci` (exit 0), `npm.cmd run test:security:w08` with fake provider (exit 0, **53/53**, build, Edge CSP/XSS checks and controlled secret scan), `npm.cmd run verify` outside the sandbox (exit 0, **214/214**, build, fake API/proxy and Edge normal/failure/restart smoke), and `npm.cmd run evidence:w08` outside the sandbox (exit 0, the three asserted traces above). The sandboxed evidence command stopped before execution at `uv_os_get_passwd/ENOMEM`. These are Codex-operated checks on this computer, not a claim that either member personally typed the commands or presented the same output during their reported 2026-10-27 demo. A new remote CI result is required before calling the timing fix verified in GitHub Actions.
+
 ## Checkpoint and measured starting state
 
 | Item | Observation |

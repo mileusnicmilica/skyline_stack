@@ -117,7 +117,9 @@ describe("W08 local HTTP admission", () => {
       expect(recovered.status).toBe(200);
       expect((await recovered.json()).recommendation.drillId).toBe("release_earlier");
     }, { ...fakeAgentProvider, generate }, { agentAdmission: admission }, {
-      attemptTimeoutMs: 15, retryDelayMs: 1, totalDeadlineMs: 100,
+      // Give the recovery request room for two normal decisions on a busy CI runner.
+      // The first request still times out because its error-body cancellation is held.
+      attemptTimeoutMs: 500, retryDelayMs: 1, totalDeadlineMs: 2_500,
     });
   });
 
