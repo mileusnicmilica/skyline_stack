@@ -183,9 +183,10 @@ do not aggregate across deployed instances.
 [![CI](https://github.com/mileusnicmilica/skyline_stack/actions/workflows/ci.yml/badge.svg)](https://github.com/mileusnicmilica/skyline_stack/actions/workflows/ci.yml)
 
 GitHub Actions runs two jobs on every push and pull request, with a manual
-**Run workflow** option in the repository's Actions tab. The basic job checks
-TypeScript, runs all unit/HTTP tests, builds the frontend and checks the secret
-boundary. The W08 job runs the full security suite, including real Chromium
+**Run workflow** option in the repository's Actions tab. The full verification
+job runs `npm run verify`: TypeScript, all unit/HTTP tests, frontend build,
+secret boundary scan, and the actual fake API/proxy/browser flow through the
+agent and tool. The W08 job runs the security suite, including real Chromium
 browser/CSP checks and a controlled build-secret proof. Both jobs use Node.js 24,
 locked dependencies and the fake provider; no API key is required. Open the
 [CI workflow runs](https://github.com/mileusnicmilica/skyline_stack/actions/workflows/ci.yml)
@@ -205,6 +206,12 @@ production build, generates source maps, and scans every built artifact. It
 forces fake mode and uses a stubbed provider transport for the credential test.
 The [pair review and demo guide](specs/005-secure-the-arcade/demo-guide.md) lists
 the exact remaining personal checks and the eight-minute walkthrough.
+
+For a concise set of measured demo traces, run `npm run evidence:w08`.
+It exercises the real local HTTP/agent/tool path with synthetic data and a fake
+provider, and prints status, provider/tool counts and state comparison for a
+normal request, a forbidden `maxSteps` field and a `constructor` tool proposal.
+The output supplies technical evidence for the pair to explain during the demo.
 
 The measured results and remaining pair review/demo steps are in
 [W08 evidence](docs/EVIDENCE_W08.md). Local tests do not establish a shared

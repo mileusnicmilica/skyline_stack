@@ -1,6 +1,36 @@
-# W08 Secure the Arcade — working evidence
+# W08 Secure the Arcade — evidence
 
-**State (2026-10-27):** The HTTP/browser and agent/tool/provider technical blocks and follow-up audit corrections are implemented and locally verified with Codex assistance. The final tested code checkpoint is `bc7de67` on `main`; the initial W08 baseline is `fe4029c`. The W08 suite passed again on 2026-10-27 (**46/46**); the last full regression result remains **207/207** from 2026-10-26. Production browser checks and a controlled environment-backed build-secret proof include source maps. Both members' approvals of the three W08 documents are recorded below; each person's exact personal work and observed role rotation/demo traces remain open. `NOT RUN` means no result has been observed; `TBD` means a person's action is not known. All adversarial tests use synthetic data and fake/stubbed providers. See [the pair split](../specs/005-secure-the-arcade/handoff-milica-nemanja.md) and [exact personal review/demo steps](../specs/005-secure-the-arcade/demo-guide.md).
+**State (2026-10-28):** The HTTP/browser and agent/tool/provider controls, including HTTP error-body cleanup, are implemented and verified with Codex assistance at code checkpoint `ad2e83b`; the initial W08 baseline is `fe4029c`. Current local results are **53/53 W08 tests and 214/214 full regression tests**, production browser checks, a controlled build-secret proof with source maps, and three measured demo traces. Both members' document approvals and specific contributions through direction/review of AI-assisted changes are recorded below. T030 is complete for the evidence record; T032 remains open for individual explanations and the missing details of the reported pair demo. `NOT RUN` means no result has been observed; `TBD` means a person's action is not known. All adversarial tests use synthetic data and fake/stubbed providers. See [the pair split](../specs/005-secure-the-arcade/handoff-milica-nemanja.md) and [demo preparation](../specs/005-secure-the-arcade/demo-guide.md).
+
+## Follow-up after the grading review — 2026-10-28
+
+Milica requested all five review findings be addressed. The response-body protection, full CI integration and document-status mismatch are fixed. Contributions are now tied to actual requests and previously recorded reviews. The technical material for the demo is executable; an automated run cannot establish the members' own explanations or role rotation.
+
+| Change | Measured evidence and boundary |
+|---|---|
+| Cancel unsuccessful provider responses before retry | The original two-run synthetic 503 probe made two attempts per run and created four response bodies, with **0 cancelled**. The same scenario after the fix created four bodies and **cancelled all 4**. Both runs still end safely as `provider_unavailable`. No live provider or network transport was used. |
+| Preserve capacity during cleanup | New 429/503 tests assert that the next attempt waits for cancellation. A cancellation failure keeps the safe status classification and disables retry. A stalled cancellation reaches the attempt timeout, returns 504, retains the admission slot, rejects excess work with 429, then permits a 200 response after settlement. Seven added regressions are in `tests/server/w08-provider.test.ts` and `tests/server/w08-admission.test.ts`. |
+| Exercise full integration in CI | `.github/workflows/ci.yml` now runs `npm run verify` in the first job: typechecks, all unit/HTTP tests, build, secret scan and the actual fake API → preview proxy → browser flow. The separate W08 job retains adversarial, CSP/XSS and artifact checks. Both jobs use Node 24 and Ubuntu 24.04 without a real provider key. |
+| Make demo traces repeatable | `npm run evidence:w08` uses the real HTTP handler, agent and evaluator with injected fake providers. It asserts observed counters and unchanged inputs, then prints the three traces below. It is preparation evidence, not a record that the pair performed a demo. |
+| Reconcile document status | The specification checklist now agrees with T001's recorded approvals. This document is the detailed source for current results and contribution facts; the guide and personal drafts link here. |
+
+Commands run by **Codex** on 2026-10-28 against the code saved as `ad2e83b`:
+
+| Command / check | Actual result |
+|---|---|
+| Focused provider/admission/reliability tests and typecheck | Exit 0, 4 files / 25 tests; the initial new 429/503 cancellation tests failed before the implementation because the cancel count was 0. |
+| `npm.cmd run test:security:w08` | Exit 0, 9 files / **53 tests**, 17-module build, positive scanner control and 4 clean artifacts including one source map, Edge CSP/XSS checks and secret scan. |
+| `npm.cmd run verify` with fake provider | Exit 0, 34 files / **214 tests**, typechecks, build, secret scan, actual API/proxy, Edge normal/failure/restart flows and no browser errors. |
+| `npm.cmd run evidence:w08` | Exit 0, all three asserted traces below. The first sandbox attempt failed before script startup with `uv_os_get_passwd/ENOMEM`; the normal-process run passed. |
+| Same-fixture 503 cleanup probe | Exit 0, two safe failures with attempts `[2,2]`, 4 response bodies created and 4 cancelled. |
+
+| Trace / input | HTTP / public code | Provider calls | Tool executions | Internal result |
+|---|---|---:|---:|---|
+| Valid score-1 run, two late drops | 200 | 2 | 1 actual `evaluate_drill` | `goal_completed`, 2 model steps |
+| Same run with `maxSteps: 99` | 400 / `INVALID_REQUEST` | 0 | 0 | Agent not started |
+| Otherwise valid run; fake model proposes `constructor` | 503 / `AGENT_UNAVAILABLE` | 1 | 0 | `unknown_tool`, 1 model step |
+
+All three synthetic inputs remained unchanged; the successful real evaluator also preserved its arguments/counts. HTTP callers receive the safe public error, while the script observes the internal stop reason through the existing usage callback. These results supply material for the members to explain during T032.
 
 ## Checkpoint and measured starting state
 
@@ -8,7 +38,7 @@
 |---|---|
 | Game and chosen flow | **Skyline Stack**; Game Over → Next Drill HTTP route → two model decisions with real read-only `evaluate_drill` → validated browser recommendation |
 | Starting Git commit | `fe4029c67e1d3f1f1bd9046227e13983b8f9f32f` on `main` |
-| Final tested code commit | `bc7de67` on `main`; the subsequent evidence/documentation commit records these measurements |
+| Final tested code commit | `ad2e83b` on `main`; the earlier audit-correction checkpoint `bc7de67` is retained in the historical observations below |
 | Initial working tree | Only unrelated untracked `responses/nedeljni_izvestaj_w04_milica_mileusnic.md` before W08 planning; it is preserved |
 | Runtime | Windows PowerShell, Node `v24.20.0`, installed lockfile dependencies |
 | `npm.cmd run typecheck` at starting commit | PASS |
@@ -137,9 +167,9 @@ The current local W08 check, run by Codex on 2026-10-27 from `853f221` before th
 
 | Person or tool | Actual status |
 |---|---|
-| Milica Mileusnić | Directed the HTTP/browser block: admission and CSP protections with direct HTTP, XSS and CSP negative tests. She explicitly approved the three W08 documents and her draft on 2026-10-27. She asked for wording because she is unsure which checks she personally ran or exactly what she observed in the demo; no such personal execution is claimed. Exact personal protection/test actions and observed demo traces: TBD. |
-| Nemanja Manić | Directed completion of the agent/tool/provider block: shared direct-run validation, context/decision/transport/token limits and linked security events, with forbidden-tool, foreign-evidence, delayed-work and secret negative tests. His prior direct statement approved the three documents and identified the `evaluate_drill` rule and T07/T09 negative test as directed/reviewed work. His personally run commands and exact observed demo traces: TBD. |
-| Codex | Wrote the W08 code/test changes in both assigned blocks with human direction. After the audit, the user explicitly authorized all independently actionable corrections: terminal timeout/no overlap, controlled build-secret proof, full trusted Origin comparison, explicit HTTP tool counters, corrected trace examples and a personal review/demo guide. Changes were checked with focused tests, full fake `verify`, Edge, controlled artifact scans and diff review. This does not establish the members' personal contributions or a completed demo. |
+| Milica Mileusnić | Explicitly approved the W08 spec/plan/tasks and requested GitHub Actions on 2026-10-27. On 2026-10-28 she selected the grading review's corrections for implementation, including the concrete protection of closing error response bodies before retry and its 429/503 negative regressions, and requested full API/browser verification in CI. This is a contribution through choosing and directing AI-assisted work; it is not a claim that she personally wrote the code or ran the commands. Her HTTP/browser block remains described in the handoff; individual demo explanations are pending under T032. |
+| Nemanja Manić | His previously recorded confirmation identifies the closed `evaluate_drill` allowlist in `server/agent/run.ts` and the T07/T09 `read_file` negative test in `tests/server/w08-agent.test.ts` as work he directed and then reviewed. The test expects `unknown_tool`, provider 1, tool 0 and unchanged input. His document approval is recorded; Codex implemented and ran the tests. New 2026-10-28 edits are not claimed as personally authored by him. Individual demo explanations remain under T032. |
+| Codex | Wrote the implementation/tests and ran the reported commands under the members' direction. The 2026-10-28 work added error-body cleanup and seven regressions, full CI integration and the three-trace demo command. Checks included red/green focused tests, 53 W08 tests, 214 full tests, real browser checks, controlled artifact scans and diff review. Earlier timeout/build-secret/Origin corrections and their verification remain documented below. Automated output is not proof of a person's oral explanation or role rotation. |
 
 The HTTP security event recorder uses a generated correlation UUID, fixed event/outcome/reason values and capped counters. Local and Vercel wiring is present. Tests observe admission/completion, initial denial with provider/tool 0, safe adapter-error 503 and sanitized one-line output. The earlier document accidentally paired examples from different runs; the following replacement events were actually captured from **one request** in the final `verify` run at 22:31:22 UTC. The same original correlation UUID is consistently replaced with `[same-request-id]`:
 
@@ -153,7 +183,7 @@ The linked agent event follows 5 ms later, with its separate generated run ID re
 {"correlationId":"[same-request-id]","runId":"[redacted-run-id]","timestamp":"2026-10-26T22:31:22.244Z","event":"agent_completion","outcome":"success","reason":"goal_completed","providerAttempts":2,"toolCalls":1}
 ```
 
-Neither event contains the raw request, drop log, provider output or key. The correlation test also asserts actual ID equality before redaction. Final tested code checkpoint: `bc7de67`; the subsequent evidence/documentation commit is identified in the delivery summary. Pair role swap and eight-minute demo: TBD. Reported joint document/code review remains user-provided evidence; personal authorship is not inferred from it. Each person can return the exact template in [demo-guide.md](../specs/005-secure-the-arcade/demo-guide.md) after performing the steps.
+Neither event contains the raw request, drop log, provider output or key. The correlation test also asserts actual ID equality before redaction. This historical event example belongs to checkpoint `bc7de67`; the current tested checkpoint is listed above. Nemanja reported the pair role swap and eight-minute demo on 2026-10-27, but the exact challenged variants and observed outputs were not recorded. Reported joint review remains user-provided evidence. The new automated traces help prepare the missing individual explanations in [demo-guide.md](../specs/005-secure-the-arcade/demo-guide.md).
 
 ### Dependency audit (local lockfile, 2026-10-26)
 
@@ -214,6 +244,6 @@ Current T00–T17 observations and limits are in the matrix above. T16 is a loca
 
 ### Exact remaining human actions
 
-T001 is complete for document approval and planned roles. T030 and T032 remain open for exact personally attributable work and observed demo details. The pair should identify each person's actual protection and negative-test contribution, personally run and explain the named checks, and record the real normal + API/browser denial + agent denial traces from their role rotation and eight-minute demo. Nemanja previously reported the demo happened, but precise challenged variants and observed outputs were not supplied; Milica has not independently specified them. [demo-guide.md](../specs/005-secure-the-arcade/demo-guide.md) contains commands, expected counters, a timed agenda and a per-person return template. AI-directed work must be described honestly; simply running an existing test does not establish authorship of the protection and test. No manual code change is needed for the technical findings closed above. If an actual contribution is missing, describe that fact and agree a meaningful contribution before closing the pair gate. Course submission email is sent by the members after these facts are recorded.
+T001 is complete for document approval and planned roles. T030 is complete for the technical evidence and the attributed contributions through direction/review listed above. **T032 remains open for the individual explanations and missing observed details of the pair demo.** The assignment does not require each member to type every test command; a person's contribution, the tool used to implement it, the actual test operator and the member's own explanation should be stated separately. The pair can use `npm run evidence:w08` to show one normal and two denied traces, swap the person explaining each boundary, and record their actual answers to a new variant. Nemanja previously reported the demo happened; exact variants and outputs have not been supplied. The guide contains the commands and timed agenda. No extra code change or invented personal history is needed to finish this remaining human step. Course submission email is sent by the members after their review.
 
 **Residual risk and next test:** Local in-memory quota cannot aggregate cost across separate Vercel serverless instances. Before claiming public live-mode cost protection, choose a deployment-wide trusted admission mechanism, test several instances with forged headers and concurrent calls, and record maximum underlying provider work. A local abort does not prove remote generation or billing stopped. This W08 exercise uses fake mode and makes no production-wide quota claim.

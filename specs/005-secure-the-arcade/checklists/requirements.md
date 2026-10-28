@@ -27,8 +27,8 @@
 - [x] Functional requirements map to T00–T17 and dependency-ordered tasks.
 - [x] Three user stories cover safe recommendation, browser/resource safety and reproducible evidence.
 - [x] Approval gate and factual evidence rule match Constitution I and III.
-- [ ] Pair approval received and implementation authorized.
+- [x] Pair approval received and implementation authorized; both document approvals are recorded under T001 in [the evidence](../../../docs/EVIDENCE_W08.md#document-approval-and-proposed-role-rotation--t001).
 
 ## Notes
 
-The final unchecked item is intentionally pending the user's review. This checklist validates document readiness only; it does not claim W08 controls or tests have been implemented.
+Updated on 2026-10-28 to match the document approvals recorded on 2026-10-27. This checklist tracks specification readiness. Current executable results and remaining individual demo requirements are maintained in [EVIDENCE_W08.md](../../../docs/EVIDENCE_W08.md); they are not inferred from checklist completion.
